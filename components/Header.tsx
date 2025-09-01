@@ -68,7 +68,7 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between flex-wrap gap-y-3">
           <div className="flex items-center justify-center space-x-2 sm:space-x-3 min-w-0">
-               <img src="/public/logo.png" alt="Self-Care Guide for Wellness Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain flex-shrink-0"/>
+               <img src="/logo.png" alt="Self-Care Guide for Wellness Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain flex-shrink-0"/>
               <div className="min-w-0">
                   <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-slate-800 truncate">
                   Self-Care Guide for Wellness

@@ -195,10 +195,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         // Get API key from environment
-        const API_KEY = process.env.GEMINI_API_KEY;
+        const API_KEY = process.env.GEMINI_API_KEY || process.env.API_KEY;
         if (!API_KEY) {
-            console.error('GEMINI_API_KEY not configured');
-            return res.status(500).json({ error: 'Service configuration error' });
+            console.error('Environment variables available:', Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
+            console.error('GEMINI_API_KEY not configured - check Vercel environment variables');
+            return res.status(500).json({ 
+                error: 'Service configuration error', 
+                details: 'API key not configured properly'
+            });
         }
 
         // Initialize Gemini AI

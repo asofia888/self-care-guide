@@ -84,8 +84,8 @@ export const Compendium: React.FC = () => {
     try {
       const data = await getCompendiumInfo(searchQuery, language);
       setResult(data);
-      if (!data || (!data.kampoEntries.length && !data.herbEntries.length && !data.supplementEntries.length)) {
-          setInfoMessage(translations.noResults); 
+      if (!data || (!data.kampoEntries.length && !data.japaneseCrudeDrugEntries?.length && !data.westernHerbEntries?.length && !data.supplementEntries.length)) {
+          setInfoMessage(translations.noResults);
       }
     } catch (err) {
       const caughtError = err as Error;
@@ -172,8 +172,9 @@ export const Compendium: React.FC = () => {
             )}
 
             {result && !isLoading && (() => {
-                const japaneseCrudeDrugEntries = result.kampoEntries.filter(entry => !entry.constituentHerbs || entry.constituentHerbs.trim() === '');
                 const kampoFormulaEntries = result.kampoEntries.filter(entry => entry.constituentHerbs && entry.constituentHerbs.trim() !== '');
+                const japaneseCrudeDrugEntries = result.japaneseCrudeDrugEntries || [];
+                const westernHerbEntries = result.westernHerbEntries || [];
 
                 return (
                     <div className="space-y-4 printable-area">
@@ -200,15 +201,15 @@ export const Compendium: React.FC = () => {
                                 </div>
                             )}
 
-                            {result.supplementEntries.length > 0 && (
+                            {kampoFormulaEntries.length > 0 && (
                                 <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.supplementSectionTitle}</h2>
-                                    {result.supplementEntries.map((entry, index) => (
-                                        <EntryCard key={`supplement-${index}`} entry={entry} />
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.kampoFormulaSectionTitle}</h2>
+                                    {kampoFormulaEntries.map((entry, index) => (
+                                        <EntryCard key={`kampo-formula-${index}`} entry={entry} />
                                     ))}
                                 </section>
                             )}
-                            
+
                             {japaneseCrudeDrugEntries.length > 0 && (
                                 <section>
                                     <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.japaneseCrudeDrugSectionTitle}</h2>
@@ -218,20 +219,20 @@ export const Compendium: React.FC = () => {
                                 </section>
                             )}
 
-                            {result.herbEntries.length > 0 && (
+                            {westernHerbEntries.length > 0 && (
                                 <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.herbSectionTitle}</h2>
-                                    {result.herbEntries.map((entry, index) => (
-                                        <EntryCard key={`herb-${index}`} entry={entry} />
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-emerald-400 pb-2">{translations.westernHerbSectionTitle}</h2>
+                                    {westernHerbEntries.map((entry, index) => (
+                                        <EntryCard key={`western-herb-${index}`} entry={entry} />
                                     ))}
                                 </section>
                             )}
 
-                            {kampoFormulaEntries.length > 0 && (
+                            {result.supplementEntries.length > 0 && (
                                 <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.kampoFormulaSectionTitle}</h2>
-                                    {kampoFormulaEntries.map((entry, index) => (
-                                        <EntryCard key={`kampo-formula-${index}`} entry={entry} />
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.supplementSectionTitle}</h2>
+                                    {result.supplementEntries.map((entry, index) => (
+                                        <EntryCard key={`supplement-${index}`} entry={entry} />
                                     ))}
                                 </section>
                             )}

@@ -5,31 +5,32 @@ import { GoogleGenAI, Type } from '@google/genai';
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const compendiumEntrySchema = {
-    type: Type.OBJECT, 
-    properties: { 
-        name: { type: Type.STRING }, 
-        category: { type: Type.STRING, enum: ['Herb', 'Kampo Formula', 'Supplement'] }, 
-        summary: { type: Type.STRING }, 
-        properties: { type: Type.STRING }, 
-        channels: { type: Type.STRING }, 
-        actions: { type: Type.ARRAY, items: { type: Type.STRING } }, 
-        indications: { type: Type.ARRAY, items: { type: Type.STRING } }, 
-        constituentHerbs: { type: Type.STRING }, 
-        clinicalNotes: { type: Type.STRING }, 
-        contraindications: { type: Type.STRING }, 
-    }, 
+    type: Type.OBJECT,
+    properties: {
+        name: { type: Type.STRING },
+        category: { type: Type.STRING, enum: ['Japanese Crude Drug', 'Western Herb', 'Kampo Formula', 'Supplement'] },
+        summary: { type: Type.STRING },
+        properties: { type: Type.STRING },
+        channels: { type: Type.STRING },
+        actions: { type: Type.ARRAY, items: { type: Type.STRING } },
+        indications: { type: Type.ARRAY, items: { type: Type.STRING } },
+        constituentHerbs: { type: Type.STRING },
+        clinicalNotes: { type: Type.STRING },
+        contraindications: { type: Type.STRING },
+    },
     required: ["name", "category", "summary", "actions", "indications"]
 };
 
 const compendiumResponseSchema = {
-    type: Type.OBJECT, 
-    properties: { 
-        integrativeViewpoint: { type: Type.STRING }, 
-        kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema }, 
-        herbEntries: { type: Type.ARRAY, items: compendiumEntrySchema }, 
-        supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema } 
-    }, 
-    required: ["integrativeViewpoint", "kampoEntries", "herbEntries", "supplementEntries"]
+    type: Type.OBJECT,
+    properties: {
+        integrativeViewpoint: { type: Type.STRING },
+        kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+        japaneseCrudeDrugEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+        westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+        supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema }
+    },
+    required: ["integrativeViewpoint", "kampoEntries", "japaneseCrudeDrugEntries", "westernHerbEntries", "supplementEntries"]
 };
 
 const getLanguageName = (langCode: string) => {
@@ -132,17 +133,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const model = 'gemini-2.5-flash';
         const languageName = getLanguageName(language);
 
-        const systemInstruction = `You are an expert AI Materia Medica and integrative medicine scholar with deep knowledge of Japanese Kampo medicine. Your function is to provide detailed, accurate, and structured information for a professional audience. Analyze the query.
+        const systemInstruction = `You are an expert AI Materia Medica and integrative medicine scholar with deep knowledge of Japanese Kampo medicine, Traditional Chinese Medicine (TCM), and Western herbal medicine. Your function is to provide detailed, accurate, and structured information for a professional audience combining Eastern and Western approaches. Analyze the query.
+
 - If the query appears to be a specific substance (e.g., an herb, a crude drug, a supplement, or a specific formula like "Kakkonto"), focus the response on providing a detailed entry for that substance in its correct category. Provide a concise integrative viewpoint related to that substance. Do not provide lists of other unrelated substances unless they are directly relevant for comparison.
-- If the query appears to be a symptom, condition, or general concept (e.g., "headache," "fatigue," "qi stagnation"), provide a comprehensive integrative viewpoint and then provide categorized lists of relevant therapeutic options. In this case, you should suggest exactly three relevant Kampo formulas/crude drugs, exactly three relevant herbs, and five to seven relevant supplements.
+
+- If the query appears to be a symptom, condition, or general concept (e.g., "headache," "fatigue," "qi stagnation"), provide a comprehensive integrative viewpoint and then provide categorized lists of relevant therapeutic options:
+  * Exactly 3 Kampo formulas (multi-herb traditional Japanese prescriptions like Kakkonto, Hochuekkito)
+  * Exactly 3 Japanese crude drugs (single TCM/Kampo herbs like Angelica sinensis/当帰, Astragalus/黄耆, Ginger/生姜)
+  * Exactly 3 Western herbs (European/American herbs like Echinacea, Chamomile, St. John's Wort, Valerian)
+  * 5-7 supplements (modern nutritional supplements)
+
 - Order all suggestions by clinical relevance and efficacy, with the most effective and commonly used options first.
+
+- For Japanese crude drugs: Focus on traditional TCM/Kampo single herbs with properties, channels, and traditional uses.
+
+- For Western herbs: Focus on well-researched European and American herbs with modern clinical evidence. Examples include Echinacea, Valerian, St. John's Wort, Ginkgo biloba, Milk Thistle, Saw Palmetto, Hawthorn, Passionflower, etc.
+
 - For supplements, provide a diverse range covering different mechanisms and price points:
   * Include 2-3 primary evidence-based supplements (e.g., vitamins, minerals, omega-3)
   * Include 2-3 functional supplements (e.g., probiotics, adaptogens, amino acids)
   * Include 1-2 complementary or emerging options with good research support
   * Prioritize commonly available, well-researched options directly relevant to the query
   * DO NOT default to suggesting obscure supplements unless specifically relevant
-- Focus on practical, accessible, and well-researched therapeutic options that give users meaningful choice based on budget, availability, and preference.
+
+- Focus on practical, accessible, and well-researched therapeutic options that give users meaningful choice based on budget, availability, cultural preference, and evidence base.
+
 Your entire response MUST be a single, valid JSON object adhering to the schema, with all text in ${languageName}.`;
 
         const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;

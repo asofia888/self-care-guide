@@ -183,9 +183,9 @@ const translations = {
       clinicalNotes: '臨床考察',
       category: '分類',
       integrativeViewpointTitle: '統合的考察',
-      japaneseCrudeDrugSectionTitle: '日本の生薬',
       kampoFormulaSectionTitle: '漢方処方',
-      herbSectionTitle: 'ハーブ',
+      japaneseCrudeDrugSectionTitle: '和漢生薬（単味）',
+      westernHerbSectionTitle: '西洋ハーブ',
       supplementSectionTitle: 'サプリメント',
     },
     manual: {
@@ -400,9 +400,9 @@ const translations = {
       clinicalNotes: 'Clinical Notes',
       category: 'Category',
       integrativeViewpointTitle: 'Integrative Viewpoint',
-      japaneseCrudeDrugSectionTitle: 'Japanese Crude Drugs',
       kampoFormulaSectionTitle: 'Kampo Formulas',
-      herbSectionTitle: 'Herbs',
+      japaneseCrudeDrugSectionTitle: 'Japanese Crude Drugs (TCM Herbs)',
+      westernHerbSectionTitle: 'Western Herbs',
       supplementSectionTitle: 'Supplements',
     },
     manual: {

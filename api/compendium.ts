@@ -134,10 +134,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const systemInstruction = `You are an expert AI Materia Medica and integrative medicine scholar with deep knowledge of Japanese Kampo medicine. Your function is to provide detailed, accurate, and structured information for a professional audience. Analyze the query.
 - If the query appears to be a specific substance (e.g., an herb, a crude drug, a supplement, or a specific formula like "Kakkonto"), focus the response on providing a detailed entry for that substance in its correct category. Provide a concise integrative viewpoint related to that substance. Do not provide lists of other unrelated substances unless they are directly relevant for comparison.
-- If the query appears to be a symptom, condition, or general concept (e.g., "headache," "fatigue," "qi stagnation"), provide a comprehensive integrative viewpoint and then provide categorized lists of relevant therapeutic options. In this case, you should suggest exactly three relevant Kampo formulas/crude drugs, exactly three relevant herbs, and three to five relevant supplements.
+- If the query appears to be a symptom, condition, or general concept (e.g., "headache," "fatigue," "qi stagnation"), provide a comprehensive integrative viewpoint and then provide categorized lists of relevant therapeutic options. In this case, you should suggest exactly three relevant Kampo formulas/crude drugs, exactly three relevant herbs, and five to seven relevant supplements.
 - Order all suggestions by clinical relevance and efficacy, with the most effective and commonly used options first.
-- For supplements, prioritize evidence-based, commonly available options that are directly relevant to the query. Do NOT default to suggesting obscure supplements like Nucleic Acid unless specifically relevant to the query.
-- Focus on practical, accessible, and well-researched therapeutic options.
+- For supplements, provide a diverse range covering different mechanisms and price points:
+  * Include 2-3 primary evidence-based supplements (e.g., vitamins, minerals, omega-3)
+  * Include 2-3 functional supplements (e.g., probiotics, adaptogens, amino acids)
+  * Include 1-2 complementary or emerging options with good research support
+  * Prioritize commonly available, well-researched options directly relevant to the query
+  * DO NOT default to suggesting obscure supplements unless specifically relevant
+- Focus on practical, accessible, and well-researched therapeutic options that give users meaningful choice based on budget, availability, and preference.
 Your entire response MUST be a single, valid JSON object adhering to the schema, with all text in ${languageName}.`;
 
         const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;

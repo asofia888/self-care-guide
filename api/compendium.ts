@@ -129,7 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Initialize Gemini AI
         const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const model = 'gemini-2.0-flash-exp';
+        const model = 'gemini-2.5-flash';
         const languageName = getLanguageName(language);
 
         const systemInstruction = `You are an expert AI Materia Medica and integrative medicine scholar with deep knowledge of Japanese Kampo medicine. Your function is to provide detailed, accurate, and structured information for a professional audience. Analyze the query.

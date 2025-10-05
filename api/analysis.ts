@@ -1,6 +1,21 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
 
+// Constants
+const GEMINI_MODEL = 'gemini-2.5-flash';
+const RATE_LIMIT = 5; // requests per minute
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const ALLOWED_ORIGINS = [
+    'https://self-care-guide.vercel.app',
+    'https://self-care-guide-git-main-asofia888.vercel.app',
+    'http://localhost:5173'
+];
+const ALLOWED_MODES = ['professional', 'general'] as const;
+const ALLOWED_LANGUAGES = ['ja', 'en'] as const;
+
+type AnalysisMode = typeof ALLOWED_MODES[number];
+type Language = typeof ALLOWED_LANGUAGES[number];
+
 // Rate limiting in-memory store (for production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
@@ -93,74 +108,100 @@ const generalAnalysisSchema = {
     required: ["analysisMode", "wellnessProfile", "herbSuggestions", "supplementSuggestions", "lifestyleAdvice", "precautions"]
 };
 
-const getLanguageName = (langCode: string) => {
+// Helper functions
+const getLanguageName = (langCode: Language): string => {
     const level = 'Medical Professional Level';
-    switch (langCode) {
-        case 'ja': return `Japanese (${level})`;
-        case 'en': return `English (${level})`;
-        default: return `English (${level})`;
-    }
+    const languageMap: Record<Language, string> = {
+        ja: 'Japanese',
+        en: 'English'
+    };
+    return `${languageMap[langCode]} (${level})`;
+};
+
+const getClientIP = (req: VercelRequest): string => {
+    const clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+    return Array.isArray(clientIP) ? clientIP[0] : clientIP;
 };
 
 const checkRateLimit = (ip: string): boolean => {
     const now = Date.now();
-    const limit = 5; // 5 requests per minute (more restrictive for analysis)
-    const windowMs = 60 * 1000; // 1 minute
-
-    const key = ip;
-    const record = rateLimitStore.get(key);
+    const record = rateLimitStore.get(ip);
 
     if (!record || now > record.resetTime) {
-        rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+        rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
         return true;
     }
 
-    if (record.count >= limit) {
+    if (record.count >= RATE_LIMIT) {
         return false;
     }
 
     record.count++;
-    rateLimitStore.set(key, record);
     return true;
 };
 
-const processImageFile = async (imageData: string, mimeType: string) => {
-    // Validate image type
-    if (!mimeType.startsWith('image/')) {
-        throw new Error('Invalid file type. Only images are allowed.');
-    }
-
-    // Validate image size (base64 encoded, so approximate)
-    const sizeInBytes = (imageData.length * 3) / 4;
-    if (sizeInBytes > 4 * 1024 * 1024) { // 4MB limit
-        throw new Error('Image too large. Maximum size is 4MB.');
-    }
-
-    return {
-        inlineData: { data: imageData, mimeType },
-    };
-};
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-    // Set security headers
+const setSecurityHeaders = (res: VercelResponse): void => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store, max-age=0');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
+};
 
-    // CORS for frontend
-    const allowedOrigins = [
-        'https://self-care-guide.vercel.app',
-        'https://self-care-guide-git-main-asofia888.vercel.app',
-        'http://localhost:5173'
-    ];
+const setCORSHeaders = (req: VercelRequest, res: VercelResponse): void => {
     const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+};
+
+const buildSystemInstruction = (languageName: string): string => {
+    return `You are an expert AI in integrative medicine, skilled in Japanese Kampo, TCM, and modern wellness. Your task is to analyze user-provided data and generate a structured, professional-level (for 'professional' mode) or easy-to-understand (for 'general' mode) wellness analysis.
+- Analyze the provided text data to form a comprehensive assessment.
+- Base your suggestions on evidence and traditional knowledge. For 'professional' mode, be specific and clinical. For 'general' mode, be safe, practical, and encouraging.
+- Your entire response MUST be a single, valid JSON object adhering to the provided schema, with all text in ${languageName}.
+- Do not include any markdown formatting (like \`\`\`json) in your response, only the raw JSON object.`;
+};
+
+const buildPrompt = (mode: AnalysisMode, profile: object): string => {
+    return `Please perform a wellness analysis.
+- Mode: ${mode}
+- User Profile: ${JSON.stringify(profile, null, 2)}`;
+};
+
+interface RequestBody {
+    mode?: string;
+    profile?: unknown;
+    language?: string;
+}
+
+const validateRequest = (body: RequestBody): { mode: AnalysisMode; profile: object; language: Language } | { error: string } => {
+    const { mode, profile, language } = body;
+
+    if (!mode || !ALLOWED_MODES.includes(mode as AnalysisMode)) {
+        return { error: 'Mode must be "professional" or "general"' };
+    }
+
+    if (!profile || typeof profile !== 'object') {
+        return { error: 'Profile is required and must be an object' };
+    }
+
+    if (!language || !ALLOWED_LANGUAGES.includes(language as Language)) {
+        return { error: 'Language must be "ja" or "en"' };
+    }
+
+    return {
+        mode: mode as AnalysisMode,
+        profile: profile as object,
+        language: language as Language
+    };
+};
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+    setSecurityHeaders(res);
+    setCORSHeaders(req, res);
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
@@ -170,85 +211,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // Rate limiting
-    const clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
-    const ip = Array.isArray(clientIP) ? clientIP[0] : clientIP;
-    
+    const ip = getClientIP(req);
     if (!checkRateLimit(ip)) {
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
     }
 
     try {
-        const { mode, profile, language, faceImage, tongueImage } = req.body;
-
-        // Input validation
-        if (!mode || !['professional', 'general'].includes(mode)) {
-            return res.status(400).json({ error: 'Mode must be "professional" or "general"' });
+        const validation = validateRequest(req.body);
+        if ('error' in validation) {
+            return res.status(400).json({ error: validation.error });
         }
 
-        if (!profile || typeof profile !== 'object') {
-            return res.status(400).json({ error: 'Profile is required and must be an object' });
-        }
+        const { mode, profile, language } = validation;
 
-        if (!language || !['ja', 'en'].includes(language)) {
-            return res.status(400).json({ error: 'Language must be "ja" or "en"' });
-        }
-
-        // Get API key from environment
-        const API_KEY = process.env.GEMINI_API_KEY || process.env.API_KEY;
-        if (!API_KEY) {
-            console.error('Environment variables available:', Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
+        const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+        if (!apiKey) {
             console.error('GEMINI_API_KEY not configured - check Vercel environment variables');
-            return res.status(500).json({ 
-                error: 'Service configuration error', 
+            return res.status(500).json({
+                error: 'Service configuration error',
                 details: 'API key not configured properly'
             });
         }
 
-        // Initialize Gemini AI
-        const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const model = 'gemini-2.0-flash-exp';
+        const ai = new GoogleGenAI({ apiKey });
         const languageName = getLanguageName(language);
         const responseSchema = mode === 'professional' ? professionalAnalysisSchema : generalAnalysisSchema;
-
-        const systemInstruction = `You are an expert AI in integrative medicine, skilled in Japanese Kampo, TCM, and modern wellness. Your task is to analyze user-provided data and generate a structured, professional-level (for 'professional' mode) or easy-to-understand (for 'general' mode) wellness analysis.
-- Analyze all provided text data and any images (face, tongue) to form a comprehensive assessment.
-- If images are provided, incorporate visual diagnosis (e.g., tongue diagnosis, facial complexion) into your analysis.
-- Base your suggestions on evidence and traditional knowledge. For 'professional' mode, be specific and clinical. For 'general' mode, be safe, practical, and encouraging.
-- Your entire response MUST be a single, valid JSON object adhering to the provided schema, with all text in ${languageName}.
-- Do not include any markdown formatting (like \`\`\`json) in your response, only the raw JSON object.`;
-
-        const textPrompt = `Please perform a wellness analysis.
-- Mode: ${mode}
-- User Profile: ${JSON.stringify(profile, null, 2)}
-- If images are included, analyze them for signs relevant to the assessment (e.g., tongue coating, color, shape; facial complexion).`;
-
-        const contents: any[] = [{ text: textPrompt }];
-
-        // Process images if provided
-        if (faceImage && faceImage.data && faceImage.mimeType) {
-            try {
-                contents.push({ text: "User's face image:" });
-                contents.push(await processImageFile(faceImage.data, faceImage.mimeType));
-            } catch (error) {
-                console.error('Error processing face image:', error);
-                return res.status(400).json({ error: 'Invalid face image format' });
-            }
-        }
-
-        if (tongueImage && tongueImage.data && tongueImage.mimeType) {
-            try {
-                contents.push({ text: "User's tongue image:" });
-                contents.push(await processImageFile(tongueImage.data, tongueImage.mimeType));
-            } catch (error) {
-                console.error('Error processing tongue image:', error);
-                return res.status(400).json({ error: 'Invalid tongue image format' });
-            }
-        }
+        const systemInstruction = buildSystemInstruction(languageName);
+        const textPrompt = buildPrompt(mode, profile);
 
         const response = await ai.models.generateContent({
-            model,
-            contents: { parts: contents },
+            model: GEMINI_MODEL,
+            contents: { parts: [{ text: textPrompt }] },
             config: {
                 systemInstruction,
                 responseMimeType: "application/json",

@@ -69,58 +69,17 @@ export const getCompendiumInfo = async (query: string, language: Language): Prom
 
 // --- ANALYSIS FUNCTION ---
 
-const fileToBase64 = async (file: File): Promise<{data: string, mimeType: string}> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const result = reader.result as string;
-        const base64Data = result.split(',')[1];
-        resolve({
-          data: base64Data, 
-          mimeType: file.type
-        });
-      } catch (error) {
-        reject(error);
-      }
-    };
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsDataURL(file);
-  });
-};
-
 export const analyzeUserData = async (
-    mode: AnalysisMode, 
-    profile: AnyUserProfile, 
-    language: Language,
-    faceImage?: File | null, 
-    tongueImage?: File | null
+    mode: AnalysisMode,
+    profile: AnyUserProfile,
+    language: Language
 ): Promise<AnalysisResult> => {
     try {
-        const payload: any = {
+        const payload = {
             mode,
             profile,
             language
         };
-
-        // Process images if provided
-        if (faceImage) {
-            try {
-                payload.faceImage = await fileToBase64(faceImage);
-            } catch (error) {
-                console.error('Error processing face image:', error);
-                // Continue without the image rather than failing completely
-            }
-        }
-        
-        if (tongueImage) {
-            try {
-                payload.tongueImage = await fileToBase64(tongueImage);
-            } catch (error) {
-                console.error('Error processing tongue image:', error);
-                // Continue without the image rather than failing completely
-            }
-        }
 
         const result = await apiCall<AnalysisResult>('/analysis', payload);
         return result;

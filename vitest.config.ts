@@ -1,8 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
+import react from '@vitejs/plugin-react';
 
 // This configuration sets up the Vitest testing framework.
 export default defineConfig({
+  plugins: [react()],
   test: {
     // Enables global APIs (describe, it, expect, etc.) without importing them.
     globals: true,
@@ -40,12 +42,23 @@ export default defineConfig({
     },
     // Test timeout
     testTimeout: 10000,
-    // Run tests in parallel
-    pool: 'forks'
+    // Run tests in single thread to avoid WSL issues
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true
+      }
+    }
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
+    }
+  },
+  // WSL compatibility settings
+  server: {
+    watch: {
+      usePolling: true
     }
   }
 });

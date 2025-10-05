@@ -8,7 +8,7 @@ const compendiumEntrySchema = {
     type: Type.OBJECT,
     properties: {
         name: { type: Type.STRING },
-        category: { type: Type.STRING, enum: ['Japanese Crude Drug', 'Western Herb', 'Kampo Formula', 'Supplement'] },
+        category: { type: Type.STRING, enum: ['Western Herb', 'Kampo Formula', 'Supplement'] },
         summary: { type: Type.STRING },
         properties: { type: Type.STRING },
         channels: { type: Type.STRING },
@@ -26,11 +26,10 @@ const compendiumResponseSchema = {
     properties: {
         integrativeViewpoint: { type: Type.STRING },
         kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
-        japaneseCrudeDrugEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema }
     },
-    required: ["integrativeViewpoint", "kampoEntries", "japaneseCrudeDrugEntries", "westernHerbEntries", "supplementEntries"]
+    required: ["integrativeViewpoint", "kampoEntries", "westernHerbEntries", "supplementEntries"]
 };
 
 const getLanguageName = (langCode: string) => {
@@ -133,15 +132,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const model = 'gemini-2.5-flash';
         const languageName = getLanguageName(language);
 
-        const systemInstruction = `You are an expert integrative medicine AI combining Kampo, TCM, and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
+        const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
 For specific substances: Provide ONE detailed entry in the correct category with brief integrative viewpoint.
 
 For symptoms/conditions: Provide integrative viewpoint plus:
-- 3 Kampo formulas (e.g., Kakkonto, Hochuekkito)
-- 3 Japanese crude drugs (e.g., 当帰, 黄耆, 生姜)
-- 3 Western herbs (e.g., Echinacea, Valerian, Chamomile)
-- 5-7 supplements (vitamins, minerals, functional supplements)
+- 3 Kampo formulas (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito)
+- 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
+- 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 

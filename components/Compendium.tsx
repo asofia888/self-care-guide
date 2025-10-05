@@ -84,7 +84,7 @@ export const Compendium: React.FC = () => {
     try {
       const data = await getCompendiumInfo(searchQuery, language);
       setResult(data);
-      if (!data || (!data.kampoEntries.length && !data.japaneseCrudeDrugEntries?.length && !data.westernHerbEntries?.length && !data.supplementEntries.length)) {
+      if (!data || (!data.kampoEntries.length && !data.westernHerbEntries.length && !data.supplementEntries.length)) {
           setInfoMessage(translations.noResults);
       }
     } catch (err) {
@@ -171,75 +171,60 @@ export const Compendium: React.FC = () => {
                 </div>
             )}
 
-            {result && !isLoading && (() => {
-                const kampoFormulaEntries = result.kampoEntries.filter(entry => entry.constituentHerbs && entry.constituentHerbs.trim() !== '');
-                const japaneseCrudeDrugEntries = result.japaneseCrudeDrugEntries || [];
-                const westernHerbEntries = result.westernHerbEntries || [];
-
-                return (
-                    <div className="space-y-4 printable-area">
-                        <div className="text-right no-print">
-                            <button
-                                onClick={handlePrint}
-                                className="inline-flex items-center gap-2 px-4 py-3 min-h-[44px] sm:min-h-[auto] sm:py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-all duration-200 text-sm"
-                            >
-                                <PrinterIcon className="w-4 h-4" />
-                                {translations.print}
-                            </button>
-                        </div>
-
-                        <div className="space-y-8">
-                            {result.integrativeViewpoint && (
-                                <div className="bg-gradient-to-br from-sky-50 to-white text-slate-800 p-6 rounded-2xl shadow-lg border border-sky-200/80">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <BrainCircuitIcon className="w-8 h-8 text-sky-700"/>
-                                        <h2 className="text-2xl font-bold">{translations.integrativeViewpointTitle}</h2>
-                                    </div>
-                                    <div className="prose prose-sm max-w-none prose-p:my-1 text-slate-700">
-                                        <p>{result.integrativeViewpoint}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {kampoFormulaEntries.length > 0 && (
-                                <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.kampoFormulaSectionTitle}</h2>
-                                    {kampoFormulaEntries.map((entry, index) => (
-                                        <EntryCard key={`kampo-formula-${index}`} entry={entry} />
-                                    ))}
-                                </section>
-                            )}
-
-                            {japaneseCrudeDrugEntries.length > 0 && (
-                                <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.japaneseCrudeDrugSectionTitle}</h2>
-                                    {japaneseCrudeDrugEntries.map((entry, index) => (
-                                        <EntryCard key={`crude-drug-${index}`} entry={entry} />
-                                    ))}
-                                </section>
-                            )}
-
-                            {westernHerbEntries.length > 0 && (
-                                <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-emerald-400 pb-2">{translations.westernHerbSectionTitle}</h2>
-                                    {westernHerbEntries.map((entry, index) => (
-                                        <EntryCard key={`western-herb-${index}`} entry={entry} />
-                                    ))}
-                                </section>
-                            )}
-
-                            {result.supplementEntries.length > 0 && (
-                                <section>
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.supplementSectionTitle}</h2>
-                                    {result.supplementEntries.map((entry, index) => (
-                                        <EntryCard key={`supplement-${index}`} entry={entry} />
-                                    ))}
-                                </section>
-                            )}
-                        </div>
+            {result && !isLoading && (
+                <div className="space-y-4 printable-area">
+                    <div className="text-right no-print">
+                        <button
+                            onClick={handlePrint}
+                            className="inline-flex items-center gap-2 px-4 py-3 min-h-[44px] sm:min-h-[auto] sm:py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-all duration-200 text-sm"
+                        >
+                            <PrinterIcon className="w-4 h-4" />
+                            {translations.print}
+                        </button>
                     </div>
-                );
-            })()}
+
+                    <div className="space-y-8">
+                        {result.integrativeViewpoint && (
+                            <div className="bg-gradient-to-br from-sky-50 to-white text-slate-800 p-6 rounded-2xl shadow-lg border border-sky-200/80">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <BrainCircuitIcon className="w-8 h-8 text-sky-700"/>
+                                    <h2 className="text-2xl font-bold">{translations.integrativeViewpointTitle}</h2>
+                                </div>
+                                <div className="prose prose-sm max-w-none prose-p:my-1 text-slate-700">
+                                    <p>{result.integrativeViewpoint}</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {result.supplementEntries.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.supplementSectionTitle}</h2>
+                                {result.supplementEntries.map((entry, index) => (
+                                    <EntryCard key={`supplement-${index}`} entry={entry} />
+                                ))}
+                            </section>
+                        )}
+
+                        {result.kampoEntries.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.kampoFormulaSectionTitle}</h2>
+                                {result.kampoEntries.map((entry, index) => (
+                                    <EntryCard key={`kampo-formula-${index}`} entry={entry} />
+                                ))}
+                            </section>
+                        )}
+
+                        {result.westernHerbEntries.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-emerald-400 pb-2">{translations.westernHerbSectionTitle}</h2>
+                                {result.westernHerbEntries.map((entry, index) => (
+                                    <EntryCard key={`western-herb-${index}`} entry={entry} />
+                                ))}
+                            </section>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     </div>
   );

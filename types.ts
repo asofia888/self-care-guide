@@ -6,7 +6,7 @@ export type FontSize = 'standard' | 'large';
 
 export interface CompendiumEntry {
     name: string;
-    category: 'Japanese Crude Drug' | 'Western Herb' | 'Kampo Formula' | 'Supplement';
+    category: 'Western Herb' | 'Kampo Formula' | 'Supplement';
     summary: string;
     properties?: string;
     channels?: string;
@@ -20,7 +20,6 @@ export interface CompendiumEntry {
 export interface CompendiumResult {
     integrativeViewpoint: string;
     kampoEntries: CompendiumEntry[];
-    japaneseCrudeDrugEntries: CompendiumEntry[];
     westernHerbEntries: CompendiumEntry[];
     supplementEntries: CompendiumEntry[];
 }

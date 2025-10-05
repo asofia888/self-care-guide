@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/compendium.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
     },
     "api/analysis.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
     }
   }
 }

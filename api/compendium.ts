@@ -133,32 +133,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const model = 'gemini-2.5-flash';
         const languageName = getLanguageName(language);
 
-        const systemInstruction = `You are an expert AI Materia Medica and integrative medicine scholar with deep knowledge of Japanese Kampo medicine, Traditional Chinese Medicine (TCM), and Western herbal medicine. Your function is to provide detailed, accurate, and structured information for a professional audience combining Eastern and Western approaches. Analyze the query.
+        const systemInstruction = `You are an expert integrative medicine AI combining Kampo, TCM, and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
-- If the query appears to be a specific substance (e.g., an herb, a crude drug, a supplement, or a specific formula like "Kakkonto"), focus the response on providing a detailed entry for that substance in its correct category. Provide a concise integrative viewpoint related to that substance. Do not provide lists of other unrelated substances unless they are directly relevant for comparison.
+For specific substances: Provide ONE detailed entry in the correct category with brief integrative viewpoint.
 
-- If the query appears to be a symptom, condition, or general concept (e.g., "headache," "fatigue," "qi stagnation"), provide a comprehensive integrative viewpoint and then provide categorized lists of relevant therapeutic options:
-  * Exactly 3 Kampo formulas (multi-herb traditional Japanese prescriptions like Kakkonto, Hochuekkito)
-  * Exactly 3 Japanese crude drugs (single TCM/Kampo herbs like Angelica sinensis/当帰, Astragalus/黄耆, Ginger/生姜)
-  * Exactly 3 Western herbs (European/American herbs like Echinacea, Chamomile, St. John's Wort, Valerian)
-  * 5-7 supplements (modern nutritional supplements)
+For symptoms/conditions: Provide integrative viewpoint plus:
+- 3 Kampo formulas (e.g., Kakkonto, Hochuekkito)
+- 3 Japanese crude drugs (e.g., 当帰, 黄耆, 生姜)
+- 3 Western herbs (e.g., Echinacea, Valerian, Chamomile)
+- 5-7 supplements (vitamins, minerals, functional supplements)
 
-- Order all suggestions by clinical relevance and efficacy, with the most effective and commonly used options first.
+Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 
-- For Japanese crude drugs: Focus on traditional TCM/Kampo single herbs with properties, channels, and traditional uses.
-
-- For Western herbs: Focus on well-researched European and American herbs with modern clinical evidence. Examples include Echinacea, Valerian, St. John's Wort, Ginkgo biloba, Milk Thistle, Saw Palmetto, Hawthorn, Passionflower, etc.
-
-- For supplements, provide a diverse range covering different mechanisms and price points:
-  * Include 2-3 primary evidence-based supplements (e.g., vitamins, minerals, omega-3)
-  * Include 2-3 functional supplements (e.g., probiotics, adaptogens, amino acids)
-  * Include 1-2 complementary or emerging options with good research support
-  * Prioritize commonly available, well-researched options directly relevant to the query
-  * DO NOT default to suggesting obscure supplements unless specifically relevant
-
-- Focus on practical, accessible, and well-researched therapeutic options that give users meaningful choice based on budget, availability, cultural preference, and evidence base.
-
-Your entire response MUST be a single, valid JSON object adhering to the schema, with all text in ${languageName}.`;
+Output: Valid JSON only, no markdown.`;
 
         const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
         const contents = { parts: [{ text: textPrompt }] };

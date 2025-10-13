@@ -129,7 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // Initialize Gemini AI
         const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const model = 'gemini-2.5-flash';
+        const model = 'gemini-flash-latest';
         const languageName = getLanguageName(language);
 
         const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.

@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
 
 // Constants
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-flash-latest';
 const RATE_LIMIT = 5; // requests per minute
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const ALLOWED_ORIGINS = [

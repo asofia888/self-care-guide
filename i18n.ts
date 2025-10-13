@@ -82,20 +82,26 @@ export interface Translations {
   error: {
     unexpected: string;
     apiError: string;
+    networkError: string;
     retry: string;
   };
   compendium: {
     title: string;
+    description: string;
     searchLabel: string;
     searchPlaceholder: string;
     searchButton: string;
     clearButton: string;
     searching: string;
+    print: string;
     printButton: string;
     integrativeViewpointTitle: string;
     kampoFormulasTitle: string;
+    kampoFormulaSectionTitle: string;
     westernHerbsTitle: string;
+    westernHerbSectionTitle: string;
     supplementsTitle: string;
+    supplementSectionTitle: string;
     category: string;
     summary: string;
     properties: string;

@@ -111,7 +111,11 @@
     }
   },
   "streaming": {
-    "title": "AI is analyzing..."
+    "title": "AI is analyzing...",
+    "subtitle": "Please wait a moment"
+  },
+  "loadingSpinner": {
+    "message": "Loading..."
   },
   "error": {
     "unexpected": "An unexpected error occurred.",
@@ -148,29 +152,44 @@
     "noResults": "No results found"
   },
   "analysisDisplay": {
-    "professionalAnalysisTitle": "Professional Analysis",
-    "generalAnalysisTitle": "Wellness Analysis",
-    "differentialDiagnosisTitle": "Differential Diagnosis",
-    "pattern": "Pattern",
-    "pathology": "Pathology",
-    "evidence": "Evidence",
-    "rationaleTitle": "Rationale",
-    "treatmentPrincipleTitle": "Treatment Principle",
-    "herbSuggestionsTitle": "Herb Suggestions",
-    "kampoSuggestionsTitle": "Kampo Suggestions",
-    "supplementSuggestionsTitle": "Supplement Suggestions",
-    "folkRemediesTitle": "Folk Remedies",
-    "lifestyleAdviceTitle": "Lifestyle Advice",
-    "dietTitle": "Diet",
-    "sleepTitle": "Sleep",
-    "exerciseTitle": "Exercise",
-    "precautionsTitle": "Precautions",
-    "wellnessProfileTitle": "Your Wellness Profile",
-    "reason": "Reason",
-    "usage": "Usage",
-    "rationale": "Rationale",
+    "print": "Print",
     "printButton": "Print",
-    "searchInCompendium": "Search in Compendium"
+    "searchInCompendium": "Search in Compendium",
+    "professional": {
+      "diagnosisSummaryTitle": "Diagnosis Summary",
+      "pathology": "Pathology",
+      "evidence": "Evidence",
+      "rationaleTitle": "Rationale",
+      "treatmentPrincipleTitle": "Treatment Principle",
+      "herbSuggestionsTitle": "Recommended Herbs",
+      "kampoSuggestionsTitle": "Recommended Kampo",
+      "supplementSuggestionsTitle": "Recommended Supplements",
+      "folkRemediesTitle": "Folk Remedies",
+      "lifestyleAdviceTitle": "Lifestyle Advice",
+      "diet": "Diet",
+      "sleep": "Sleep",
+      "exercise": "Exercise",
+      "precautionsTitle": "Precautions",
+      "reason": "Reason",
+      "usage": "Usage",
+      "rationale": "Rationale",
+      "constituentHerbs": "Constituent Herbs",
+      "pharmacology": "Pharmacology",
+      "contraindications": "Contraindications"
+    },
+    "general": {
+      "wellnessProfileTitle": "Your Wellness Profile",
+      "herbSuggestionsTitle": "Recommended Herbs",
+      "supplementSuggestionsTitle": "Recommended Supplements",
+      "folkRemediesTitle": "Self-Care Tips",
+      "lifestyleAdviceTitle": "Lifestyle Advice",
+      "diet": "Diet",
+      "sleep": "Sleep",
+      "exercise": "Exercise",
+      "precautionsTitle": "Precautions",
+      "reason": "Reason",
+      "usage": "Usage"
+    }
   },
   "manual": {
     "title": "User Guide",

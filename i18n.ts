@@ -78,6 +78,10 @@ export interface Translations {
   };
   streaming: {
     title: string;
+    subtitle: string;
+  };
+  loadingSpinner: {
+    message: string;
   };
   error: {
     unexpected: string;
@@ -114,29 +118,44 @@ export interface Translations {
     noResults: string;
   };
   analysisDisplay: {
-    professionalAnalysisTitle: string;
-    generalAnalysisTitle: string;
-    differentialDiagnosisTitle: string;
-    pattern: string;
-    pathology: string;
-    evidence: string;
-    rationaleTitle: string;
-    treatmentPrincipleTitle: string;
-    herbSuggestionsTitle: string;
-    kampoSuggestionsTitle: string;
-    supplementSuggestionsTitle: string;
-    folkRemediesTitle: string;
-    lifestyleAdviceTitle: string;
-    dietTitle: string;
-    sleepTitle: string;
-    exerciseTitle: string;
-    precautionsTitle: string;
-    wellnessProfileTitle: string;
-    reason: string;
-    usage: string;
-    rationale: string;
+    print: string;
     printButton: string;
     searchInCompendium: string;
+    professional: {
+      diagnosisSummaryTitle: string;
+      pathology: string;
+      evidence: string;
+      rationaleTitle: string;
+      treatmentPrincipleTitle: string;
+      herbSuggestionsTitle: string;
+      kampoSuggestionsTitle: string;
+      supplementSuggestionsTitle: string;
+      folkRemediesTitle: string;
+      lifestyleAdviceTitle: string;
+      diet: string;
+      sleep: string;
+      exercise: string;
+      precautionsTitle: string;
+      reason: string;
+      usage: string;
+      rationale: string;
+      constituentHerbs: string;
+      pharmacology: string;
+      contraindications: string;
+    };
+    general: {
+      wellnessProfileTitle: string;
+      herbSuggestionsTitle: string;
+      supplementSuggestionsTitle: string;
+      folkRemediesTitle: string;
+      lifestyleAdviceTitle: string;
+      diet: string;
+      sleep: string;
+      exercise: string;
+      precautionsTitle: string;
+      reason: string;
+      usage: string;
+    };
   };
   manual: {
     title: string;

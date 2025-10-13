@@ -111,7 +111,11 @@
     }
   },
   "streaming": {
-    "title": "AIが分析しています..."
+    "title": "AIが分析しています...",
+    "subtitle": "しばらくお待ちください"
+  },
+  "loadingSpinner": {
+    "message": "読み込み中..."
   },
   "error": {
     "unexpected": "予期しないエラーが発生しました。",
@@ -148,29 +152,44 @@
     "noResults": "検索結果がありません"
   },
   "analysisDisplay": {
-    "professionalAnalysisTitle": "専門家向け分析結果",
-    "generalAnalysisTitle": "ウェルネス分析結果",
-    "differentialDiagnosisTitle": "鑑別診断",
-    "pattern": "証候",
-    "pathology": "病理",
-    "evidence": "根拠",
-    "rationaleTitle": "診断の論拠",
-    "treatmentPrincipleTitle": "治療原則",
-    "herbSuggestionsTitle": "推奨ハーブ",
-    "kampoSuggestionsTitle": "推奨漢方",
-    "supplementSuggestionsTitle": "推奨サプリメント",
-    "folkRemediesTitle": "民間療法・養生法",
-    "lifestyleAdviceTitle": "生活習慣のアドバイス",
-    "dietTitle": "食事",
-    "sleepTitle": "睡眠",
-    "exerciseTitle": "運動",
-    "precautionsTitle": "注意事項",
-    "wellnessProfileTitle": "あなたの健康プロファイル",
-    "reason": "理由",
-    "usage": "使用方法",
-    "rationale": "根拠",
+    "print": "印刷",
     "printButton": "印刷",
-    "searchInCompendium": "事典で検索"
+    "searchInCompendium": "事典で検索",
+    "professional": {
+      "diagnosisSummaryTitle": "診断サマリー",
+      "pathology": "病理",
+      "evidence": "根拠",
+      "rationaleTitle": "診断の論拠",
+      "treatmentPrincipleTitle": "治療原則",
+      "herbSuggestionsTitle": "推奨ハーブ",
+      "kampoSuggestionsTitle": "推奨漢方",
+      "supplementSuggestionsTitle": "推奨サプリメント",
+      "folkRemediesTitle": "民間療法・養生法",
+      "lifestyleAdviceTitle": "生活習慣のアドバイス",
+      "diet": "食事",
+      "sleep": "睡眠",
+      "exercise": "運動",
+      "precautionsTitle": "注意事項",
+      "reason": "理由",
+      "usage": "使用方法",
+      "rationale": "根拠",
+      "constituentHerbs": "構成生薬",
+      "pharmacology": "薬理",
+      "contraindications": "禁忌"
+    },
+    "general": {
+      "wellnessProfileTitle": "あなたの健康プロファイル",
+      "herbSuggestionsTitle": "推奨ハーブ",
+      "supplementSuggestionsTitle": "推奨サプリメント",
+      "folkRemediesTitle": "セルフケアのヒント",
+      "lifestyleAdviceTitle": "生活習慣のアドバイス",
+      "diet": "食事",
+      "sleep": "睡眠",
+      "exercise": "運動",
+      "precautionsTitle": "注意事項",
+      "reason": "理由",
+      "usage": "使用方法"
+    }
   },
   "manual": {
     "title": "使い方ガイド",

@@ -1,45 +1,11 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { UploadIcon, SparklesIcon, StethoscopeIcon, UserIcon } from './Icons';
+import React, { useState } from 'react';
+import { SparklesIcon, StethoscopeIcon, UserIcon } from './Icons';
 import type { Language, ProfessionalUserProfile, ProfessionalObservations, AnalysisMode, GeneralUserProfile, AnyUserProfile } from '../types';
 import { t } from '../i18n';
 import { useAppContext } from '../contexts/AppContext';
 import { ProfessionalForm } from './ProfessionalForm';
 import { GeneralForm } from './GeneralForm';
 import { ErrorDisplay } from './ErrorDisplay';
-
-const ImageUploader = React.memo<{
-  imagePreview: string | null;
-  onFileSelect: () => void;
-  onRemove: () => void;
-  isLoading: boolean;
-  language: Language;
-  'aria-labelledby': string;
-}> (({ imagePreview, onFileSelect, onRemove, isLoading, language, 'aria-labelledby': labelledby }) => {
-  const translations = t(language).userInput;
-  const altText = labelledby === 'face-photo-title' ? translations.faceImagePreviewAlt : translations.tongueImagePreviewAlt;
-
-  return (
-    <div role="group" aria-labelledby={labelledby}>
-      <div className="flex items-start gap-4">
-        <div className="flex-grow">
-          <button type="button" onClick={onFileSelect} disabled={isLoading} className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-amber-300 text-amber-800 font-semibold rounded-lg hover:bg-amber-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm">
-            <UploadIcon className="w-4 h-4" />
-            {translations.uploadButton}
-          </button>
-        </div>
-        {imagePreview && (
-          <div className="relative group flex-shrink-0">
-            <img src={imagePreview} alt={altText} className="h-16 w-16 object-cover rounded-md border-2 border-amber-200" />
-            <button type="button" onClick={onRemove} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity" aria-label={translations.removeImageLabel} disabled={isLoading}>
-              ✕
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-});
-ImageUploader.displayName = 'ImageUploader';
 
 const ModeSwitcher = React.memo<{
     currentMode: AnalysisMode;
@@ -75,26 +41,12 @@ ModeSwitcher.displayName = 'ModeSwitcher';
 
 export const UserInput: React.FC = () => {
   const { handleAnalysis, isLoading, language, error: globalError, clearError: clearGlobalError } = useAppContext();
-  
+
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('professional');
   const [profile, setProfile] = useState<Partial<ProfessionalUserProfile & GeneralUserProfile>>({ professionalObservations: {} });
-  const [faceImageFile, setFaceImageFile] = useState<File | null>(null);
-  const [tongueImageFile, setTongueImageFile] = useState<File | null>(null);
-  const [faceImagePreview, setFaceImagePreview] = useState<string | null>(null);
-  const [tongueImagePreview, setTongueImagePreview] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
-  
-  const faceFileInputRef = useRef<HTMLInputElement>(null);
-  const tongueFileInputRef = useRef<HTMLInputElement>(null);
 
   const translations = t(language).userInput;
-
-  useEffect(() => {
-    return () => {
-      if (faceImagePreview) URL.revokeObjectURL(faceImagePreview);
-      if (tongueImagePreview) URL.revokeObjectURL(tongueImagePreview);
-    };
-  }, [faceImagePreview, tongueImagePreview]);
 
   const handleModeChange = (mode: AnalysisMode) => {
     setAnalysisMode(mode);
@@ -123,43 +75,6 @@ export const UserInput: React.FC = () => {
     });
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, target: 'face' | 'tongue') => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 4 * 1024 * 1024) { setLocalError(translations.imageSizeError); return; }
-      const newPreviewUrl = URL.createObjectURL(file);
-      if (target === 'face') {
-        if (faceImagePreview) URL.revokeObjectURL(faceImagePreview);
-        setFaceImageFile(file);
-        setFaceImagePreview(newPreviewUrl);
-      } else {
-        if (tongueImagePreview) URL.revokeObjectURL(tongueImagePreview);
-        setTongueImageFile(file);
-        setTongueImagePreview(newPreviewUrl);
-      }
-      setLocalError(null);
-    }
-  };
-
-  const triggerFileSelect = (target: 'face' | 'tongue') => {
-    if (target === 'face') faceFileInputRef.current?.click();
-    else tongueFileInputRef.current?.click();
-  };
-
-  const removeImage = useCallback((target: 'face' | 'tongue') => {
-    if (target === 'face') {
-        setFaceImageFile(null);
-        if (faceImagePreview) URL.revokeObjectURL(faceImagePreview);
-        setFaceImagePreview(null);
-        if (faceFileInputRef.current) faceFileInputRef.current.value = "";
-    } else {
-        setTongueImageFile(null);
-        if (tongueImagePreview) URL.revokeObjectURL(tongueImagePreview);
-        setTongueImagePreview(null);
-        if (tongueFileInputRef.current) tongueFileInputRef.current.value = "";
-    }
-  }, [faceImagePreview, tongueImagePreview]);
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     clearGlobalError();
@@ -174,10 +89,8 @@ export const UserInput: React.FC = () => {
       return;
     }
     setLocalError(null);
-    handleAnalysis(analysisMode, profile as AnyUserProfile, faceImageFile, tongueImageFile);
+    handleAnalysis(analysisMode, profile as AnyUserProfile);
   };
-  
-  const legendClass = "text-lg font-bold text-teal-900 mb-3";
 
   return (
     <>
@@ -185,11 +98,8 @@ export const UserInput: React.FC = () => {
         <ModeSwitcher currentMode={analysisMode} onModeChange={handleModeChange} language={language} />
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          <input type="file" accept="image/png, image/jpeg" ref={faceFileInputRef} onChange={(e) => handleFileChange(e, 'face')} className="hidden" disabled={isLoading} />
-          <input type="file" accept="image/png, image/jpeg" ref={tongueFileInputRef} onChange={(e) => handleFileChange(e, 'tongue')} className="hidden" disabled={isLoading} />
-
           <div id="professional-form-section" role="region" hidden={analysisMode !== 'professional'}>
-            <ProfessionalForm 
+            <ProfessionalForm
               profile={profile}
               handleProfileChange={handleProfileChange}
               handleObservationChange={handleObservationChange}
@@ -206,20 +116,6 @@ export const UserInput: React.FC = () => {
               language={language}
             />
           </div>
-
-           <fieldset>
-             <legend className={legendClass}>{translations.photoTitle}</legend>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                 <div>
-                    <h4 id="face-photo-title" className="block text-md font-semibold text-teal-800 mb-2">{translations.facePhotoTitle}</h4>
-                    <ImageUploader aria-labelledby="face-photo-title" imagePreview={faceImagePreview} onFileSelect={() => triggerFileSelect('face')} onRemove={() => removeImage('face')} isLoading={isLoading} language={language}/>
-                 </div>
-                 <div>
-                    <h4 id="tongue-photo-title" className="block text-md font-semibold text-teal-800 mb-2">{translations.tonguePhotoTitle}</h4>
-                    <ImageUploader aria-labelledby="tongue-photo-title" imagePreview={tongueImagePreview} onFileSelect={() => triggerFileSelect('tongue')} onRemove={() => removeImage('tongue')} isLoading={isLoading} language={language} />
-                 </div>
-              </div>
-           </fieldset>
 
           {localError && <p className="text-red-600 mt-4 text-sm text-center" role="alert">{localError}</p>}
           

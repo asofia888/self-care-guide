@@ -1,21 +1,21 @@
-import type { 
+import type {
     Language, CompendiumResult, AnalysisMode, AnyUserProfile, AnalysisResult
 } from '../types';
-
-// API base URL - will be automatically set by Vercel
-const API_BASE_URL = typeof window !== 'undefined' ? '/api' : '';
+import { API_CONFIG } from '../constants';
+import { APIError, shouldRetry, logError } from '../utils/errorHandler';
 
 // Helper function for API calls with retry logic
 const apiCall = async <T>(
     endpoint: string,
     payload: any,
-    maxRetries: number = 3
+    maxRetries: number = API_CONFIG.RETRY_COUNT
 ): Promise<T> => {
-    let lastError: Error;
-    
+    let lastError: Error | APIError;
+
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -25,29 +25,33 @@ const apiCall = async <T>(
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+                throw new APIError(
+                    response.status,
+                    errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+                    errorData
+                );
             }
 
             const data = await response.json();
             return data as T;
 
         } catch (error) {
-            lastError = error as Error;
-            
+            lastError = error as Error | APIError;
+
+            // Log error for monitoring
+            logError(`apiCall:${endpoint}:attempt${attempt + 1}`, error);
+
             // Don't retry on client errors (4xx) or on last attempt
-            if (lastError.message.includes('400') || 
-                lastError.message.includes('401') ||
-                lastError.message.includes('403') ||
-                attempt === maxRetries) {
+            if (!shouldRetry(error) || attempt === maxRetries) {
                 throw lastError;
             }
-            
+
             // Wait with exponential backoff for server errors
             const delay = 1000 * Math.pow(2, attempt);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
-    
+
     throw lastError!;
 };
 
@@ -58,11 +62,11 @@ export const getCompendiumInfo = async (query: string, language: Language): Prom
             query: query.trim(),
             language
         });
-        
+
         return result;
     } catch (error) {
-        console.error("Error calling Compendium API:", error);
-        throw error; // Re-throw the original error object to preserve context
+        logError('getCompendiumInfo', error);
+        throw error; // Re-throw to allow caller to handle
     }
 };
 
@@ -85,11 +89,19 @@ export const analyzeUserData = async (
         return result;
 
     } catch (error) {
-        console.error("Error calling Analysis API:", error);
-        const typedError = error as any;
-        if (typedError.message) {
-            throw new Error(`AI API Error: ${typedError.message}`);
+        logError('analyzeUserData', error);
+
+        // Re-throw APIError as-is for proper handling
+        if (error instanceof APIError) {
+            throw error;
         }
-        throw new Error("An unknown error occurred with the AI service.");
+
+        // Wrap other errors in APIError
+        const typedError = error as Error;
+        throw new APIError(
+            500,
+            typedError.message || 'An unknown error occurred with the AI service.',
+            error
+        );
     }
 };

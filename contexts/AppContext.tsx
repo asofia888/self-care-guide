@@ -1,14 +1,15 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
 import { t } from '../i18n';
-import type { 
-    Language, 
-    View, 
+import type {
+    Language,
+    View,
     FontSize,
     AnalysisResult,
     AnalysisMode,
     AnyUserProfile
 } from '../types';
 import { analyzeUserData } from '../services/geminiService';
+import { formatErrorMessage, logError } from '../utils/errorHandler';
 
 interface AppState {
   language: Language;
@@ -24,7 +25,7 @@ export interface AppContextType extends AppState {
   handleLanguageChange: (lang: Language) => void;
   handleNavigate: (view: View) => void;
   handleFontSizeChange: (size: FontSize) => void;
-  handleAnalysis: (mode: AnalysisMode, profile: AnyUserProfile, faceImage?: File | null, tongueImage?: File | null) => Promise<void>;
+  handleAnalysis: (mode: AnalysisMode, profile: AnyUserProfile) => Promise<void>;
   clearError: () => void;
   viewCompendiumItem: (query: string) => void;
 }
@@ -55,8 +56,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const clearError = useCallback(() => setError(null), []);
 
-  const handleAnalysis = useCallback(async (mode: AnalysisMode, profile: AnyUserProfile, faceImage?: File | null, tongueImage?: File | null) => {
-    console.log("Starting analysis with:", { mode, profile, faceImage, tongueImage });
+  const handleAnalysis = useCallback(async (mode: AnalysisMode, profile: AnyUserProfile) => {
+    console.log("Starting analysis with:", { mode, profile });
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
@@ -64,27 +65,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     try {
       setStreamingContent(t(language).streaming.title);
-      
-      const result = await analyzeUserData(mode, profile, language, faceImage, tongueImage);
-      
+
+      const result = await analyzeUserData(mode, profile, language);
+
       setAnalysisResult(result);
       setStreamingContent('');
 
     } catch (err) {
-      const caughtError = err as Error;
-      console.error("Analysis failed:", caughtError);
-      let errorMessage = t(language).error.unexpected;
-      if (caughtError.message) {
-        try {
-          // The error message from the API might be a JSON string.
-          const errorJson = JSON.parse(caughtError.message.replace('AI API Error: ', ''));
-          const specificMessage = errorJson.error?.message || caughtError.message;
-          errorMessage = t(language).error.apiError.replace('{message}', specificMessage);
-        } catch (e) {
-          // If it's not JSON, use the message directly.
-          errorMessage = t(language).error.apiError.replace('{message}', caughtError.message);
-        }
-      }
+      // Log error for monitoring
+      logError('AppContext.handleAnalysis', err);
+
+      // Format error message for user display
+      const errorMessage = formatErrorMessage(err, language);
       setError(errorMessage);
       setStreamingContent('');
     } finally {

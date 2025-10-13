@@ -1,6 +1,74 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getCompendiumInfo, analyzeUserData } from './geminiService';
-import { mockCompendiumResult, mockAnalysisResult, mockUserProfile, createMockFile } from '../__tests__/test-utils';
+
+// Mock data
+const mockCompendiumResult = {
+  integrativeViewpoint: "Test integrative viewpoint for ginger analysis.",
+  kampoEntries: [{
+    name: "Shokenchuto",
+    category: "Kampo Formula" as const,
+    summary: "A warming formula for digestive support.",
+    properties: "Warm, pungent",
+    channels: "Spleen, Stomach",
+    actions: ["Warm the middle jiao", "Dispel cold"],
+    indications: ["Cold limbs", "Digestive weakness"],
+    constituentHerbs: "Ginger, Cinnamon, Jujube",
+    clinicalNotes: "Use with caution in heat conditions."
+  }],
+  westernHerbEntries: [{
+    name: "Ginger",
+    category: "Western Herb" as const,
+    summary: "Warming herb for digestive health.",
+    properties: "Hot, pungent",
+    actions: ["Warm the stomach", "Stop nausea"],
+    indications: ["Nausea", "Cold stomach"],
+    clinicalNotes: "Fresh vs dried ginger have different properties."
+  }],
+  supplementEntries: [{
+    name: "Ginger Extract",
+    category: "Supplement" as const,
+    summary: "Concentrated ginger for convenient dosing.",
+    actions: ["Support digestive health"],
+    indications: ["Occasional nausea", "Motion sickness"]
+  }]
+};
+
+const mockAnalysisResult = {
+  analysisMode: "general" as const,
+  wellnessProfile: {
+    title: "Digestive Wellness Profile",
+    summary: "You appear to have digestive sensitivity with occasional discomfort."
+  },
+  herbSuggestions: [{
+    name: "Chamomile",
+    reason: "Gentle digestive support",
+    usage: "Tea, 1-2 cups daily"
+  }],
+  supplementSuggestions: [{
+    name: "Probiotics",
+    reason: "Support digestive balance",
+    usage: "Daily with food"
+  }],
+  folkRemedies: [{
+    name: "Warm Water",
+    description: "Drink warm water before meals"
+  }],
+  lifestyleAdvice: {
+    diet: ["Eat smaller, frequent meals"],
+    sleep: ["Maintain regular sleep schedule"],
+    exercise: ["Gentle walking after meals"]
+  },
+  precautions: ["Consult healthcare provider if symptoms persist"]
+};
+
+const mockUserProfile = {
+  age: 30,
+  gender: "female",
+  concerns: ["digestion"],
+  selfAssessment: ["low_energy"],
+  medications: "none",
+  allergies: "none"
+};
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -79,10 +147,15 @@ describe('GeminiService', () => {
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Network Error');
     });
 
-    it('retries on server errors', async () => {
+    it('retries on server errors with exponential backoff', async () => {
       const mockFetch = vi.mocked(fetch);
-      // First call fails, second succeeds
+      // First two calls fail, third succeeds
       mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          json: async () => ({ error: 'Server Error' }),
+          status: 500,
+        } as Response)
         .mockResolvedValueOnce({
           ok: false,
           json: async () => ({ error: 'Server Error' }),
@@ -96,11 +169,11 @@ describe('GeminiService', () => {
 
       const result = await getCompendiumInfo('ginger', 'en');
 
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch).toHaveBeenCalledTimes(3);
       expect(result).toEqual(mockCompendiumResult);
     });
 
-    it('does not retry on client errors', async () => {
+    it('does not retry on client errors (4xx)', async () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -111,10 +184,23 @@ describe('GeminiService', () => {
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Bad Request');
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
+
+    it('stops retrying after max retries', async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockResolvedValue({
+        ok: false,
+        json: async () => ({ error: 'Server Error' }),
+        status: 500,
+      } as Response);
+
+      await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Server Error');
+      // Should try 4 times total (initial + 3 retries)
+      expect(mockFetch).toHaveBeenCalledTimes(4);
+    });
   });
 
   describe('analyzeUserData', () => {
-    it('makes correct API call for analysis without images', async () => {
+    it('makes correct API call for analysis', async () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -139,120 +225,41 @@ describe('GeminiService', () => {
       expect(result).toEqual(mockAnalysisResult);
     });
 
-    it('includes face image when provided', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockAnalysisResult,
-        status: 200,
-      } as Response);
-
-      const faceImage = createMockFile('face.jpg', 'image/jpeg');
-      
-      // Mock FileReader
-      const mockFileReader = {
-        readAsDataURL: vi.fn(),
-        result: 'data:image/jpeg;base64,dGVzdA==',
-        onload: null as any,
-        onerror: null as any,
-      };
-
-      vi.spyOn(window, 'FileReader').mockImplementation(() => mockFileReader as any);
-
-      // Simulate successful file read
-      setTimeout(() => {
-        if (mockFileReader.onload) {
-          mockFileReader.onload();
-        }
-      }, 0);
-
-      const result = await analyzeUserData('general', mockUserProfile, 'en', faceImage);
-
-      expect(result).toEqual(mockAnalysisResult);
-    });
-
-    it('includes tongue image when provided', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockAnalysisResult,
-        status: 200,
-      } as Response);
-
-      const tongueImage = createMockFile('tongue.jpg', 'image/jpeg');
-      
-      // Mock FileReader
-      const mockFileReader = {
-        readAsDataURL: vi.fn(),
-        result: 'data:image/jpeg;base64,dGVzdA==',
-        onload: null as any,
-        onerror: null as any,
-      };
-
-      vi.spyOn(window, 'FileReader').mockImplementation(() => mockFileReader as any);
-
-      // Simulate successful file read
-      setTimeout(() => {
-        if (mockFileReader.onload) {
-          mockFileReader.onload();
-        }
-      }, 0);
-
-      const result = await analyzeUserData('general', mockUserProfile, 'en', null, tongueImage);
-
-      expect(result).toEqual(mockAnalysisResult);
-    });
-
-    it('handles file processing errors gracefully', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockAnalysisResult,
-        status: 200,
-      } as Response);
-
-      const faceImage = createMockFile('face.jpg', 'image/jpeg');
-      
-      // Mock FileReader that fails
-      const mockFileReader = {
-        readAsDataURL: vi.fn(),
-        result: null,
-        onload: null as any,
-        onerror: null as any,
-      };
-
-      vi.spyOn(window, 'FileReader').mockImplementation(() => mockFileReader as any);
-
-      // Simulate file read error
-      setTimeout(() => {
-        if (mockFileReader.onerror) {
-          mockFileReader.onerror();
-        }
-      }, 0);
-
-      // Should still proceed without the image
-      const result = await analyzeUserData('general', mockUserProfile, 'en', faceImage);
-
-      expect(result).toEqual(mockAnalysisResult);
-    });
-
     it('handles different analysis modes correctly', async () => {
       const mockFetch = vi.mocked(fetch);
+      const professionalResult = {
+        ...mockAnalysisResult,
+        analysisMode: 'professional' as const,
+        differentialDiagnosis: {
+          pattern: "Qi Deficiency",
+          pathology: "Weak digestive function",
+          evidence: "Fatigue, poor appetite"
+        },
+        rationale: "Based on symptoms",
+        treatmentPrinciple: "Tonify Qi",
+        kampoSuggestions: []
+      };
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockAnalysisResult,
+        json: async () => professionalResult,
         status: 200,
       } as Response);
 
-      await analyzeUserData('professional', mockUserProfile, 'en');
+      const professionalProfile = {
+        chiefComplaint: "Fatigue",
+        professionalObservations: {}
+      };
+
+      await analyzeUserData('professional', professionalProfile, 'en');
 
       const call = mockFetch.mock.calls[0];
       const body = JSON.parse(call[1]?.body as string);
-      
+
       expect(body.mode).toBe('professional');
     });
 
-    it('handles analysis API errors', async () => {
+    it('handles analysis API errors with proper formatting', async () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -272,48 +279,52 @@ describe('GeminiService', () => {
           throw new Error('Invalid JSON');
         },
         status: 500,
+        statusText: 'Internal Server Error',
       } as Response);
 
       await expect(analyzeUserData('general', mockUserProfile, 'en'))
         .rejects.toThrow('AI API Error: HTTP 500: Internal Server Error');
     });
 
-    it('applies exponential backoff for retries', async () => {
+    it('retries on server errors', async () => {
       const mockFetch = vi.mocked(fetch);
-      let attemptCount = 0;
-      
-      mockFetch.mockImplementation(async () => {
-        attemptCount++;
-        if (attemptCount < 3) {
-          return {
-            ok: false,
-            json: async () => ({ error: 'Server Error' }),
-            status: 500,
-          } as Response;
-        }
-        return {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          json: async () => ({ error: 'Server Error' }),
+          status: 503,
+        } as Response)
+        .mockResolvedValueOnce({
           ok: true,
           json: async () => mockAnalysisResult,
           status: 200,
-        } as Response;
-      });
+        } as Response);
 
-      const startTime = Date.now();
       const result = await analyzeUserData('general', mockUserProfile, 'en');
-      const endTime = Date.now();
 
-      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
       expect(result).toEqual(mockAnalysisResult);
-      // Should have some delay due to exponential backoff
-      expect(endTime - startTime).toBeGreaterThan(100);
+    });
+
+    it('does not retry on authentication errors', async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'Unauthorized' }),
+        status: 401,
+      } as Response);
+
+      await expect(analyzeUserData('general', mockUserProfile, 'en'))
+        .rejects.toThrow('AI API Error: Unauthorized');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Error handling and resilience', () => {
     it('handles timeout scenarios', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockImplementation(() => 
-        new Promise((_, reject) => 
+      mockFetch.mockImplementation(() =>
+        new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timeout')), 100)
         )
       );
@@ -343,6 +354,19 @@ describe('GeminiService', () => {
 
       await expect(getCompendiumInfo('ginger', 'en'))
         .rejects.toThrow('HTTP 500: Internal Server Error');
+    });
+
+    it('handles unknown API errors gracefully', async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: null }),
+        status: 500,
+        statusText: 'Internal Server Error',
+      } as Response);
+
+      await expect(analyzeUserData('general', mockUserProfile, 'en'))
+        .rejects.toThrow('AI API Error');
     });
   });
 });

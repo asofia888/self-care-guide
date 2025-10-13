@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
+import { GEMINI_MODEL, RATE_LIMIT, ALLOWED_ORIGINS, LANGUAGES } from '../constants';
 
 // Rate limiting in-memory store (for production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -43,8 +44,8 @@ const getLanguageName = (langCode: string) => {
 
 const checkRateLimit = (ip: string): boolean => {
     const now = Date.now();
-    const limit = 10; // 10 requests per minute
-    const windowMs = 60 * 1000; // 1 minute
+    const limit = RATE_LIMIT.REQUESTS_PER_MINUTE * 2; // 10 requests per minute for compendium
+    const windowMs = RATE_LIMIT.WINDOW_MS;
 
     const key = ip;
     const record = rateLimitStore.get(key);
@@ -72,13 +73,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('X-XSS-Protection', '1; mode=block');
 
     // CORS for frontend
-    const allowedOrigins = [
-        'https://self-care-guide.vercel.app',
-        'https://self-care-guide-git-main-asofia888.vercel.app',
-        'http://localhost:5173'
-    ];
     const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
+    if (origin && (ALLOWED_ORIGINS as readonly string[]).includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -112,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(400).json({ error: 'Query must be less than 500 characters' });
         }
 
-        if (!language || !['ja', 'en'].includes(language)) {
+        if (!language || !LANGUAGES.includes(language as typeof LANGUAGES[number])) {
             return res.status(400).json({ error: 'Language must be "ja" or "en"' });
         }
 
@@ -121,15 +117,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!API_KEY) {
             console.error('Environment variables available:', Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')));
             console.error('GEMINI_API_KEY not configured - check Vercel environment variables');
-            return res.status(500).json({ 
-                error: 'Service configuration error', 
+            return res.status(500).json({
+                error: 'Service configuration error',
                 details: 'API key not configured properly'
             });
         }
 
         // Initialize Gemini AI
         const ai = new GoogleGenAI({ apiKey: API_KEY });
-        const model = 'gemini-flash-latest';
         const languageName = getLanguageName(language);
 
         const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
@@ -155,14 +150,14 @@ Output: Valid JSON only, no markdown.`;
         const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
         const contents = { parts: [{ text: textPrompt }] };
 
-        const response = await ai.models.generateContent({ 
-            model, 
-            contents, 
-            config: { 
-                systemInstruction, 
-                responseMimeType: "application/json", 
-                responseSchema: compendiumResponseSchema 
-            } 
+        const response = await ai.models.generateContent({
+            model: GEMINI_MODEL,
+            contents,
+            config: {
+                systemInstruction,
+                responseMimeType: "application/json",
+                responseSchema: compendiumResponseSchema
+            }
         });
 
         const result = JSON.parse(response.text.trim());

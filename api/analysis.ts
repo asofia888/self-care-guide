@@ -1,17 +1,10 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
+import { GEMINI_MODEL, RATE_LIMIT, ALLOWED_ORIGINS, ANALYSIS_MODES, LANGUAGES } from '../constants';
 
-// Constants
-const GEMINI_MODEL = 'gemini-flash-latest';
-const RATE_LIMIT = 5; // requests per minute
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const ALLOWED_ORIGINS = [
-    'https://self-care-guide.vercel.app',
-    'https://self-care-guide-git-main-asofia888.vercel.app',
-    'http://localhost:5173'
-];
-const ALLOWED_MODES = ['professional', 'general'] as const;
-const ALLOWED_LANGUAGES = ['ja', 'en'] as const;
+// Type aliases from imported constants
+const ALLOWED_MODES = ANALYSIS_MODES;
+const ALLOWED_LANGUAGES = LANGUAGES;
 
 type AnalysisMode = typeof ALLOWED_MODES[number];
 type Language = typeof ALLOWED_LANGUAGES[number];
@@ -128,11 +121,11 @@ const checkRateLimit = (ip: string): boolean => {
     const record = rateLimitStore.get(ip);
 
     if (!record || now > record.resetTime) {
-        rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+        rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT.WINDOW_MS });
         return true;
     }
 
-    if (record.count >= RATE_LIMIT) {
+    if (record.count >= RATE_LIMIT.REQUESTS_PER_MINUTE) {
         return false;
     }
 
@@ -150,7 +143,7 @@ const setSecurityHeaders = (res: VercelResponse): void => {
 
 const setCORSHeaders = (req: VercelRequest, res: VercelResponse): void => {
     const origin = req.headers.origin;
-    if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    if (origin && (ALLOWED_ORIGINS as readonly string[]).includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

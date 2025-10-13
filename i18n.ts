@@ -1,438 +1,175 @@
 import type { Language } from './types';
+import jaTranslations from './i18n/ja.json';
+import enTranslations from './i18n/en.json';
 
-const translations = {
-  ja: {
-    header: {
-      tagline: 'あなたのウェルネス・ガイド',
-      compendium: '処方解説',
-      manual: '説明書',
-      fontSize: {
-        label: '文字サイズ',
-        standard: '標準',
-        large: '大',
-      }
-    },
-    error: {
-      unexpected: '予期せぬエラーが発生しました。入力内容を確認し、再度お試しください。',
-      apiError: 'AIとの通信中にエラーが発生しました: {message}',
-      networkError: 'ネットワーク接続に失敗しました。インターネット接続を確認して、再度お試しください。',
-      dismissErrorLabel: 'エラーメッセージを閉じる',
-    },
-    loadingSpinner: {
-        message: '読み込み中...',
-    },
-    footer: {
-        privacy: 'プライバシーポリシー',
-        terms: '利用規約',
-        disclaimerLink: '免責事項',
-        navigationLabel: 'フッターナビゲーション',
-    },
-    welcome: {
-      title: 'Self-Care Guide for Wellness へようこそ',
-      description: 'あなたの健康状態に関する情報を入力して、AIによる統合的な分析と提案を受け取りましょう。'
-    },
-    userInput: {
-        uploadButton: 'ファイルをアップロード',
-        faceImagePreviewAlt: '顔写真のプレビュー',
-        tongueImagePreviewAlt: '舌の写真のプレビュー',
-        removeImageLabel: '画像を削除',
-        imageSizeError: '画像ファイルサイズは4MBを超えることはできません。',
-        photoTitle: '任意: AI画像分析のために写真を追加',
-        facePhotoTitle: '顔写真',
-        tonguePhotoTitle: '舌の写真',
-        submitButton: 'AI分析を開始',
-        submitButtonLoading: '分析中...',
-        modes: {
-            professional: '専門家向け',
-            general: '一般向け',
-        },
-        professional: {
-            patientInfoTitle: '患者情報',
-            age: '年齢',
-            gender: '性別',
-            height: '身長 (cm)',
-            weight: '体重 (kg)',
-            occupation: '職業',
-            clinicalInfoTitle: '臨床情報',
-            chiefComplaint: '主訴',
-            chiefComplaintPlaceholder: '例: 3ヶ月続く頭痛、週に2-3回発生。',
-            chiefComplaintRequiredError: '主訴は必須です。',
-            historyOfPresentIllness: '現病歴',
-            historyOfPresentIllnessPlaceholder: '症状の経過、悪化・寛解因子など。',
-            pastMedicalHistory: '既往歴',
-            pastMedicalHistoryPlaceholder: '高血圧、糖尿病など。',
-            allergies: 'アレルギー',
-            allergiesPlaceholder: '薬物、食物アレルギーなど。',
-            practitionerObservationsTitle: '診察所見',
-            tongueDiagnosis: '舌診',
-            tongueDiagnosisPlaceholder: '例: 舌質淡紅、舌苔薄白',
-            pulseDiagnosis: '脈診',
-            pulseDiagnosisPlaceholder: '例: 沈弦脈',
-            abdominalDiagnosis: '腹診',
-            abdominalDiagnosisPlaceholder: '例: 胸脇苦満、心下痞硬',
-            otherObservations: 'その他の所見',
-            otherObservationsPlaceholder: '顔色、声、精神状態など。',
-            practitionerDiagnosis: 'あなたの診断',
-            practitionerDiagnosisPlaceholder: '例: 肝鬱気滞',
-            occupationOptions: [
-                { value: 'sedentary', label: 'デスクワーク' },
-                { value: 'active', label: '身体労働' },
-                { value: 'student', label: '学生' },
-                { value: 'unemployed', label: '無職' },
-                { value: 'other', label: 'その他' },
-            ],
-        },
-        general: {
-            basicInfoTitle: '基本情報',
-            age: '年齢',
-            gender: '性別',
-            occupation: '職業',
-            concernsTitle: '現在の主な悩み',
-            concernsRequiredError: '悩みを1つ以上選択してください。',
-            selfAssessmentTitle: '体質・状態の自己評価',
-            safetyInfoTitle: '安全情報',
-            medications: '服用中の薬',
-            medicationsPlaceholder: '例: 降圧剤、サプリメントなど。',
-            allergies: 'アレルギー',
-            allergiesPlaceholder: '薬、食べ物など。',
-            concernOptions: [
-                { value: 'stress', label: 'ストレス・不安' },
-                { value: 'fatigue', label: '疲労感・倦怠感' },
-                { value: 'sleep', label: '睡眠の問題' },
-                { value: 'digestion', label: '消化器系の不調' },
-                { value: 'pain', label: '痛み（頭痛、肩こり等）' },
-                { value: 'skin', label: '肌の問題' },
-            ],
-            selfAssessmentOptions: [
-                { value: 'cold_sensitive', label: '冷えやすい' },
-                { value: 'heat_sensitive', label: '暑がり' },
-                { value: 'low_energy', label: '疲れやすい' },
-                { value: 'anxious', label: '不安になりやすい' },
-                { value: 'dryness', label: '乾燥しやすい（肌、目など）' },
-                { value: 'edema', label: 'むくみやすい' },
-            ],
-            occupationOptions: [
-                { value: 'sedentary', label: 'デスクワーク' },
-                { value: 'active', label: '身体労働' },
-                { value: 'student', label: '学生' },
-                { value: 'unemployed', label: '無職' },
-                { value: 'other', label: 'その他' },
-            ],
-        },
-        genderOptions: [
-            { value: 'male', label: '男性' },
-            { value: 'female', label: '女性' },
-            { value: 'other', label: 'その他' },
-        ],
-    },
-    analysisDisplay: {
-      print: '印刷',
-      professional: {
-        diagnosisSummaryTitle: 'AIによる診断概要',
-        pathology: '病理',
-        evidence: '根拠',
-        rationaleTitle: '診断の論理的根拠',
-        treatmentPrincipleTitle: '治療原則',
-        herbSuggestionsTitle: '生薬の提案',
-        kampoSuggestionsTitle: '漢方処方の提案',
-        supplementSuggestionsTitle: 'サプリメントの提案',
-        folkRemediesTitle: '民間療法',
-        lifestyleAdviceTitle: '生活習慣アドバイス',
-        precautionsTitle: '注意事項',
-        reason: '理由',
-        usage: '使用法',
-        constituentHerbs: '構成生薬',
-        pharmacology: '薬理作用',
-        contraindications: '禁忌',
-        rationale: '理論的根拠',
-        diet: '食事',
-        sleep: '睡眠',
-        exercise: '運動',
-      },
-      general: {
-        wellnessProfileTitle: 'ウェルネスプロフィール',
-        herbSuggestionsTitle: 'ハーブの提案',
-        supplementSuggestionsTitle: 'サプリメントの提案',
-        folkRemediesTitle: 'セルフケアのヒント',
-        lifestyleAdviceTitle: '生活習慣アドバイス',
-        precautionsTitle: '注意事項',
-        reason: 'なぜおすすめか',
-        usage: '使い方',
-        diet: '食事',
-        sleep: '睡眠',
-        exercise: '運動',
-      }
-    },
-    streaming: {
-        title: 'AIが分析中...',
-        subtitle: '最終結果は下に表示されます。'
-    },
-    compendium: {
-      searchLabel: '処方・生薬解説の検索',
-      print: '結果を印刷',
-      title: '処方・生薬解説 (臨床薬物学)',
-      description: '処方、生薬、症状などで検索してください。AIが統合的な臨床情報を提供します。',
-      searchPlaceholder: '例: 葛根湯, 頭痛, 気滞...',
-      searchButton: '検索',
-      searching: '検索中...',
-      noResults: '関連情報が見つかりませんでした。AIによる考察は以下に表示されます。',
-      entryTitle: '検索結果',
-      properties: '性味/帰経',
-      actions: '効能',
-      indications: '主治',
-      clinicalNotes: '臨床考察',
-      category: '分類',
-      integrativeViewpointTitle: '統合的考察',
-      supplementSectionTitle: 'サプリメント',
-      kampoFormulaSectionTitle: '漢方処方',
-      westernHerbSectionTitle: '西洋ハーブ',
-    },
-    manual: {
-        title: '取扱説明書',
-        description: 'Self-Care Guide for Wellness の全機能を活用するためのガイドです。',
-        introduction: {
-            title: 'はじめに',
-            p1: 'Self-Care Guide for Wellness へようこそ。このアプリは、伝統医学の叡智と最先端のAI技術を融合させ、あなたの健康を多角的にサポートするツールです。',
-            p2: 'メイン機能である「処方解説」では、漢方薬、ハーブ、サプリメントなどの詳細情報を検索できます。AIが日本の漢方を含む複数の医学体系の情報を統合し、専門家向けの信頼できる解説を提供します。',
-        },
-        compendium: {
-            title: '「処方解説」機能',
-            p1: 'この機能は、あなたのデジタル版「マテリアメディカ（薬物学）」です。処方名、生薬名、症状などを入力して検索すると、AIが包括的な情報を提供します。',
-            p2: '表示される情報は、日本の漢方、伝統中国医学、アーユルヴェーダ、西洋ハーブ学など、複数の伝統医学体系の知識を統合したものです。専門家が臨床で活用できるよう、詳細かつ構造化されたデータを提供することを目的としています。',
-        },
-        generalTips: {
-            title: '一般的なヒントと免責事項',
-            disclaimer: {
-                title: '免責事項',
-                p1: 'Self-Care Guide for Wellness によって生成されたすべての情報は、情報提供のみを目的としており、専門的な医学的アドバイス、診断、または治療の代替となるものではありません。常に資格のある医療提供者の助言を求めてください。',
-            }
-        }
-    },
-    legal: {
-        privacyTitle: 'プライバシーポリシー',
-        privacyContent: '**最終更新日: 2024年7月**\n\n本プライバシーポリシーは、お客様が「Self-Care Guide for Wellness」（以下「本サービス」）をご利用になる際の、情報の収集、利用、保護に関する方針を説明するものです。\n\n**1. 収集する情報**\n当サービスは、以下の種類の情報を収集することがあります。\n**- お客様が提供する情報:** お客様が本サービスに任意で入力するテキスト、質問、健康関連の情報。\n**- 画像データ（任意）:** お客様が画像のアップロードを選択した場合（例：顔や舌の写真）、AI分析を提供するためにこのデータを処理します。分析完了後、これらの画像は保存されません。\n**- 利用状況データ:** サービスのパフォーマンスと機能改善のため、お客様のサービス利用に関する匿名データを収集することがあります。このデータは集計され、個人を特定するものではありません。\n\n**2. 情報の利用目的**\n収集した情報は、以下の目的で利用します。\n**- サービスの提供と運営:** お客様の質問を処理し、AIによる応答を生成するため。\n**- サービスの改善:** ユーザーのニーズを理解し、AIモデルの機能と精度を向上させるため。\n**- セキュリティの確保:** 不正行為や乱用からサービスを保護するため。\n\n**3. データセキュリティ**\n当サービスは、お客様の情報を保護するために合理的なセキュリティ対策を講じます。しかし、電子的な送信や保存が100%安全であるとは限らず、絶対的なセキュリティを保証することはできません。\n\n**4. データ共有と第三者提供**\n私たちは、お客様の個人を特定できる情報を外部の第三者に販売、交換、またはその他の方法で譲渡することはありません。研究やサービス改善の目的で、匿名化・集計されたデータを信頼できる第三者と共有する場合があります。また、法律により開示が求められた場合は、情報を開示することがあります。\n\n**5. 本ポリシーの変更**\n当サービスは、本プライバシーポリシーを随時更新することがあります。変更があった場合は、このページに新しいポリシーを掲載することでお知らせします。\n\n**6. お問い合わせ**\n本プライバシーポリシーに関するご質問は、アプリ内のサポートチャネルを通じてお問い合わせください。',
-        termsTitle: '利用規約',
-        termsContent: '**最終更新日: 2024年7月**\n\n「Self-Care Guide for Wellness」アプリケーション（以下「本サービス」）をご利用になる前に、本利用規約（以下「本規約」）をよくお読みください。お客様による本サービスへのアクセスおよび利用は、本規約への同意と遵守を条件とします。\n\n**1. 規約への同意**\n本サービスにアクセスまたは利用することにより、お客様は本規約に拘束されることに同意したものとみなされます。本規약のいずれかの部分に同意できない場合は、本サービスにアクセスすることはできません。\n\n**2. サービス内容**\n本サービスは、ウェルネス、ハーブ、サプリメント、伝統医学に関連するAI生成情報を、情報提供のみを目的として提供します。**本サービスは、医学的な助言、診断、または治療を提供するものではありません。**\n\n**3. 禁止事項**\nお客様は、本サービスを以下の目的で利用しないことに同意します。\n**- あらゆる違法な目的のため。**\n**- 他者に違法行為の実行または参加を勧誘するため。**\n**- 当社または第三者の知的財産権を侵害するため。**\n**- 虚偽または誤解を招く情報を提出するため。**\n**- ウイルスやその他の悪意のあるコードを送信するため。**\n\n**4. 知的財産権**\n本サービスおよびその独自のコンテンツ、特徴、機能は、その作成者の独占的な財産であり続けます。\n\n**5. サービスの終了**\n当社は、お客様が本規約に違反した場合を含め、いかなる理由であれ、事前の通知や責任を負うことなく、お客様の本サービスへのアクセスを直ちに終了または停止することがあります。\n\n**6. 準拠法**\n本規約は、法の抵触に関する規定にかかわらず、サービス提供者が拠点を置く地域の法律に従って解釈されるものとします。\n\n**7. 規約の変更**\n当社は、独自の裁量により、いつでも本規約を修正または置換する権利を留保します。\n\n**8. お問い合わせ**\n本規約に関するご質問は、お問い合わせください。',
-        disclaimerTitle: '重要な医療免責事項',
-        disclaimerContent: '**⚠️ 重要：本サービスは医療行為ではありません**\n\n「Self-Care Guide for Wellness」（以下「本サービス」）は、人工知能により生成された情報提供サービスであり、**医療行為、医学的診断、治療、処方、または医療相談を提供するものでは一切ありません。**\n\n**1. 医学的アドバイスではありません**\n\n本サービスは以下のものに代わるものでは**ありません**：\n- 医師による診察・診断・治療\n- 薬剤師による服薬指導\n- 医療専門家による個別の医学的助言\n- 緊急医療サービス\n\n**健康上の問題や症状がある場合、または医学的助言が必要な場合は、必ず医師または資格のある医療提供者に直接相談してください。本サービスの情報により、医師の診察を遅らせたり、医学的助言を無視したりしないでください。**\n\n**2. 教育目的・参考情報のみ**\n\n本サービスが提供する情報は：\n- 一般的な教育目的および情報提供のみ\n- 伝統医学・補完代替医療に関する参考情報\n- **個別の医学的状況には対応していません**\n- 医療専門家の判断に代わるものではありません\n\n**3. AIによる情報生成の限界**\n\nAIが生成した情報には以下のリスクがあります：\n- 誤情報、不正確な情報、古い情報の可能性\n- 個人の健康状態・体質・既往歴への考慮不足\n- 薬物相互作用や禁忌事項の見落とし\n- 最新の医学的知見の反映不足\n\n**最新の医学研究や個別の症状については、必ず医療専門家に確認してください。**\n\n**4. 使用に関する重要な注意事項**\n\n以下の場合は本サービスを使用せず、直ちに医療機関を受診してください：\n- 緊急の症状（激しい痛み、呼吸困難、胸痛など）\n- 重篤な疾患の疑い\n- 既存の治療中で症状が悪化している場合\n- 妊娠中・授乳中・小児・高齢者（特別な配慮が必要）\n\n**5. ハーブ・サプリメント使用の注意**\n\n- 医薬品との相互作用の可能性があります\n- 既往症・アレルギーにより禁忌の場合があります\n- 品質・用量が不適切な場合、健康被害のリスクがあります\n- **使用前に必ず医師・薬剤師に相談してください**\n\n**6. 医療専門家の方へ**\n\n本サービスは医療専門家向けの参考情報ツールとして提供されていますが：\n- 臨床判断の補助ツールであり、判断を代替するものではありません\n- 患者の診療には医師の責任において専門的判断が必要です\n- 本サービスの情報を患者ケアに使用する場合、独自の検証が必須です\n\n**7. 保証の完全否認**\n\n本サービスは「現状有姿」で提供され、明示・黙示を問わず、以下を含む一切の保証を行いません：\n- 情報の完全性、正確性、最新性、信頼性\n- 特定目的への適合性\n- 商品性\n- 権利侵害の不存在\n\n**8. 責任の制限**\n\n法律で認められる最大限の範囲において：\n- 本サービスの作成者・運営者は、本サービスの使用に起因または関連するいかなる損害についても責任を負いません\n- これには直接的、間接的、付随的、特別、懲罰的、結果的損害を含みますが、これらに限定されません\n- 健康被害、医療費、逸失利益、データ損失なども含まれます\n\n**9. 利用者の自己責任**\n\n本サービスの使用により：\n- すべてのリスクは利用者が負担します\n- 利用者の判断と責任で行動してください\n- 本サービスの情報に基づく決定・行動の結果について、利用者が全責任を負います\n\n**10. 法的遵守**\n\n- 本サービスは医師法、薬機法、その他の医療関連法規に基づく医療行為を提供しません\n- 利用者は各国・地域の法律を遵守する責任があります\n- 医療行為が必要な場合は、資格を有する医療機関・医療専門家を受診してください\n\n---\n\n**本サービスを使用することで、上記の免責事項を理解し、同意したものとみなされます。同意できない場合は、本サービスの使用を直ちに中止してください。**\n\n**緊急時は119番（日本）または各国の緊急通報番号に連絡してください。**\n\n最終更新日: 2025年10月13日',
-    },
-  },
-  en: {
-    header: {
-      tagline: 'Your Wellness Guide',
-      compendium: 'Formulary',
-      manual: 'Manual',
-      fontSize: {
-        label: 'Font Size',
-        standard: 'Standard',
-        large: 'Large',
-      }
-    },
-    error: {
-      unexpected: 'An unexpected error occurred. Please check your input and try again.',
-      apiError: 'An error occurred while communicating with the AI: {message}',
-      networkError: 'Network connection failed. Please check your internet connection and try again.',
-      dismissErrorLabel: 'Dismiss error message',
-    },
-    loadingSpinner: {
-        message: 'Loading...',
-    },
-    footer: {
-        privacy: 'Privacy Policy',
-        terms: 'Terms of Service',
-        disclaimerLink: 'Disclaimer',
-        navigationLabel: 'Footer Navigation',
-    },
-    welcome: {
-      title: 'Welcome to Self-Care Guide for Wellness',
-      description: 'Enter information about your health status to receive an integrative analysis and suggestions from the AI.'
-    },
-    userInput: {
-        uploadButton: 'Upload File',
-        faceImagePreviewAlt: 'Face image preview',
-        tongueImagePreviewAlt: 'Tongue image preview',
-        removeImageLabel: 'Remove image',
-        imageSizeError: 'Image file size cannot exceed 4MB.',
-        photoTitle: 'Optional: Add Photos for Visual Analysis',
-        facePhotoTitle: 'Face Photo',
-        tonguePhotoTitle: 'Tongue Photo',
-        submitButton: 'Get AI Analysis',
-        submitButtonLoading: 'Analyzing...',
-        modes: {
-            professional: 'For Practitioners',
-            general: 'For General Wellness',
-        },
-        professional: {
-            patientInfoTitle: 'Patient Information',
-            age: 'Age',
-            gender: 'Gender',
-            height: 'Height (cm)',
-            weight: 'Weight (kg)',
-            occupation: 'Occupation',
-            clinicalInfoTitle: 'Clinical Information',
-            chiefComplaint: 'Chief Complaint',
-            chiefComplaintPlaceholder: 'e.g., Headache for 3 months, occurring 2-3 times a week.',
-            chiefComplaintRequiredError: 'Chief complaint is required.',
-            historyOfPresentIllness: 'History of Present Illness',
-            historyOfPresentIllnessPlaceholder: 'Course of symptoms, aggravating/remitting factors, etc.',
-            pastMedicalHistory: 'Past Medical History',
-            pastMedicalHistoryPlaceholder: 'e.g., Hypertension, Diabetes.',
-            allergies: 'Allergies',
-            allergiesPlaceholder: 'e.g., Drug or food allergies.',
-            practitionerObservationsTitle: 'Practitioner Observations',
-            tongueDiagnosis: 'Tongue Diagnosis',
-            tongueDiagnosisPlaceholder: 'e.g., Pale red body, thin white coat.',
-            pulseDiagnosis: 'Pulse Diagnosis',
-            pulseDiagnosisPlaceholder: 'e.g., Wiry and thin pulse.',
-            abdominalDiagnosis: 'Abdominal Diagnosis',
-            abdominalDiagnosisPlaceholder: 'e.g., Hypochondriac tension, epigastric hardness.',
-            otherObservations: 'Other Observations',
-            otherObservationsPlaceholder: 'e.g., Complexion, voice, spirit.',
-            practitionerDiagnosis: 'Your Diagnosis',
-            practitionerDiagnosisPlaceholder: 'e.g., Liver Qi Stagnation',
-            occupationOptions: [
-                { value: 'sedentary', label: 'Sedentary/Office work' },
-                { value: 'active', label: 'Physically active' },
-                { value: 'student', label: 'Student' },
-                { value: 'unemployed', label: 'Unemployed' },
-                { value: 'other', label: 'Other' },
-            ],
-        },
-        general: {
-            basicInfoTitle: 'Basic Information',
-            age: 'Age',
-            gender: 'Gender',
-            occupation: 'Occupation',
-            concernsTitle: 'Primary Concerns *',
-            concernsRequiredError: 'Please select at least one concern.',
-            selfAssessmentTitle: 'Self-Assessment of Constitution/Condition',
-            safetyInfoTitle: 'Safety Information',
-            medications: 'Current Medications',
-            medicationsPlaceholder: 'e.g., Blood pressure medication, supplements.',
-            allergies: 'Allergies',
-            allergiesPlaceholder: 'e.g., Medications, foods.',
-            concernOptions: [
-                { value: 'stress', label: 'Stress / Anxiety' },
-                { value: 'fatigue', label: 'Fatigue / Low Energy' },
-                { value: 'sleep', label: 'Sleep Issues' },
-                { value: 'digestion', label: 'Digestive Discomfort' },
-                { value: 'pain', label: 'Pain (headache, shoulder, etc.)' },
-                { value: 'skin', label: 'Skin Problems' },
-            ],
-            selfAssessmentOptions: [
-                { value: 'cold_sensitive', label: 'Sensitive to Cold' },
-                { value: 'heat_sensitive', label: 'Sensitive to Heat' },
-                { value: 'low_energy', label: 'Easily Fatigued' },
-                { value: 'anxious', label: 'Prone to Anxiety' },
-                { value: 'dryness', label: 'Tendency towards Dryness' },
-                { value: 'edema', label: 'Prone to Swelling' },
-            ],
-            occupationOptions: [
-                { value: 'sedentary', label: 'Sedentary/Office work' },
-                { value: 'active', label: 'Physically active' },
-                { value: 'student', label: 'Student' },
-                { value: 'unemployed', label: 'Unemployed' },
-                { value: 'other', label: 'Other' },
-            ],
-        },
-        genderOptions: [
-            { value: 'male', label: 'Male' },
-            { value: 'female', label: 'Female' },
-            { value: 'other', label: 'Other' },
-        ],
-    },
-    analysisDisplay: {
-      print: 'Print',
-      professional: {
-        diagnosisSummaryTitle: 'AI Diagnostic Summary',
-        pathology: 'Pathology',
-        evidence: 'Evidence',
-        rationaleTitle: 'Rationale',
-        treatmentPrincipleTitle: 'Treatment Principle',
-        herbSuggestionsTitle: 'Herb Suggestions',
-        kampoSuggestionsTitle: 'Kampo Formula Suggestions',
-        supplementSuggestionsTitle: 'Supplement Suggestions',
-        folkRemediesTitle: 'Folk Remedies',
-        lifestyleAdviceTitle: 'Lifestyle Advice',
-        precautionsTitle: 'Precautions',
-        reason: 'Reason',
-        usage: 'Usage',
-        constituentHerbs: 'Constituent Herbs',
-        pharmacology: 'Pharmacology',
-        contraindications: 'Contraindications',
-        rationale: 'Rationale',
-        diet: 'Diet',
-        sleep: 'Sleep',
-        exercise: 'Exercise',
-      },
-      general: {
-        wellnessProfileTitle: 'Wellness Profile',
-        herbSuggestionsTitle: 'Herb Suggestions',
-        supplementSuggestionsTitle: 'Supplement Suggestions',
-        folkRemediesTitle: 'Self-Care Tips',
-        lifestyleAdviceTitle: 'Lifestyle Advice',
-        precautionsTitle: 'Precautions',
-        reason: 'Why it\'s recommended',
-        usage: 'How to use',
-        diet: 'Diet',
-        sleep: 'Sleep',
-        exercise: 'Exercise',
-      }
-    },
-    streaming: {
-        title: 'AI is Analyzing...',
-        subtitle: 'The final results will be displayed below.'
-    },
-    compendium: {
-      searchLabel: 'Formulary / Materia Medica Search',
-      print: 'Print Results',
-      title: 'Formulary / Materia Medica',
-      description: 'Search by formula, herb, or symptom. The AI will provide integrative clinical information.',
-      searchPlaceholder: 'e.g., Kakkonto, Headache, Qi Stagnation...',
-      searchButton: 'Search',
-      searching: 'Searching...',
-      noResults: 'No relevant information was found. The AI\'s viewpoint is displayed below.',
-      entryTitle: 'Search Results',
-      properties: 'Properties / Channels',
-      actions: 'Actions',
-      indications: 'Indications',
-      clinicalNotes: 'Clinical Notes',
-      category: 'Category',
-      integrativeViewpointTitle: 'Integrative Viewpoint',
-      supplementSectionTitle: 'Supplements',
-      kampoFormulaSectionTitle: 'Kampo Formulas',
-      westernHerbSectionTitle: 'Western Herbs',
-    },
-    manual: {
-      title: 'Instruction Manual',
-      description: 'A guide to using all the features of Self-Care Guide for Wellness.',
-      introduction: {
-        title: 'Introduction',
-        p1: 'Welcome to Self-Care Guide for Wellness. This application is a tool that supports your health from multiple perspectives by fusing the wisdom of traditional medicine with cutting-edge AI technology.',
-        p2: 'The main "Formulary" feature allows you to search for detailed information on Kampo medicines, herbs, and supplements. The AI integrates knowledge from multiple medical systems, including Japanese Kampo, to provide reliable explanations for professionals.',
-      },
-      compendium: {
-        title: '"Formulary" Feature',
-        p1: 'This feature is your digital "Materia Medica". Enter a formula name, herb name, or symptom to search, and the AI will provide comprehensive information.',
-        p2: 'The information displayed is an integration of knowledge from multiple traditional medical systems, including Japanese Kampo, Traditional Chinese Medicine, Ayurveda, and Western Herbalism. It aims to provide detailed and structured data for clinical use by professionals.',
-      },
-      generalTips: {
-        title: 'General Tips & Disclaimer',
-        disclaimer: {
-          title: 'Disclaimer',
-          p1: 'All information generated by Self-Care Guide for Wellness is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of a qualified health provider.',
-        }
-      }
-    },
-    legal: {
-        privacyTitle: 'Privacy Policy',
-        privacyContent: '**Last Updated: July 2024**\n\nThis Privacy Policy explains how we collect, use, and protect your information when you use Self-Care Guide for Wellness (the "Service").\n\n**1. Information We Collect**\nWe may collect the following types of information:\n**- Information You Provide:** This includes any text, queries, or health-related information you voluntarily enter into the Service.\n**- Optional Image Data:** If you choose to upload images (e.g., of your face or tongue), we process this data to provide the AI analysis. We do not store these images after the analysis is complete.\n**- Usage Data:** We may collect anonymous data about your interactions with the Service to help us improve its performance and features. This data is aggregated and does not personally identify you.\n\n**2. How We Use Your Information**\nWe use the information we collect to:\n**- Provide and Operate the Service:** To process your queries and generate AI-powered responses.\n**- Improve the Service:** To understand user needs and enhance the functionality and accuracy of our AI models.\n**- Ensure Security:** To protect the Service from fraud and abuse.\n\n**3. Data Security**\nWe implement reasonable security measures to protect your information. However, no electronic transmission or storage is 100% secure, and we cannot guarantee absolute security.\n\n**4. Data Sharing and Third Parties**\nWe do not sell, trade, or otherwise transfer your personally identifiable information to outside parties. We may share anonymized, aggregated data with trusted third parties for research or service improvement purposes. Information may be disclosed if required by law.\n\n**5. Changes to This Policy**\nWe may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page.\n\n**6. Contact Us**\nIf you have any questions about this Privacy Policy, please contact us through the app\'s support channels.',
-        termsTitle: 'Terms of Service',
-        termsContent: '**Last Updated: July 2024**\n\nPlease read these Terms of Service ("Terms") carefully before using the Self-Care Guide for Wellness application (the "Service"). Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms.\n\n**1. Acceptance of Terms**\nBy accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, then you may not access the Service.\n\n**2. Description of Service**\nThe Service provides AI-generated information related to wellness, herbs, supplements, and traditional medicine for informational purposes only. **The Service does not provide medical advice, diagnosis, or treatment.**\n\n**3. Prohibited Uses**\nYou agree not to use the Service:\n**- For any unlawful purpose.**\n**- To solicit others to perform or participate in any unlawful acts.**\n**- To infringe upon or violate our intellectual property rights or the intellectual property rights of others.**\n**- To submit false or misleading information.**\n**- To transmit viruses or any other type of malicious code.**\n\n**4. Intellectual Property**\nThe Service and its original content, features, and functionality are and will remain the exclusive property of its creators.\n\n**5. Termination**\nWe may terminate or suspend your access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.\n\n**6. Governing Law**\nThese Terms shall be governed and construed in accordance with the laws of the jurisdiction in which the service provider is based, without regard to its conflict of law provisions.\n\n**7. Changes to Terms**\nWe reserve the right, at our sole discretion, to modify or replace these Terms at any time.\n\n**8. Contact Us**\nIf you have any questions about these Terms, please contact us.',
-        disclaimerTitle: 'Critical Medical Disclaimer',
-        disclaimerContent: '**⚠️ IMPORTANT: THIS SERVICE IS NOT MEDICAL PRACTICE**\n\nSelf-Care Guide for Wellness (the "Service") is an AI-generated information service and **does NOT provide medical practice, medical diagnosis, treatment, prescriptions, or medical consultation of any kind.**\n\n**1. Not Medical Advice**\n\nThis Service is NOT a substitute for:\n- Medical examination, diagnosis, or treatment by a physician\n- Medication counseling by a pharmacist\n- Individual medical advice from healthcare professionals\n- Emergency medical services\n\n**If you have health problems or symptoms, or need medical advice, you MUST consult a physician or qualified healthcare provider directly. DO NOT delay seeking medical care or disregard medical advice based on information from this Service.**\n\n**2. Educational and Reference Information Only**\n\nInformation provided by this Service is:\n- For general educational and informational purposes only\n- Reference information about traditional medicine and complementary alternative medicine\n- **NOT tailored to individual medical situations**\n- NOT a replacement for professional medical judgment\n\n**3. Limitations of AI-Generated Information**\n\nAI-generated information carries these risks:\n- Potential for misinformation, inaccuracies, or outdated information\n- Insufficient consideration of individual health conditions, constitution, and medical history\n- Possible oversight of drug interactions and contraindications\n- May not reflect the latest medical research\n\n**Always verify with healthcare professionals regarding the latest medical research and individual symptoms.**\n\n**4. Critical Usage Warnings**\n\nDO NOT use this Service and seek immediate medical attention if:\n- Emergency symptoms (severe pain, difficulty breathing, chest pain, etc.)\n- Suspicion of serious illness\n- Worsening symptoms during existing treatment\n- Pregnant, nursing, pediatric, or elderly (requiring special considerations)\n\n**5. Warnings About Herbs and Supplements**\n\n- Potential for interactions with medications\n- May be contraindicated due to medical conditions or allergies\n- Risk of health hazards with inappropriate quality or dosage\n- **ALWAYS consult a physician or pharmacist before use**\n\n**6. For Healthcare Professionals**\n\nWhile this Service is offered as a reference tool for healthcare professionals:\n- It is a clinical decision support tool, NOT a replacement for judgment\n- Patient care requires professional judgment under the physician\'s responsibility\n- Independent verification is REQUIRED when using this Service\'s information for patient care\n\n**7. Complete Disclaimer of Warranties**\n\nThis Service is provided "AS IS" with NO WARRANTIES of any kind, express or implied, including but not limited to:\n- Completeness, accuracy, currentness, or reliability of information\n- Fitness for a particular purpose\n- Merchantability\n- Non-infringement\n\n**8. Limitation of Liability**\n\nTo the maximum extent permitted by law:\n- The creators and operators of this Service are NOT liable for ANY damages arising from or related to use of this Service\n- This includes direct, indirect, incidental, special, punitive, and consequential damages\n- Including but not limited to health injuries, medical expenses, lost profits, and data loss\n\n**9. User\'s Sole Responsibility**\n\nBy using this Service:\n- You assume ALL risks\n- You act based on your own judgment and responsibility\n- You accept FULL responsibility for decisions and actions based on this Service\'s information\n\n**10. Legal Compliance**\n\n- This Service does NOT provide medical practice under Medical Practitioners\' Act, Pharmaceutical Affairs Act, or other medical regulations\n- Users are responsible for complying with laws in their country/region\n- When medical practice is needed, consult licensed medical institutions and healthcare professionals\n\n---\n\n**By using this Service, you acknowledge that you understand and agree to the above disclaimer. If you do not agree, you must immediately stop using this Service.**\n\n**In case of emergency, call 911 (US), 119 (Japan), or your local emergency number.**\n\nLast Updated: October 13, 2025',
-    },
-  },
+// Type definitions for translations structure
+export interface Translations {
+  nav: {
+    compendium: string;
+    manual: string;
+  };
+  welcome: {
+    title: string;
+    description: string;
+  };
+  userInput: {
+    submitButton: string;
+    submitButtonLoading: string;
+    modes: {
+      professional: string;
+      general: string;
+    };
+    genderOptions: Array<{ value: string; label: string }>;
+    professional: {
+      patientInfoTitle: string;
+      age: string;
+      gender: string;
+      height: string;
+      weight: string;
+      occupation: string;
+      occupationOptions: Array<{ value: string; label: string }>;
+      clinicalInfoTitle: string;
+      chiefComplaint: string;
+      chiefComplaintPlaceholder: string;
+      chiefComplaintRequiredError: string;
+      historyOfPresentIllness: string;
+      historyOfPresentIllnessPlaceholder: string;
+      pastMedicalHistory: string;
+      pastMedicalHistoryPlaceholder: string;
+      allergies: string;
+      allergiesPlaceholder: string;
+      practitionerObservationsTitle: string;
+      tongueDiagnosis: string;
+      tongueDiagnosisPlaceholder: string;
+      pulseDiagnosis: string;
+      pulseDiagnosisPlaceholder: string;
+      abdominalDiagnosis: string;
+      abdominalDiagnosisPlaceholder: string;
+      otherObservations: string;
+      otherObservationsPlaceholder: string;
+      practitionerDiagnosis: string;
+      practitionerDiagnosisPlaceholder: string;
+    };
+    general: {
+      basicInfoTitle: string;
+      age: string;
+      gender: string;
+      occupation: string;
+      occupationOptions: Array<{ value: string; label: string }>;
+      concernsTitle: string;
+      concernsRequiredError: string;
+      concernOptions: Array<{ value: string; label: string }>;
+      selfAssessmentTitle: string;
+      selfAssessmentOptions: Array<{ value: string; label: string }>;
+      safetyInfoTitle: string;
+      medications: string;
+      medicationsPlaceholder: string;
+      allergies: string;
+      allergiesPlaceholder: string;
+    };
+  };
+  streaming: {
+    title: string;
+  };
+  error: {
+    unexpected: string;
+    apiError: string;
+    retry: string;
+  };
+  compendium: {
+    title: string;
+    searchLabel: string;
+    searchPlaceholder: string;
+    searchButton: string;
+    clearButton: string;
+    searching: string;
+    printButton: string;
+    integrativeViewpointTitle: string;
+    kampoFormulasTitle: string;
+    westernHerbsTitle: string;
+    supplementsTitle: string;
+    category: string;
+    summary: string;
+    properties: string;
+    channels: string;
+    actions: string;
+    indications: string;
+    constituentHerbs: string;
+    clinicalNotes: string;
+    noResults: string;
+  };
+  analysisDisplay: {
+    professionalAnalysisTitle: string;
+    generalAnalysisTitle: string;
+    differentialDiagnosisTitle: string;
+    pattern: string;
+    pathology: string;
+    evidence: string;
+    rationaleTitle: string;
+    treatmentPrincipleTitle: string;
+    herbSuggestionsTitle: string;
+    kampoSuggestionsTitle: string;
+    supplementSuggestionsTitle: string;
+    folkRemediesTitle: string;
+    lifestyleAdviceTitle: string;
+    dietTitle: string;
+    sleepTitle: string;
+    exerciseTitle: string;
+    precautionsTitle: string;
+    wellnessProfileTitle: string;
+    reason: string;
+    usage: string;
+    rationale: string;
+    printButton: string;
+    searchInCompendium: string;
+  };
+  manual: {
+    title: string;
+    overviewTitle: string;
+    overviewContent: string;
+    modesTitle: string;
+    professionalModeTitle: string;
+    professionalModeContent: string;
+    generalModeTitle: string;
+    generalModeContent: string;
+    compendiumTitle: string;
+    compendiumContent: string;
+    disclaimerTitle: string;
+    disclaimerContent: string;
+  };
+  footer: {
+    privacy: string;
+    terms: string;
+    disclaimer: string;
+  };
+  privacy: {
+    title: string;
+    content: string;
+  };
+  terms: {
+    title: string;
+    content: string;
+  };
+  disclaimer: {
+    title: string;
+    content: string;
+  };
+}
+
+// Translation data
+const translations: Record<Language, Translations> = {
+  ja: jaTranslations as Translations,
+  en: enTranslations as Translations,
 };
 
-export const t = (lang: Language) => translations[lang];
+/**
+ * Get translations for a specific language
+ * @param language - The language code ('ja' or 'en')
+ * @returns Translation object for the specified language
+ */
+export const t = (language: Language): Translations => {
+  return translations[language] || translations.ja;
+};
+
+// Re-export for backward compatibility
+export default translations;

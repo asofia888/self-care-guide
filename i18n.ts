@@ -84,6 +84,7 @@ export interface Translations {
     apiError: string;
     networkError: string;
     retry: string;
+    dismissErrorLabel: string;
   };
   compendium: {
     title: string;

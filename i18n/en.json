@@ -117,7 +117,8 @@
     "unexpected": "An unexpected error occurred.",
     "apiError": "Communication error: {message}",
     "networkError": "Network error occurred. Please check your connection.",
-    "retry": "Please try again."
+    "retry": "Please try again.",
+    "dismissErrorLabel": "Dismiss error"
   },
   "compendium": {
     "title": "Herbal Compendium",

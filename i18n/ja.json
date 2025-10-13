@@ -117,7 +117,8 @@
     "unexpected": "予期しないエラーが発生しました。",
     "apiError": "通信中にエラーが発生しました: {message}",
     "networkError": "ネットワークエラーが発生しました。接続を確認してください。",
-    "retry": "もう一度お試しください。"
+    "retry": "もう一度お試しください。",
+    "dismissErrorLabel": "エラーを閉じる"
   },
   "compendium": {
     "title": "薬草事典",

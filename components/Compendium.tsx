@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAppContext } from '../contexts/AppContext';
 import { ErrorDisplay } from './ErrorDisplay';
+import { APIError } from '../utils/errorHandler';
 
 const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) => {
     const { language } = useAppContext();
@@ -88,22 +89,33 @@ export const Compendium: React.FC = () => {
           setInfoMessage(translations.noResults);
       }
     } catch (err) {
-      const caughtError = err as Error;
-      console.error(err);
+      console.error('Compendium search error:', err);
       let errorMessage = t(language).error.unexpected;
-      if (caughtError.message && caughtError.message.toLowerCase().includes('network')) {
+
+      // Handle APIError instances
+      if (err instanceof APIError) {
+        if (err.status === 429) {
+          errorMessage = t(language).error.apiError.replace('{message}', 'Too many requests. Please try again later.');
+        } else if (err.status >= 500) {
+          errorMessage = t(language).error.apiError.replace('{message}', 'Service unavailable. Please try again.');
+        } else {
+          errorMessage = t(language).error.apiError.replace('{message}', err.message || 'An error occurred');
+        }
+      } else if (err instanceof Error) {
+        // Handle standard Error objects
+        const errorMsg = err.message || String(err);
+        if (errorMsg.toLowerCase().includes('network') || errorMsg.toLowerCase().includes('fetch')) {
           errorMessage = t(language).error.networkError;
-      } else if (caughtError.message) {
-          try {
-              // The error message from the API might be a JSON string.
-              const errorJson = JSON.parse(caughtError.message);
-              const specificMessage = errorJson.error?.message || caughtError.message;
-              errorMessage = t(language).error.apiError.replace('{message}', specificMessage);
-          } catch(e) {
-              // If it's not JSON, use the message directly.
-              errorMessage = t(language).error.apiError.replace('{message}', caughtError.message);
-          }
+        } else {
+          errorMessage = t(language).error.apiError.replace('{message}', errorMsg);
+        }
+      } else if (err && typeof err === 'object') {
+        // Handle other error objects
+        const errorObj = err as any;
+        const errorMsg = errorObj.message || errorObj.error || String(err);
+        errorMessage = t(language).error.apiError.replace('{message}', errorMsg);
       }
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);

@@ -16,9 +16,9 @@ const compendiumEntrySchema = {
         indications: { type: Type.ARRAY, items: { type: Type.STRING } },
         constituentHerbs: { type: Type.STRING },
         clinicalNotes: { type: Type.STRING },
-        contraindications: { type: Type.STRING },
+        contraindications: { type: Type.STRING, description: "Important contraindications, warnings, and precautions. Always provide this information." },
     },
-    required: ["name", "category", "summary", "actions", "indications"]
+    required: ["name", "category", "summary", "actions", "indications", "contraindications"]
 };
 
 const compendiumResponseSchema = {
@@ -140,6 +140,8 @@ For symptoms/conditions: Provide integrative viewpoint plus:
 - 3 Kampo formulas (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito)
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
+
+IMPORTANT: ALWAYS include contraindications for EVERY entry. This is critical safety information. Even if minimal, state "Generally safe when used as directed" or similar. Never omit this field.
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 

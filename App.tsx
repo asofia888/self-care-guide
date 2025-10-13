@@ -2,7 +2,6 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { Header } from './components/Header';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { Compendium } from './components/Compendium';
-import { MedicalDisclaimerBanner } from './components/MedicalDisclaimerBanner';
 import { useAppContext } from './contexts/AppContext';
 import { t } from './i18n';
 
@@ -58,7 +57,6 @@ const App: React.FC = () => {
           </Suspense>
         </div>
       </main>
-      <MedicalDisclaimerBanner />
       <footer className="text-center p-4 text-slate-500 text-sm mt-8 no-print">
         <nav aria-label={t(language).footer.navigationLabel}>
           <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 mb-2">

@@ -14,11 +14,11 @@ const compendiumEntrySchema = {
         channels: { type: Type.STRING },
         actions: { type: Type.ARRAY, items: { type: Type.STRING } },
         indications: { type: Type.ARRAY, items: { type: Type.STRING } },
-        constituentHerbs: { type: Type.STRING },
-        clinicalNotes: { type: Type.STRING },
+        constituentHerbs: { type: Type.STRING, description: "Key constituent herbs in Kampo formulas, or active compounds in Western herbs/supplements. Always provide this." },
+        clinicalNotes: { type: Type.STRING, description: "Clinical applications, research evidence, and traditional use notes. Always provide this information." },
         contraindications: { type: Type.STRING, description: "Important contraindications, warnings, and precautions. Always provide this information." },
     },
-    required: ["name", "category", "summary", "actions", "indications", "contraindications"]
+    required: ["name", "category", "summary", "actions", "indications", "constituentHerbs", "clinicalNotes", "contraindications"]
 };
 
 const compendiumResponseSchema = {
@@ -141,7 +141,12 @@ For symptoms/conditions: Provide integrative viewpoint plus:
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
 
-IMPORTANT: ALWAYS include contraindications for EVERY entry. This is critical safety information. Even if minimal, state "Generally safe when used as directed" or similar. Never omit this field.
+CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
+1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements
+2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum)
+3. contraindications: Safety information, warnings, and precautions (even if minimal, state "Generally safe when used as directed")
+
+These fields are MANDATORY. Never omit them.
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 

@@ -51,7 +51,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-slate-800 flex flex-col">
       <Header />
-      <MedicalDisclaimerBanner />
       <main className="container mx-auto p-4 md:p-8 flex-grow">
         <div className="max-w-4xl mx-auto">
           <Suspense fallback={<LoadingSpinner />}>
@@ -59,6 +58,7 @@ const App: React.FC = () => {
           </Suspense>
         </div>
       </main>
+      <MedicalDisclaimerBanner />
       <footer className="text-center p-4 text-slate-500 text-sm mt-8 no-print">
         <nav aria-label={t(language).footer.navigationLabel}>
           <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 mb-2">

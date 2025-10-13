@@ -3,7 +3,7 @@ import { useAppContext } from '../contexts/AppContext';
 import { t } from '../i18n';
 
 export const MedicalDisclaimerBanner: React.FC = () => {
-  const { language } = useAppContext();
+  const { language, handleNavigate } = useAppContext();
   const translations = t(language);
 
   const disclaimerText = language === 'ja'
@@ -11,6 +11,13 @@ export const MedicalDisclaimerBanner: React.FC = () => {
     : '⚠️ IMPORTANT: This service is NOT medical practice. Always consult a physician for medical advice.';
 
   const linkText = language === 'ja' ? '詳細を見る' : 'View Details';
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleNavigate('disclaimer');
+    // Scroll to top after navigation
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div
@@ -39,17 +46,12 @@ export const MedicalDisclaimerBanner: React.FC = () => {
           </p>
         </div>
         <div className="flex-shrink-0 w-full sm:w-auto">
-          <a
-            href="#disclaimer"
-            onClick={(e) => {
-              e.preventDefault();
-              // Scroll to footer where disclaimer link is
-              document.querySelector('footer')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="inline-block w-full sm:w-auto text-center px-4 py-2 text-sm font-semibold text-amber-800 bg-amber-100 rounded-lg hover:bg-amber-200 active:bg-amber-300 transition-colors duration-200 border border-amber-300"
+          <button
+            onClick={handleClick}
+            className="inline-block w-full sm:w-auto text-center px-4 py-2 min-h-[44px] sm:min-h-[auto] text-sm font-semibold text-amber-800 bg-amber-100 rounded-lg hover:bg-amber-200 active:bg-amber-300 transition-colors duration-200 border border-amber-300"
           >
             {linkText}
-          </a>
+          </button>
         </div>
       </div>
     </div>

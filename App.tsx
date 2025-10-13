@@ -2,6 +2,7 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { Header } from './components/Header';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { Compendium } from './components/Compendium';
+import { MedicalDisclaimerBanner } from './components/MedicalDisclaimerBanner';
 import { useAppContext } from './contexts/AppContext';
 import { t } from './i18n';
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-slate-800 flex flex-col">
       <Header />
+      <MedicalDisclaimerBanner />
       <main className="container mx-auto p-4 md:p-8 flex-grow">
         <div className="max-w-4xl mx-auto">
           <Suspense fallback={<LoadingSpinner />}>

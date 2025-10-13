@@ -1,4 +1,12 @@
 {
+  "header": {
+    "tagline": "あなたのウェルネス・ガイド",
+    "fontSize": {
+      "label": "文字サイズ",
+      "standard": "標準",
+      "large": "大"
+    }
+  },
   "nav": {
     "compendium": "薬草事典",
     "manual": "使い方"

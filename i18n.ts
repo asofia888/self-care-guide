@@ -4,6 +4,14 @@ import enTranslations from './i18n/en.json';
 
 // Type definitions for translations structure
 export interface Translations {
+  header: {
+    tagline: string;
+    fontSize: {
+      label: string;
+      standard: string;
+      large: string;
+    };
+  };
   nav: {
     compendium: string;
     manual: string;

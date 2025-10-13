@@ -1,6 +1,18 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
-import { GEMINI_MODEL, RATE_LIMIT, ALLOWED_ORIGINS, LANGUAGES } from '../constants';
+
+// Constants (defined locally for Vercel serverless function compatibility)
+const GEMINI_MODEL = 'gemini-flash-latest';
+const RATE_LIMIT = {
+    REQUESTS_PER_MINUTE: 5,
+    WINDOW_MS: 60 * 1000,
+};
+const ALLOWED_ORIGINS = [
+    'https://self-care-guide.vercel.app',
+    'https://self-care-guide-git-main-asofia888.vercel.app',
+    'http://localhost:5173',
+];
+const LANGUAGES = ['ja', 'en'] as const;
 
 // Rate limiting in-memory store (for production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -74,7 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // CORS for frontend
     const origin = req.headers.origin;
-    if (origin && (ALLOWED_ORIGINS as readonly string[]).includes(origin)) {
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

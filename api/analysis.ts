@@ -1,10 +1,19 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from '@google/genai';
-import { GEMINI_MODEL, RATE_LIMIT, ALLOWED_ORIGINS, ANALYSIS_MODES, LANGUAGES } from '../constants';
 
-// Type aliases from imported constants
-const ALLOWED_MODES = ANALYSIS_MODES;
-const ALLOWED_LANGUAGES = LANGUAGES;
+// Constants (defined locally for Vercel serverless function compatibility)
+const GEMINI_MODEL = 'gemini-flash-latest';
+const RATE_LIMIT = {
+    REQUESTS_PER_MINUTE: 5,
+    WINDOW_MS: 60 * 1000,
+};
+const ALLOWED_ORIGINS = [
+    'https://self-care-guide.vercel.app',
+    'https://self-care-guide-git-main-asofia888.vercel.app',
+    'http://localhost:5173',
+];
+const ALLOWED_MODES = ['professional', 'general'] as const;
+const ALLOWED_LANGUAGES = ['ja', 'en'] as const;
 
 type AnalysisMode = typeof ALLOWED_MODES[number];
 type Language = typeof ALLOWED_LANGUAGES[number];
@@ -143,7 +152,7 @@ const setSecurityHeaders = (res: VercelResponse): void => {
 
 const setCORSHeaders = (req: VercelRequest, res: VercelResponse): void => {
     const origin = req.headers.origin;
-    if (origin && (ALLOWED_ORIGINS as readonly string[]).includes(origin)) {
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

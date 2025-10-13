@@ -1,4 +1,12 @@
 {
+  "header": {
+    "tagline": "Your Wellness Guide",
+    "fontSize": {
+      "label": "Font Size",
+      "standard": "Standard",
+      "large": "Large"
+    }
+  },
   "nav": {
     "compendium": "Compendium",
     "manual": "Guide"

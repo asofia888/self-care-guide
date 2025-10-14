@@ -177,12 +177,37 @@ Output: Valid JSON only, no markdown.`;
 
     } catch (error) {
         console.error('Compendium API error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
-        if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
-            return res.status(429).json({ error: 'Service temporarily unavailable. Please try again later.' });
+
+        // Log detailed error information
+        if (error instanceof Error) {
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+        } else {
+            console.error('Non-Error object:', JSON.stringify(error, null, 2));
         }
-        
-        return res.status(500).json({ error: 'Failed to process request. Please try again.' });
+
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        // Handle specific API errors
+        if (errorMessage.includes('quota') || errorMessage.includes('rate limit') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+            return res.status(429).json({ error: 'Service temporarily unavailable due to high demand. Please try again later.' });
+        }
+
+        if (errorMessage.includes('API key') || errorMessage.includes('authentication') || errorMessage.includes('UNAUTHENTICATED')) {
+            console.error('Authentication error - check API key configuration');
+            return res.status(500).json({ error: 'Service configuration error. Please contact support.' });
+        }
+
+        if (errorMessage.includes('timeout') || errorMessage.includes('DEADLINE_EXCEEDED')) {
+            return res.status(504).json({ error: 'Request timeout. Please try again.' });
+        }
+
+        // Generic error with more context in development
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        return res.status(500).json({
+            error: 'Failed to process request. Please try again.',
+            ...(isDevelopment && { details: errorMessage })
+        });
     }
 }

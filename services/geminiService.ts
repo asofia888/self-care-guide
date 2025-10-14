@@ -2,7 +2,7 @@ import type {
     Language, CompendiumResult, AnalysisMode, AnyUserProfile, AnalysisResult
 } from '../types';
 import { API_CONFIG } from '../constants';
-import { APIError, shouldRetry, logError } from '../utils/errorHandler';
+import { APIError, shouldRetry, getRetryDelay, logError } from '../utils/errorHandler';
 
 // Helper function for API calls with retry logic
 const apiCall = async <T>(
@@ -46,8 +46,8 @@ const apiCall = async <T>(
                 throw lastError;
             }
 
-            // Wait with exponential backoff for server errors
-            const delay = 1000 * Math.pow(2, attempt);
+            // Wait with exponential backoff and jitter for server errors
+            const delay = getRetryDelay(attempt);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }

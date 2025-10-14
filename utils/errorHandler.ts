@@ -25,28 +25,44 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
   const translations = t(language).error;
 
   if (error instanceof APIError) {
-    // Handle specific HTTP status codes
+    // Handle specific HTTP status codes with user-friendly messages
     switch (error.status) {
       case 400:
-        return translations.apiError.replace('{message}', 'Invalid request');
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? '無効なリクエストです' : 'Invalid request');
       case 401:
-        return translations.apiError.replace('{message}', 'Unauthorized');
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? '認証が必要です' : 'Authentication required');
       case 403:
-        return translations.apiError.replace('{message}', 'Access denied');
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? 'アクセスが拒否されました' : 'Access denied');
       case 404:
-        return translations.apiError.replace('{message}', 'Not found');
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? 'リソースが見つかりません' : 'Resource not found');
       case 429:
-        return translations.apiError.replace('{message}', 'Too many requests. Please try again later.');
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? 'リクエストが多すぎます。しばらく待ってから再試行してください' : 'Too many requests. Please try again later');
       case 500:
       case 502:
       case 503:
-        return translations.apiError.replace('{message}', 'Service unavailable. Please try again.');
+      case 504:
+        return translations.apiError.replace('{message}',
+          language === 'ja' ? 'サービスが一時的に利用できません。しばらく待ってから再試行してください' : 'Service temporarily unavailable. Please try again later');
       default:
-        return translations.apiError.replace('{message}', error.message);
+        // Use the error message if available
+        return translations.apiError.replace('{message}',
+          error.message || (language === 'ja' ? 'エラーが発生しました' : 'An error occurred'));
     }
   }
 
   if (error instanceof Error) {
+    // Check for network errors
+    if (error.message.toLowerCase().includes('network') ||
+        error.message.toLowerCase().includes('fetch') ||
+        error.message.toLowerCase().includes('connection')) {
+      return translations.networkError;
+    }
+
     // Try to parse if it's a JSON error message
     try {
       const jsonMatch = error.message.match(/AI API Error: (.*)/);
@@ -61,7 +77,15 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
       // Not JSON, use as-is
     }
 
+    // Return the error message directly
     return translations.apiError.replace('{message}', error.message);
+  }
+
+  // Handle unknown error types
+  if (error && typeof error === 'object') {
+    const errorObj = error as any;
+    const errorMsg = errorObj.message || errorObj.error || String(error);
+    return translations.apiError.replace('{message}', errorMsg);
   }
 
   return translations.unexpected;
@@ -74,18 +98,56 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
  */
 export const shouldRetry = (error: unknown): boolean => {
   if (error instanceof APIError) {
-    // Retry on server errors (5xx) but not client errors (4xx)
-    return error.status >= 500 && error.status < 600;
+    // Retry on server errors (5xx) and rate limiting (429)
+    // Don't retry on authentication errors (401, 403) or bad requests (400, 404)
+    if (error.status === 429) {
+      // Rate limiting - retry with backoff
+      return true;
+    }
+    if (error.status >= 500 && error.status < 600) {
+      // Server errors - retry
+      return true;
+    }
+    // Client errors - don't retry
+    return false;
   }
 
   if (error instanceof Error) {
+    const message = error.message.toLowerCase();
     // Retry on network errors
-    return error.message.includes('Network') ||
-           error.message.includes('timeout') ||
-           error.message.includes('ECONNREFUSED');
+    return message.includes('network') ||
+           message.includes('timeout') ||
+           message.includes('econnrefused') ||
+           message.includes('fetch failed') ||
+           message.includes('connection');
   }
 
   return false;
+};
+
+/**
+ * Calculate retry delay with exponential backoff and jitter
+ * @param attempt - Current attempt number (0-indexed)
+ * @param baseDelay - Base delay in milliseconds
+ * @param maxDelay - Maximum delay in milliseconds
+ * @returns Delay in milliseconds
+ */
+export const getRetryDelay = (
+  attempt: number,
+  baseDelay: number = 1000,
+  maxDelay: number = 30000
+): number => {
+  // Exponential backoff: baseDelay * 2^attempt
+  const exponentialDelay = baseDelay * Math.pow(2, attempt);
+
+  // Cap at max delay
+  const cappedDelay = Math.min(exponentialDelay, maxDelay);
+
+  // Add jitter (randomness) to prevent thundering herd
+  // Jitter range: 50% to 100% of calculated delay
+  const jitter = cappedDelay * (0.5 + Math.random() * 0.5);
+
+  return Math.floor(jitter);
 };
 
 /**

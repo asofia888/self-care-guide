@@ -6,7 +6,7 @@ import { t } from '../i18n';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAppContext } from '../contexts/AppContext';
 import { ErrorDisplay } from './ErrorDisplay';
-import { APIError } from '../utils/errorHandler';
+import { formatErrorMessage } from '../utils/errorHandler';
 
 const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) => {
     const { language } = useAppContext();
@@ -90,31 +90,9 @@ export const Compendium: React.FC = () => {
       }
     } catch (err) {
       console.error('Compendium search error:', err);
-      let errorMessage = t(language).error.unexpected;
 
-      // Handle APIError instances
-      if (err instanceof APIError) {
-        if (err.status === 429) {
-          errorMessage = t(language).error.apiError.replace('{message}', 'Too many requests. Please try again later.');
-        } else if (err.status >= 500) {
-          errorMessage = t(language).error.apiError.replace('{message}', 'Service unavailable. Please try again.');
-        } else {
-          errorMessage = t(language).error.apiError.replace('{message}', err.message || 'An error occurred');
-        }
-      } else if (err instanceof Error) {
-        // Handle standard Error objects
-        const errorMsg = err.message || String(err);
-        if (errorMsg.toLowerCase().includes('network') || errorMsg.toLowerCase().includes('fetch')) {
-          errorMessage = t(language).error.networkError;
-        } else {
-          errorMessage = t(language).error.apiError.replace('{message}', errorMsg);
-        }
-      } else if (err && typeof err === 'object') {
-        // Handle other error objects
-        const errorObj = err as any;
-        const errorMsg = errorObj.message || errorObj.error || String(err);
-        errorMessage = t(language).error.apiError.replace('{message}', errorMsg);
-      }
+      // Use centralized error formatting
+      const errorMessage = formatErrorMessage(err, language);
 
       setError(errorMessage);
     } finally {

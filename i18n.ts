@@ -172,9 +172,11 @@ export interface Translations {
     disclaimerContent: string;
   };
   footer: {
+    navigationLabel: string;
     privacy: string;
     terms: string;
     disclaimer: string;
+    disclaimerLink: string;
   };
   privacy: {
     title: string;

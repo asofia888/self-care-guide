@@ -206,9 +206,11 @@
     "disclaimerContent": "This app is not a substitute for medical diagnosis or treatment. Please consult a healthcare professional for health concerns."
   },
   "footer": {
+    "navigationLabel": "Footer Navigation",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "disclaimer": "Disclaimer"
+    "disclaimer": "Disclaimer",
+    "disclaimerLink": "Disclaimer"
   },
   "privacy": {
     "title": "Privacy Policy",

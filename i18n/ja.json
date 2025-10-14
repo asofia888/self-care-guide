@@ -206,9 +206,11 @@
     "disclaimerContent": "このアプリは医療診断や治療の代替ではありません。健康上の問題については必ず医療機関にご相談ください。"
   },
   "footer": {
+    "navigationLabel": "フッターナビゲーション",
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
-    "disclaimer": "免責事項"
+    "disclaimer": "免責事項",
+    "disclaimerLink": "免責事項"
   },
   "privacy": {
     "title": "プライバシーポリシー",

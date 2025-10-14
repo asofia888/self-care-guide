@@ -198,10 +198,10 @@ describe('i18n Translation System', () => {
     // Check for essential fields
     expect(en.printButton).toBeDefined();
     expect(ja.printButton).toBeDefined();
-    expect(en.professionalAnalysisTitle).toBeDefined();
-    expect(ja.professionalAnalysisTitle).toBeDefined();
-    expect(en.generalAnalysisTitle).toBeDefined();
-    expect(ja.generalAnalysisTitle).toBeDefined();
+    expect(en.professional).toBeDefined();
+    expect(ja.professional).toBeDefined();
+    expect(en.general).toBeDefined();
+    expect(ja.general).toBeDefined();
   });
 
   it('provides footer translations', () => {

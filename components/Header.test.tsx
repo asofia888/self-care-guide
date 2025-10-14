@@ -51,39 +51,41 @@ describe('Header component', () => {
 
   it('renders navigation buttons and highlights the active one with aria-current', () => {
     render(<Header />);
-    const compendiumButton = screen.getByRole('button', { name: /Formulary/i });
-    const manualButton = screen.getByRole('button', { name: /Manual/i });
+    const compendiumButtons = screen.getAllByRole('button', { name: /Compendium/i });
+    const manualButtons = screen.getAllByRole('button', { name: /Guide/i });
 
-    expect(compendiumButton).toBeInTheDocument();
-    expect(manualButton).toBeInTheDocument();
-    
-    // The active button should have specific styles and aria-current attribute.
-    expect(compendiumButton.className).toContain('bg-sky-100');
-    expect(compendiumButton).toHaveAttribute('aria-current', 'page');
-    expect(manualButton.className).not.toContain('bg-sky-100');
-    expect(manualButton).not.toHaveAttribute('aria-current');
+    // Should have at least 2 of each (desktop and mobile)
+    expect(compendiumButtons.length).toBeGreaterThanOrEqual(2);
+    expect(manualButtons.length).toBeGreaterThanOrEqual(2);
+
+    // The first active button should have specific styles and aria-current attribute.
+    expect(compendiumButtons[0].className).toContain('bg-sky-100');
+    expect(compendiumButtons[0]).toHaveAttribute('aria-current', 'page');
+
+    expect(manualButtons[0].className).not.toContain('bg-sky-100');
+    expect(manualButtons[0]).not.toHaveAttribute('aria-current');
   });
 
   it('calls handleNavigate when a navigation button is clicked', () => {
     render(<Header />);
-    const manualButton = screen.getByRole('button', { name: /Manual/i });
-    fireEvent.click(manualButton);
+    const manualButtons = screen.getAllByRole('button', { name: /Guide/i });
+    fireEvent.click(manualButtons[0]);
     expect(mockHandleNavigate).toHaveBeenCalledWith('manual');
     expect(mockHandleNavigate).toHaveBeenCalledTimes(1);
   });
   
   it('calls handleLanguageChange when a language button is clicked', () => {
     render(<Header />);
-    const jaButton = screen.getByRole('button', { name: 'JA' });
-    fireEvent.click(jaButton);
+    const jaButtons = screen.getAllByRole('button', { name: 'JA' });
+    fireEvent.click(jaButtons[0]);
     expect(mockHandleLanguageChange).toHaveBeenCalledWith('ja');
     expect(mockHandleLanguageChange).toHaveBeenCalledTimes(1);
   });
 
   it('calls handleFontSizeChange when a font size button is clicked', () => {
     render(<Header />);
-    const largeButton = screen.getByRole('button', { name: 'Large' });
-    fireEvent.click(largeButton);
+    const largeButtons = screen.getAllByRole('button', { name: 'Large' });
+    fireEvent.click(largeButtons[0]);
     expect(mockHandleFontSizeChange).toHaveBeenCalledWith('large');
     expect(mockHandleFontSizeChange).toHaveBeenCalledTimes(1);
   });
@@ -97,6 +99,7 @@ describe('Header component', () => {
 
     render(<Header />);
     expect(screen.getByText('あなたのウェルネス・ガイド')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /処方解説/i })).toBeInTheDocument();
+    const compendiumButtons = screen.getAllByRole('button', { name: /薬草事典/i });
+    expect(compendiumButtons).toHaveLength(2); // Desktop and mobile
   });
 });

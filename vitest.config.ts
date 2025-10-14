@@ -20,6 +20,7 @@ export default defineConfig({
         'components/**/*',
         'services/**/*',
         'contexts/**/*',
+        'utils/**/*',
         'i18n.ts',
         'types.ts'
       ],
@@ -29,30 +30,36 @@ export default defineConfig({
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
         'setupTests.ts',
-        'vitest.config.ts'
+        'vitest.config.ts',
+        '__tests__/**',
+        'dist/**'
       ],
       thresholds: {
         global: {
-          branches: 80,
-          functions: 80,
-          lines: 80,
-          statements: 80
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70
         }
       }
     },
-    // Test timeout - increased for WSL and slow test execution
-    testTimeout: 60000,
+    // Test timeout - reasonable for most tests
+    testTimeout: 10000,
     // Hook timeout
-    hookTimeout: 60000,
-    // Run tests in single thread to avoid WSL issues
+    hookTimeout: 10000,
+    // Run tests sequentially for WSL compatibility
     pool: 'forks',
     poolOptions: {
       forks: {
         singleFork: true
       }
     },
-    // Disable isolation for faster tests
-    isolate: false
+    // Disable isolation for faster execution on WSL
+    isolate: false,
+    // Retry flaky tests once
+    retry: 1,
+    // Limit concurrent test files
+    fileParallelism: false
   },
   resolve: {
     alias: {

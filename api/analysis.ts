@@ -227,11 +227,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { mode, profile, language } = validation;
 
         const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-        if (!apiKey) {
-            console.error('GEMINI_API_KEY not configured - check Vercel environment variables');
+
+        // Validate API key
+        if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY' || apiKey.trim() === '') {
+            console.error('API key validation failed');
+            console.error('API_KEY value:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
+            console.error('Environment variables with API/GEMINI:',
+                Object.keys(process.env)
+                    .filter(key => key.includes('API') || key.includes('GEMINI'))
+                    .map(key => `${key}=${process.env[key]?.substring(0, 10)}...`)
+            );
             return res.status(500).json({
-                error: 'Service configuration error',
-                details: 'API key not configured properly'
+                error: 'Service configuration error. API key not properly configured.',
+                hint: 'Please ensure GEMINI_API_KEY is set in Vercel environment variables'
             });
         }
 

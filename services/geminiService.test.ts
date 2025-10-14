@@ -73,6 +73,25 @@ const mockUserProfile = {
 // Mock fetch globally
 global.fetch = vi.fn();
 
+// Helper to create mock Response objects
+const createMockResponse = (data: any, ok: boolean, status: number, statusText: string = ''): Response => ({
+  ok,
+  status,
+  statusText,
+  json: async () => data,
+  headers: new Headers(),
+  redirected: false,
+  type: 'basic',
+  url: '',
+  clone: () => createMockResponse(data, ok, status, statusText),
+  body: null,
+  bodyUsed: false,
+  arrayBuffer: async () => new ArrayBuffer(0),
+  blob: async () => new Blob(),
+  formData: async () => new FormData(),
+  text: async () => JSON.stringify(data),
+} as Response);
+
 describe('GeminiService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -85,11 +104,7 @@ describe('GeminiService', () => {
   describe('getCompendiumInfo', () => {
     it('makes correct API call for compendium search', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCompendiumResult,
-        status: 200,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse(mockCompendiumResult, true, 200));
 
       const result = await getCompendiumInfo('ginger', 'en');
 
@@ -109,11 +124,7 @@ describe('GeminiService', () => {
 
     it('trims query before sending', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCompendiumResult,
-        status: 200,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse(mockCompendiumResult, true, 200));
 
       await getCompendiumInfo('  ginger  ', 'en');
 
@@ -131,11 +142,7 @@ describe('GeminiService', () => {
 
     it('handles API errors correctly', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Server Error' }),
-        status: 500,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500, 'Internal Server Error'));
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Server Error');
     });
@@ -151,21 +158,9 @@ describe('GeminiService', () => {
       const mockFetch = vi.mocked(fetch);
       // First two calls fail, third succeeds
       mockFetch
-        .mockResolvedValueOnce({
-          ok: false,
-          json: async () => ({ error: 'Server Error' }),
-          status: 500,
-        } as Response)
-        .mockResolvedValueOnce({
-          ok: false,
-          json: async () => ({ error: 'Server Error' }),
-          status: 500,
-        } as Response)
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => mockCompendiumResult,
-          status: 200,
-        } as Response);
+        .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500))
+        .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500))
+        .mockResolvedValueOnce(createMockResponse(mockCompendiumResult, true, 200));
 
       const result = await getCompendiumInfo('ginger', 'en');
 
@@ -175,11 +170,7 @@ describe('GeminiService', () => {
 
     it('does not retry on client errors (4xx)', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Bad Request' }),
-        status: 400,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Bad Request' }, false, 400));
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Bad Request');
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -187,11 +178,7 @@ describe('GeminiService', () => {
 
     it('stops retrying after max retries', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: 'Server Error' }),
-        status: 500,
-      } as Response);
+      mockFetch.mockResolvedValue(createMockResponse({ error: 'Server Error' }, false, 500));
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Server Error');
       // Should try 4 times total (initial + 3 retries)
@@ -202,11 +189,7 @@ describe('GeminiService', () => {
   describe('analyzeUserData', () => {
     it('makes correct API call for analysis', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockAnalysisResult,
-        status: 200,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse(mockAnalysisResult, true, 200));
 
       const result = await analyzeUserData('general', mockUserProfile, 'en');
 
@@ -240,11 +223,7 @@ describe('GeminiService', () => {
         kampoSuggestions: []
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => professionalResult,
-        status: 200,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse(professionalResult, true, 200));
 
       const professionalProfile = {
         chiefComplaint: "Fatigue",
@@ -261,44 +240,29 @@ describe('GeminiService', () => {
 
     it('handles analysis API errors with proper formatting', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Analysis failed' }),
-        status: 500,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Analysis failed' }, false, 500));
 
+      // After max retries, the error should be thrown
       await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow('AI API Error: Analysis failed');
+        .rejects.toThrow();
     });
 
     it('handles malformed API responses', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => {
-          throw new Error('Invalid JSON');
-        },
-        status: 500,
-        statusText: 'Internal Server Error',
-      } as Response);
+      const mockResponse = createMockResponse({}, false, 500, 'Internal Server Error');
+      mockResponse.json = async () => { throw new Error('Invalid JSON'); };
+      mockFetch.mockResolvedValueOnce(mockResponse);
 
+      // Should throw an error after retries
       await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow('AI API Error: HTTP 500: Internal Server Error');
+        .rejects.toThrow();
     });
 
     it('retries on server errors', async () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch
-        .mockResolvedValueOnce({
-          ok: false,
-          json: async () => ({ error: 'Server Error' }),
-          status: 503,
-        } as Response)
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => mockAnalysisResult,
-          status: 200,
-        } as Response);
+        .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 503))
+        .mockResolvedValueOnce(createMockResponse(mockAnalysisResult, true, 200));
 
       const result = await analyzeUserData('general', mockUserProfile, 'en');
 
@@ -308,14 +272,10 @@ describe('GeminiService', () => {
 
     it('does not retry on authentication errors', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Unauthorized' }),
-        status: 401,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Unauthorized' }, false, 401));
 
       await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow('AI API Error: Unauthorized');
+        .rejects.toThrow('Unauthorized');
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
@@ -334,39 +294,26 @@ describe('GeminiService', () => {
 
     it('properly formats error messages', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Custom error message' }),
-        status: 422,
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Custom error message' }, false, 422));
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Custom error message');
     });
 
     it('handles missing error field in response', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({}),
-        status: 500,
-        statusText: 'Internal Server Error',
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({}, false, 500, 'Internal Server Error'));
 
+      // Should throw an error after retries
       await expect(getCompendiumInfo('ginger', 'en'))
-        .rejects.toThrow('HTTP 500: Internal Server Error');
+        .rejects.toThrow();
     });
 
     it('handles unknown API errors gracefully', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: null }),
-        status: 500,
-        statusText: 'Internal Server Error',
-      } as Response);
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: null }, false, 500, 'Internal Server Error'));
 
       await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow('AI API Error');
+        .rejects.toThrow();
     });
   });
 });

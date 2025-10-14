@@ -86,26 +86,30 @@ describe('UserInput Component', () => {
     });
 
     it('submits professional form with valid data', async () => {
-      // Mock successful API response
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          analysisMode: 'professional',
-          differentialDiagnosis: {
-            pattern: 'Test pattern',
-            pathology: 'Test pathology',
-            evidence: 'Test evidence'
-          },
-          rationale: 'Test rationale',
-          treatmentPrinciple: 'Test principle',
-          herbSuggestions: [],
-          kampoSuggestions: [],
-          supplementSuggestions: [],
-          lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-          precautions: []
-        }),
-        status: 200,
-      });
+      // Mock successful API response with a delay to see loading state
+      global.fetch = vi.fn().mockImplementation(() =>
+        new Promise(resolve =>
+          setTimeout(() => resolve({
+            ok: true,
+            json: async () => ({
+              analysisMode: 'professional',
+              differentialDiagnosis: {
+                pattern: 'Test pattern',
+                pathology: 'Test pathology',
+                evidence: 'Test evidence'
+              },
+              rationale: 'Test rationale',
+              treatmentPrinciple: 'Test principle',
+              herbSuggestions: [],
+              kampoSuggestions: [],
+              supplementSuggestions: [],
+              lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
+              precautions: []
+            }),
+            status: 200,
+          }), 100)
+        )
+      );
 
       render(<UserInput />);
 
@@ -119,7 +123,7 @@ describe('UserInput Component', () => {
       // Should show loading state
       await waitFor(() => {
         expect(screen.getByText(/分析中|Analyzing/i)).toBeInTheDocument();
-      });
+      }, { timeout: 3000 });
     });
   });
 
@@ -148,41 +152,46 @@ describe('UserInput Component', () => {
     });
 
     it('handles concern selection correctly', async () => {
-      const stressCheckbox = screen.getByRole('checkbox', { name: /ストレス・不安|Stress.*Anxiety/i });
-      const fatigueCheckbox = screen.getByRole('checkbox', { name: /疲労感|Fatigue/i });
+      // Concerns are implemented as buttons with aria-pressed attribute
+      const stressButton = screen.getByRole('button', { name: /ストレス・不安|Stress.*Anxiety/i });
+      const fatigueButton = screen.getByRole('button', { name: /疲労感|Fatigue/i });
 
-      await user.click(stressCheckbox);
-      await user.click(fatigueCheckbox);
+      await user.click(stressButton);
+      await user.click(fatigueButton);
 
-      expect(stressCheckbox).toBeChecked();
-      expect(fatigueCheckbox).toBeChecked();
+      expect(stressButton).toHaveAttribute('aria-pressed', 'true');
+      expect(fatigueButton).toHaveAttribute('aria-pressed', 'true');
 
       // Uncheck one
-      await user.click(stressCheckbox);
-      expect(stressCheckbox).not.toBeChecked();
+      await user.click(stressButton);
+      expect(stressButton).toHaveAttribute('aria-pressed', 'false');
     });
 
     it('submits general form with valid data', async () => {
-      // Mock successful API response
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          analysisMode: 'general',
-          wellnessProfile: {
-            title: 'Test Profile',
-            summary: 'Test summary'
-          },
-          herbSuggestions: [],
-          supplementSuggestions: [],
-          lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-          precautions: []
-        }),
-        status: 200,
-      });
+      // Mock successful API response with a delay to see loading state
+      global.fetch = vi.fn().mockImplementation(() =>
+        new Promise(resolve =>
+          setTimeout(() => resolve({
+            ok: true,
+            json: async () => ({
+              analysisMode: 'general',
+              wellnessProfile: {
+                title: 'Test Profile',
+                summary: 'Test summary'
+              },
+              herbSuggestions: [],
+              supplementSuggestions: [],
+              lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
+              precautions: []
+            }),
+            status: 200,
+          }), 100)
+        )
+      );
 
-      // Select at least one concern
-      const stressCheckbox = screen.getByRole('checkbox', { name: /ストレス・不安|Stress.*Anxiety/i });
-      await user.click(stressCheckbox);
+      // Select at least one concern (concerns are buttons, not checkboxes)
+      const stressButton = screen.getByRole('button', { name: /ストレス・不安|Stress.*Anxiety/i });
+      await user.click(stressButton);
 
       const submitButton = screen.getByRole('button', { name: /AI分析を開始|Get AI Analysis/i });
       await user.click(submitButton);
@@ -190,7 +199,7 @@ describe('UserInput Component', () => {
       // Should show loading state
       await waitFor(() => {
         expect(screen.getByText(/分析中|Analyzing/i)).toBeInTheDocument();
-      });
+      }, { timeout: 3000 });
     });
   });
 

@@ -40,10 +40,10 @@ export default defineConfig({
         }
       }
     },
-    // Test timeout - increased for WSL
-    testTimeout: 30000,
+    // Test timeout - increased for WSL and slow test execution
+    testTimeout: 60000,
     // Hook timeout
-    hookTimeout: 30000,
+    hookTimeout: 60000,
     // Run tests in single thread to avoid WSL issues
     pool: 'forks',
     poolOptions: {

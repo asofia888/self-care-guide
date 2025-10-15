@@ -37,7 +37,7 @@ const compendiumEntrySchema = {
 const compendiumResponseSchema = {
     type: Type.OBJECT,
     properties: {
-        integrativeViewpoint: { type: Type.STRING, description: "Brief integrative perspective. Keep concise: approximately 300 characters for Japanese, 200 words for English." },
+        integrativeViewpoint: { type: Type.STRING, description: "Integrative perspective explaining the holistic approach combining Eastern and Western medicine. IMPORTANT: Must be 280-320 characters for Japanese, 180-220 words for English. Provide sufficient detail within this range." },
         kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema }
@@ -148,12 +148,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
-For specific substances: Provide ONE detailed entry in the correct category with brief integrative viewpoint (approximately 300 characters for Japanese, 200 words for English).
+For specific substances: Provide ONE detailed entry in the correct category with integrative viewpoint (280-320 characters for Japanese, 180-220 words for English).
 
-For symptoms/conditions: Provide integrative viewpoint (approximately 300 characters for Japanese, 200 words for English) plus:
+For symptoms/conditions: Provide integrative viewpoint (280-320 characters for Japanese, 180-220 words for English) plus:
 - 3 Kampo formulas (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito)
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
+
+CRITICAL - LENGTH REQUIREMENT FOR INTEGRATIVE VIEWPOINT:
+The integrativeViewpoint field MUST be detailed and comprehensive within the specified length:
+- Japanese: 280-320 characters (aim for around 300 characters)
+- English: 180-220 words (aim for around 200 words)
+Do NOT write shorter than the minimum. Provide sufficient detail about how Eastern and Western approaches complement each other.
 
 CRITICAL - LANGUAGE REQUIREMENT:
 ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language.

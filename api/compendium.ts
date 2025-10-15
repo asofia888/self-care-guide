@@ -21,7 +21,7 @@ const compendiumEntrySchema = {
     type: Type.OBJECT,
     properties: {
         name: { type: Type.STRING },
-        category: { type: Type.STRING, enum: ['Western Herb', 'Kampo Formula', 'Supplement'] },
+        category: { type: Type.STRING, description: "Category of the entry. For English: 'Western Herb', 'Kampo Formula', or 'Supplement'. For Japanese: '西洋ハーブ', '漢方処方', or 'サプリメント'." },
         summary: { type: Type.STRING },
         properties: { type: Type.STRING },
         channels: { type: Type.STRING },
@@ -155,12 +155,17 @@ For symptoms/conditions: Provide integrative viewpoint plus:
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
 
-CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
-1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements
-2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum)
-3. contraindications: Safety information, warnings, and precautions (even if minimal, state "Generally safe when used as directed")
+CRITICAL - LANGUAGE REQUIREMENT:
+ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language.
+- For Japanese: Use '西洋ハーブ' for Western Herb, '漢方処方' for Kampo Formula, 'サプリメント' for Supplement
+- For English: Use 'Western Herb', 'Kampo Formula', 'Supplement'
 
-These fields are MANDATORY. Never omit them.
+CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
+1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements (in ${languageName})
+2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum, in ${languageName})
+3. contraindications: Safety information, warnings, and precautions (in ${languageName}, even if minimal, state equivalent of "Generally safe when used as directed" in the target language)
+
+These fields are MANDATORY. Never omit them. All content must be in ${languageName}.
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 

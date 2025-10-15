@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { BookOpenIcon, SparklesIcon, BrainCircuitIcon, PrinterIcon } from './Icons';
+import { BookOpenIcon, SparklesIcon, PrinterIcon } from './Icons';
 import { getCompendiumInfo } from '../services/geminiService';
 import type { CompendiumEntry, CompendiumResult } from '../types';
 import { t } from '../i18n';
@@ -176,10 +176,7 @@ export const Compendium: React.FC = () => {
                     <div className="space-y-8">
                         {result.integrativeViewpoint && (
                             <div className="bg-gradient-to-br from-sky-50 to-white text-slate-800 p-6 rounded-2xl shadow-lg border border-sky-200/80">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <BrainCircuitIcon className="w-8 h-8 text-sky-700"/>
-                                    <h2 className="text-2xl font-bold">{translations.integrativeViewpointTitle}</h2>
-                                </div>
+                                <h2 className="text-2xl font-bold mb-3">{translations.integrativeViewpointTitle}</h2>
                                 <div className="prose prose-sm max-w-none prose-p:my-1 text-slate-700">
                                     <p>{result.integrativeViewpoint}</p>
                                 </div>

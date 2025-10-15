@@ -195,17 +195,24 @@
   },
   "manual": {
     "title": "User Guide",
-    "overviewTitle": "Overview",
-    "overviewContent": "This app integrates Eastern and Western medicine knowledge and uses AI to provide personalized health recommendations.",
-    "modesTitle": "Two Modes",
-    "professionalModeTitle": "Professional Mode",
-    "professionalModeContent": "For healthcare practitioners and TCM professionals, providing detailed diagnostic information and clinical analysis.",
-    "generalModeTitle": "General Mode",
-    "generalModeContent": "For general users, providing easy-to-understand health advice and self-care methods.",
-    "compendiumTitle": "Herbal Compendium",
-    "compendiumContent": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
-    "disclaimerTitle": "Disclaimer",
-    "disclaimerContent": "This app is not a substitute for medical diagnosis or treatment. Please consult a healthcare professional for health concerns."
+    "description": "Learn how to use this app",
+    "introduction": {
+      "title": "Overview",
+      "p1": "This app integrates Eastern and Western medicine knowledge and uses AI to provide personalized health recommendations.",
+      "p2": "It offers two modes: Professional Mode for practitioners and General Mode for everyday wellness."
+    },
+    "compendium": {
+      "title": "Herbal Compendium",
+      "p1": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
+      "p2": "Search by symptom or herb name to get detailed information from both Eastern and Western medicine perspectives."
+    },
+    "generalTips": {
+      "title": "Important Notes",
+      "disclaimer": {
+        "title": "Disclaimer",
+        "p1": "This app is not a substitute for medical diagnosis or treatment. Please consult a healthcare professional for health concerns."
+      }
+    }
   },
   "footer": {
     "navigationLabel": "Footer Navigation",

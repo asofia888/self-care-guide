@@ -29,11 +29,13 @@ export const LoadingSpinner: React.FC = React.memo(() => {
         <div className="absolute inset-4 border-4 border-transparent border-r-sky-500 rounded-full animate-spin"
              style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
 
-        {/* Center icon */}
+        {/* Center logo */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <svg className="w-10 h-10 text-sky-600 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
-          </svg>
+          <img
+            src="/logo.png"
+            alt="Loading"
+            className="w-12 h-12 object-contain animate-pulse"
+          />
         </div>
       </div>
 

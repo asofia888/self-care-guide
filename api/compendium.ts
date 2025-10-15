@@ -37,7 +37,7 @@ const compendiumEntrySchema = {
 const compendiumResponseSchema = {
     type: Type.OBJECT,
     properties: {
-        integrativeViewpoint: { type: Type.STRING },
+        integrativeViewpoint: { type: Type.STRING, description: "Brief integrative perspective. Keep concise: approximately 300 characters for Japanese, 200 words for English." },
         kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema }
@@ -148,9 +148,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
-For specific substances: Provide ONE detailed entry in the correct category with brief integrative viewpoint.
+For specific substances: Provide ONE detailed entry in the correct category with brief integrative viewpoint (approximately 300 characters for Japanese, 200 words for English).
 
-For symptoms/conditions: Provide integrative viewpoint plus:
+For symptoms/conditions: Provide integrative viewpoint (approximately 300 characters for Japanese, 200 words for English) plus:
 - 3 Kampo formulas (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito)
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)

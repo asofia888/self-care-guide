@@ -43,7 +43,7 @@ const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) =
                 )}
                 {entry.constituentHerbs && (
                     <div>
-                        <h4 className="font-semibold text-emerald-700">Constituent Herbs / Formula Rationale</h4>
+                        <h4 className="font-semibold text-emerald-700">{translations.constituentHerbsRationale}</h4>
                         <p className="text-slate-600 whitespace-pre-wrap">{entry.constituentHerbs}</p>
                     </div>
                 )}
@@ -55,7 +55,7 @@ const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) =
                 )}
                  {entry.contraindications && (
                     <div>
-                        <h4 className="font-semibold text-red-700">Contraindications</h4>
+                        <h4 className="font-semibold text-red-700">{translations.contraindications}</h4>
                         <p className="text-red-600">{entry.contraindications}</p>
                     </div>
                 )}

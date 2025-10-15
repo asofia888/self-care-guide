@@ -148,6 +148,8 @@
     "actions": "作用",
     "indications": "適応",
     "constituentHerbs": "構成生薬",
+    "constituentHerbsRationale": "構成生薬・方剤理論",
+    "contraindications": "禁忌",
     "clinicalNotes": "臨床ノート",
     "noResults": "検索結果がありません"
   },

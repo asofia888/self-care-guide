@@ -148,6 +148,8 @@
     "actions": "Actions",
     "indications": "Indications",
     "constituentHerbs": "Constituent Herbs",
+    "constituentHerbsRationale": "Constituent Herbs / Formula Rationale",
+    "contraindications": "Contraindications",
     "clinicalNotes": "Clinical Notes",
     "noResults": "No results found"
   },

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getCompendiumInfo, analyzeUserData } from './geminiService';
+import { getCompendiumInfo } from './geminiService';
 
 // Mock data
 const mockCompendiumResult = {
@@ -33,42 +33,6 @@ const mockCompendiumResult = {
   }]
 };
 
-const mockAnalysisResult = {
-  analysisMode: "general" as const,
-  wellnessProfile: {
-    title: "Digestive Wellness Profile",
-    summary: "You appear to have digestive sensitivity with occasional discomfort."
-  },
-  herbSuggestions: [{
-    name: "Chamomile",
-    reason: "Gentle digestive support",
-    usage: "Tea, 1-2 cups daily"
-  }],
-  supplementSuggestions: [{
-    name: "Probiotics",
-    reason: "Support digestive balance",
-    usage: "Daily with food"
-  }],
-  folkRemedies: [{
-    name: "Warm Water",
-    description: "Drink warm water before meals"
-  }],
-  lifestyleAdvice: {
-    diet: ["Eat smaller, frequent meals"],
-    sleep: ["Maintain regular sleep schedule"],
-    exercise: ["Gentle walking after meals"]
-  },
-  precautions: ["Consult healthcare provider if symptoms persist"]
-};
-
-const mockUserProfile = {
-  age: 30,
-  gender: "female",
-  concerns: ["digestion"],
-  selfAssessment: ["low_energy"],
-  medications: "none",
-  allergies: "none"
-};
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -197,99 +161,6 @@ describe('GeminiService', () => {
     });
   });
 
-  describe('analyzeUserData', () => {
-    it('makes correct API call for analysis', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce(createMockResponse(mockAnalysisResult, true, 200));
-
-      const result = await analyzeUserData('general', mockUserProfile, 'en');
-
-      expect(mockFetch).toHaveBeenCalledWith('/api/analysis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          mode: 'general',
-          profile: mockUserProfile,
-          language: 'en'
-        }),
-      });
-
-      expect(result).toEqual(mockAnalysisResult);
-    });
-
-    it('handles different analysis modes correctly', async () => {
-      const mockFetch = vi.mocked(fetch);
-      const professionalResult = {
-        ...mockAnalysisResult,
-        analysisMode: 'professional' as const,
-        differentialDiagnosis: {
-          pattern: "Qi Deficiency",
-          pathology: "Weak digestive function",
-          evidence: "Fatigue, poor appetite"
-        },
-        rationale: "Based on symptoms",
-        treatmentPrinciple: "Tonify Qi",
-        kampoSuggestions: []
-      };
-
-      mockFetch.mockResolvedValueOnce(createMockResponse(professionalResult, true, 200));
-
-      const professionalProfile = {
-        chiefComplaint: "Fatigue",
-        professionalObservations: {}
-      };
-
-      await analyzeUserData('professional', professionalProfile, 'en');
-
-      const call = mockFetch.mock.calls[0];
-      const body = JSON.parse(call[1]?.body as string);
-
-      expect(body.mode).toBe('professional');
-    });
-
-    it('handles analysis API errors with proper formatting', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Analysis failed' }, false, 500));
-
-      // After max retries, the error should be thrown
-      await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow();
-    });
-
-    it('handles malformed API responses', async () => {
-      const mockFetch = vi.mocked(fetch);
-      const mockResponse = createMockResponse({}, false, 500, 'Internal Server Error');
-      mockResponse.json = async () => { throw new Error('Invalid JSON'); };
-      mockFetch.mockResolvedValueOnce(mockResponse);
-
-      // Should throw an error after retries
-      await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow();
-    });
-
-    it('retries on server errors', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch
-        .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 503))
-        .mockResolvedValueOnce(createMockResponse(mockAnalysisResult, true, 200));
-
-      const result = await analyzeUserData('general', mockUserProfile, 'en');
-
-      expect(mockFetch).toHaveBeenCalledTimes(2);
-      expect(result).toEqual(mockAnalysisResult);
-    });
-
-    it('does not retry on authentication errors', async () => {
-      const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Unauthorized' }, false, 401));
-
-      await expect(analyzeUserData('general', mockUserProfile, 'en'))
-        .rejects.toThrow('Unauthorized');
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-    });
-  });
 
   describe('Error handling and resilience', () => {
     it('handles timeout scenarios', async () => {
@@ -323,7 +194,7 @@ describe('GeminiService', () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValueOnce(createMockResponse({ error: null }, false, 500, 'Internal Server Error'));
 
-      await expect(analyzeUserData('general', mockUserProfile, 'en'))
+      await expect(getCompendiumInfo('test', 'en'))
         .rejects.toThrow();
     });
   });

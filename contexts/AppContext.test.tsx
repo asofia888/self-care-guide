@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { AppProvider, useAppContext } from './AppContext';
-import type { AnalysisMode, AnyUserProfile } from '../types';
 
 describe('AppContext', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -19,10 +18,6 @@ describe('AppContext', () => {
       expect(result.current.language).toBe('ja');
       expect(result.current.activeView).toBe('compendium');
       expect(result.current.fontSize).toBe('standard');
-      expect(result.current.analysisResult).toBeNull();
-      expect(result.current.streamingContent).toBe('');
-      expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBeNull();
     });
 
     it('throws error when useAppContext is used outside provider', () => {
@@ -126,215 +121,6 @@ describe('AppContext', () => {
     });
   });
 
-  describe('Error Management', () => {
-    it('clears error when clearError is called', () => {
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      // Manually set error state (simulating an error)
-      act(() => {
-        result.current.handleAnalysis('professional', { chiefComplaint: 'test', professionalObservations: {} });
-      });
-
-      // Mock API error
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: 'Test error' }),
-        status: 500,
-      });
-
-      act(() => {
-        result.current.clearError();
-      });
-
-      expect(result.current.error).toBeNull();
-    });
-  });
-
-  describe('Analysis Workflow', () => {
-    it('handles successful analysis', async () => {
-      const mockResult = {
-        analysisMode: 'professional' as const,
-        differentialDiagnosis: {
-          pattern: 'Test Pattern',
-          pathology: 'Test Pathology',
-          evidence: 'Test Evidence'
-        },
-        rationale: 'Test Rationale',
-        treatmentPrinciple: 'Test Treatment',
-        herbSuggestions: [],
-        kampoSuggestions: [],
-        supplementSuggestions: [],
-        lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-        precautions: []
-      };
-
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => mockResult,
-        status: 200,
-      });
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      const profile: AnyUserProfile = {
-        chiefComplaint: 'Headache',
-        professionalObservations: {}
-      };
-
-      await act(async () => {
-        await result.current.handleAnalysis('professional', profile);
-      });
-
-      await waitFor(() => {
-        expect(result.current.analysisResult).toEqual(mockResult);
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.error).toBeNull();
-      });
-    });
-
-    it('sets loading state during analysis', async () => {
-      global.fetch = vi.fn().mockImplementation(() =>
-        new Promise(resolve =>
-          setTimeout(() => resolve({
-            ok: true,
-            json: async () => ({}),
-            status: 200,
-          }), 100)
-        )
-      );
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      const profile: AnyUserProfile = {
-        chiefComplaint: 'Test',
-        professionalObservations: {}
-      };
-
-      act(() => {
-        result.current.handleAnalysis('professional', profile);
-      });
-
-      // Should be loading immediately
-      expect(result.current.isLoading).toBe(true);
-
-      // Wait for completion
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: 5000 });
-    });
-
-    it('handles analysis errors', async () => {
-      const errorMessage = 'Analysis failed';
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: false,
-        json: async () => ({ error: errorMessage }),
-        status: 500,
-      });
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      // Set language to English for predictable error messages
-      act(() => {
-        result.current.handleLanguageChange('en');
-      });
-
-      const profile: AnyUserProfile = {
-        chiefComplaint: 'Test',
-        professionalObservations: {}
-      };
-
-      await act(async () => {
-        await result.current.handleAnalysis('professional', profile);
-      });
-
-      await waitFor(() => {
-        expect(result.current.error).toBeTruthy();
-        // Error message may be formatted by errorHandler, so just check it exists
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.analysisResult).toBeNull();
-      });
-    });
-
-    it('handles general mode analysis', async () => {
-      const mockResult = {
-        analysisMode: 'general' as const,
-        wellnessProfile: {
-          title: 'Wellness Profile',
-          summary: 'Test Summary'
-        },
-        herbSuggestions: [],
-        supplementSuggestions: [],
-        lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-        precautions: []
-      };
-
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => mockResult,
-        status: 200,
-      });
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      const profile: AnyUserProfile = {
-        concerns: ['stress'],
-        selfAssessment: ['low_energy']
-      };
-
-      await act(async () => {
-        await result.current.handleAnalysis('general', profile);
-      });
-
-      await waitFor(() => {
-        expect(result.current.analysisResult).toEqual(mockResult);
-        expect(result.current.isLoading).toBe(false);
-      });
-    });
-
-    it('clears previous results before new analysis', async () => {
-      const firstResult = {
-        analysisMode: 'general' as const,
-        wellnessProfile: { title: 'First', summary: 'First' },
-        herbSuggestions: [],
-        supplementSuggestions: [],
-        lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-        precautions: []
-      };
-
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => firstResult,
-        status: 200,
-      });
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      // First analysis
-      await act(async () => {
-        await result.current.handleAnalysis('general', { concerns: ['stress'] });
-      });
-
-      await waitFor(() => {
-        expect(result.current.analysisResult).toEqual(firstResult);
-      });
-
-      // Second analysis
-      const secondResult = { ...firstResult, wellnessProfile: { title: 'Second', summary: 'Second' } };
-      global.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => secondResult,
-        status: 200,
-      });
-
-      await act(async () => {
-        await result.current.handleAnalysis('general', { concerns: ['fatigue'] });
-      });
-
-      await waitFor(() => {
-        expect(result.current.analysisResult).toEqual(secondResult);
-      });
-    });
-  });
 
   describe('Compendium Integration', () => {
     it('navigates to compendium when viewing an item', () => {
@@ -366,8 +152,6 @@ describe('AppContext', () => {
         handleLanguageChange: result.current.handleLanguageChange,
         handleNavigate: result.current.handleNavigate,
         handleFontSizeChange: result.current.handleFontSizeChange,
-        handleAnalysis: result.current.handleAnalysis,
-        clearError: result.current.clearError,
         viewCompendiumItem: result.current.viewCompendiumItem,
       };
 
@@ -377,8 +161,6 @@ describe('AppContext', () => {
       expect(result.current.handleLanguageChange).toBe(initialHandlers.handleLanguageChange);
       expect(result.current.handleNavigate).toBe(initialHandlers.handleNavigate);
       expect(result.current.handleFontSizeChange).toBe(initialHandlers.handleFontSizeChange);
-      expect(result.current.handleAnalysis).toBe(initialHandlers.handleAnalysis);
-      expect(result.current.clearError).toBe(initialHandlers.clearError);
       expect(result.current.viewCompendiumItem).toBe(initialHandlers.viewCompendiumItem);
     });
 
@@ -396,42 +178,6 @@ describe('AppContext', () => {
       expect(result.current.language).toBe('en');
       expect(result.current.activeView).toBe('manual');
       expect(result.current.fontSize).toBe('large');
-    });
-  });
-
-  describe('Streaming Content', () => {
-    it('sets streaming content during analysis', async () => {
-      global.fetch = vi.fn().mockImplementation(() =>
-        new Promise(resolve =>
-          setTimeout(() => resolve({
-            ok: true,
-            json: async () => ({
-              analysisMode: 'general',
-              wellnessProfile: { title: 'Test', summary: 'Test' },
-              herbSuggestions: [],
-              supplementSuggestions: [],
-              lifestyleAdvice: { diet: [], sleep: [], exercise: [] },
-              precautions: []
-            }),
-            status: 200,
-          }), 100)
-        )
-      );
-
-      const { result } = renderHook(() => useAppContext(), { wrapper });
-
-      act(() => {
-        result.current.handleAnalysis('general', { concerns: ['stress'] });
-      });
-
-      // Should show streaming content during analysis
-      expect(result.current.streamingContent).toBeTruthy();
-
-      // Wait for completion
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.streamingContent).toBe('');
-      }, { timeout: 5000 });
     });
   });
 });

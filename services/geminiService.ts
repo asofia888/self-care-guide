@@ -1,5 +1,5 @@
 import type {
-    Language, CompendiumResult, AnalysisMode, AnyUserProfile, AnalysisResult
+    Language, CompendiumResult
 } from '../types';
 import { API_CONFIG } from '../constants';
 import { APIError, shouldRetry, getRetryDelay, logError } from '../utils/errorHandler';
@@ -67,41 +67,5 @@ export const getCompendiumInfo = async (query: string, language: Language): Prom
     } catch (error) {
         logError('getCompendiumInfo', error);
         throw error; // Re-throw to allow caller to handle
-    }
-};
-
-
-// --- ANALYSIS FUNCTION ---
-
-export const analyzeUserData = async (
-    mode: AnalysisMode,
-    profile: AnyUserProfile,
-    language: Language
-): Promise<AnalysisResult> => {
-    try {
-        const payload = {
-            mode,
-            profile,
-            language
-        };
-
-        const result = await apiCall<AnalysisResult>('/analysis', payload);
-        return result;
-
-    } catch (error) {
-        logError('analyzeUserData', error);
-
-        // Re-throw APIError as-is for proper handling
-        if (error instanceof APIError) {
-            throw error;
-        }
-
-        // Wrap other errors in APIError
-        const typedError = error as Error;
-        throw new APIError(
-            500,
-            typedError.message || 'An unknown error occurred with the AI service.',
-            error
-        );
     }
 };

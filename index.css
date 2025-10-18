@@ -72,6 +72,22 @@ input, textarea {
   user-select: text;
 }
 
+/* Allow text selection in content areas */
+p, li, h1, h2, h3, h4, h5, h6, span, div.prose {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.printable-area {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.printable-area * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Screen reader only class */
 .sr-only {
   position: absolute;

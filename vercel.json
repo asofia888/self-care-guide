@@ -2,9 +2,6 @@
   "functions": {
     "api/compendium.ts": {
       "maxDuration": 60
-    },
-    "api/analysis.ts": {
-      "maxDuration": 60
     }
   }
 }

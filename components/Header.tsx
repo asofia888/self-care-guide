@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpenIcon, HelpCircleIcon } from './Icons';
+import { IntegrativeMedicineIcon, HelpCircleIcon } from './Icons';
 import type { View } from '../types';
 import { t } from '../i18n';
 import { useAppContext } from '../contexts/AppContext';
@@ -92,7 +92,7 @@ export const Header: React.FC = () => {
               view="compendium"
               activeView={activeView}
               onClick={handleNavigate}
-              icon={<BookOpenIcon className="w-5 h-5" />}
+              icon={<IntegrativeMedicineIcon className="w-5 h-5" />}
               label={navTranslations.compendium}
             />
             <NavButton
@@ -146,7 +146,7 @@ export const Header: React.FC = () => {
             view="compendium"
             activeView={activeView}
             onClick={handleNavigate}
-            icon={<BookOpenIcon className="w-5 h-5" />}
+            icon={<IntegrativeMedicineIcon className="w-5 h-5" />}
             label={navTranslations.compendium}
           />
           <NavButton

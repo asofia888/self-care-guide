@@ -148,12 +148,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
-For specific substances: Provide ONE detailed entry in the correct category with integrative viewpoint (280-320 characters for Japanese, 180-220 words for English).
+QUERY TYPE DETECTION (Critical):
+1. If the query is for a SPECIFIC SUBSTANCE (herb, supplement, Kampo formula, botanical name like "Tongkat Ali", "Ginseng", "Turmeric", "Echinacea", etc.):
+   - Return ONLY that ONE substance with its integrative viewpoint
+   - Ignore related substances - focus ONLY on what was queried
+   - Leave kampoEntries, westernHerbEntries, and supplementEntries arrays with AT MOST ONE entry each based on what the query is
+   - If the substance is a Western herb → put it ONLY in westernHerbEntries
+   - If the substance is a supplement → put it ONLY in supplementEntries
+   - If the substance is a Kampo formula → put it ONLY in kampoEntries
+   - Leave other arrays EMPTY
 
-For symptoms/conditions: Provide integrative viewpoint (280-320 characters for Japanese, 180-220 words for English) plus:
-- 1-3 Kampo formulas if relevant (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito). If the query is for non-traditional substances not found in Kampo, provide an EMPTY array for kampoEntries.
-- 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
-- 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
+2. If the query is for a SYMPTOM, CONDITION, or HEALTH STATE (like "fatigue", "insomnia", "low energy", "joint pain", etc.):
+   - Return integrative viewpoint plus multiple related options
+   - Include 1-3 Kampo formulas if relevant (empty array if not found)
+   - Include 3 Western herbs (European/American herbs)
+   - Include 5-7 supplements
 
 CRITICAL - LENGTH REQUIREMENT FOR INTEGRATIVE VIEWPOINT:
 The integrativeViewpoint field MUST be detailed and comprehensive within the specified length:

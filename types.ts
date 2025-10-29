@@ -19,7 +19,7 @@ export interface CompendiumEntry {
 
 export interface CompendiumResult {
     integrativeViewpoint: string;
-    kampoEntries: CompendiumEntry[];
+    kampoEntries?: CompendiumEntry[];
     westernHerbEntries: CompendiumEntry[];
     supplementEntries: CompendiumEntry[];
 }

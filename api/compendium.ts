@@ -42,7 +42,7 @@ const compendiumResponseSchema = {
         westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
         supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema }
     },
-    required: ["integrativeViewpoint", "kampoEntries", "westernHerbEntries", "supplementEntries"]
+    required: ["integrativeViewpoint", "westernHerbEntries", "supplementEntries"]
 };
 
 const getLanguageName = (langCode: string) => {
@@ -151,7 +151,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 For specific substances: Provide ONE detailed entry in the correct category with integrative viewpoint (280-320 characters for Japanese, 180-220 words for English).
 
 For symptoms/conditions: Provide integrative viewpoint (280-320 characters for Japanese, 180-220 words for English) plus:
-- 3 Kampo formulas (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito)
+- 1-3 Kampo formulas if relevant (traditional multi-herb Japanese prescriptions like Kakkonto, Hochuekkito). If the query is for non-traditional substances not found in Kampo, provide an EMPTY array for kampoEntries.
 - 3 Western herbs (European/American herbs like Echinacea, Valerian, Chamomile, St. John's Wort)
 - 5-7 supplements (modern supplements: vitamins, minerals, probiotics, amino acids, etc.)
 
@@ -190,7 +190,37 @@ Output: Valid JSON only, no markdown.`;
             }
         });
 
-        const result = JSON.parse(response.text.trim());
+        // Validate response before parsing
+        const responseText = response.text.trim();
+        if (!responseText) {
+            console.error('Empty response from Gemini API');
+            return res.status(500).json({ error: 'Empty response from AI service. Please try again.' });
+        }
+
+        // Log response for debugging (first 500 chars in development)
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Gemini response preview:', responseText.substring(0, 500));
+        }
+
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Response text (first 1000 chars):', responseText.substring(0, 1000));
+            return res.status(500).json({ error: 'Invalid response format from AI service. Please try again.' });
+        }
+
+        // Validate required fields in response
+        if (!result.integrativeViewpoint || !result.westernHerbEntries || !result.supplementEntries) {
+            console.error('Missing required fields in response:', {
+                hasIntegrativeViewpoint: !!result.integrativeViewpoint,
+                hasWesternHerbEntries: !!result.westernHerbEntries,
+                hasSupplementEntries: !!result.supplementEntries
+            });
+            return res.status(500).json({ error: 'Incomplete response from AI service. Please try again.' });
+        }
+
         return res.status(200).json(result);
 
     } catch (error) {

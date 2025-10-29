@@ -85,7 +85,7 @@ export const Compendium: React.FC = () => {
     try {
       const data = await getCompendiumInfo(searchQuery, language);
       setResult(data);
-      if (!data || (!data.kampoEntries.length && !data.westernHerbEntries.length && !data.supplementEntries.length)) {
+      if (!data || ((!data.kampoEntries || data.kampoEntries.length === 0) && !data.westernHerbEntries.length && !data.supplementEntries.length)) {
           setInfoMessage(translations.noResults);
       }
     } catch (err) {
@@ -192,7 +192,7 @@ export const Compendium: React.FC = () => {
                             </section>
                         )}
 
-                        {result.kampoEntries.length > 0 && (
+                        {result.kampoEntries && result.kampoEntries.length > 0 && (
                             <section>
                                 <h2 className="text-2xl font-bold text-slate-800 mb-4 border-b-2 border-slate-300 pb-2">{translations.kampoFormulaSectionTitle}</h2>
                                 {result.kampoEntries.map((entry, index) => (

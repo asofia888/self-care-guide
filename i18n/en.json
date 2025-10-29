@@ -55,19 +55,19 @@
     "description": "Learn how to use this app",
     "introduction": {
       "title": "Overview",
-      "p1": "This app integrates Eastern and Western medicine knowledge and uses AI to provide personalized health recommendations.",
-      "p2": "It offers two modes: Professional Mode for practitioners and General Mode for everyday wellness."
+      "p1": "This app is an 'Integrative Medicine Guide' that combines Eastern medicine (Kampo) and Western medicine knowledge. Using AI, it provides comprehensive information about Kampo formulas, Western herbs, and supplements from both medical perspectives.",
+      "p2": "Search by symptom or herb name to get detailed, evidence-based information from both Eastern and Western medicine viewpoints, including clinical applications, research evidence, and safety information."
     },
     "compendium": {
       "title": "Integrative Medicine Guide",
       "p1": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
-      "p2": "Search by symptom or herb name to get detailed information from both Eastern and Western medicine perspectives."
+      "p2": "Each entry displays: properties and channels, actions, indications, constituent herbs/active compounds, clinical notes, and contraindications/precautions."
     },
     "generalTips": {
       "title": "Important Notes",
       "disclaimer": {
         "title": "Disclaimer",
-        "p1": "This app is not a substitute for medical diagnosis or treatment. Please consult a healthcare professional for health concerns."
+        "p1": "This app is not a substitute for medical diagnosis or treatment. Please consult a healthcare professional for health concerns. The information provided is for educational purposes only."
       }
     }
   },

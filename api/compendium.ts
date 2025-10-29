@@ -203,9 +203,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Initialize Gemini AI
     const ai = new GoogleGenerativeAI(API_KEY);
-    const model = ai.getGenerativeModel({
-      model: GEMINI_MODEL,
-      systemInstruction: `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations.
+
+    // Get language name
+    const languageName = getLanguageName(language);
+
+    // Build language-specific system instruction
+    const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
 
 QUERY TYPE DETECTION (Critical):
 1. If the query is for a SPECIFIC SUBSTANCE (herb, supplement, Kampo formula, botanical name like "Tongkat Ali", "Ginseng", "Turmeric", "Echinacea", etc.):
@@ -230,19 +233,23 @@ The integrativeViewpoint field MUST be detailed and comprehensive within the spe
 Do NOT write shorter than the minimum. Provide sufficient detail about how Eastern and Western approaches complement each other.
 
 CRITICAL - LANGUAGE REQUIREMENT:
-ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in English. Do not mix languages. Every single word must be in English.
-- Use 'Western Herb', 'Kampo Formula', 'Supplement' for categories
+ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language.
+${language === 'ja' ? "- Use '西洋ハーブ' for Western Herb, '漢方処方' for Kampo Formula, 'サプリメント' for Supplement" : "- Use 'Western Herb', 'Kampo Formula', 'Supplement' for categories"}
 
 CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
-1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements
-2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum)
-3. contraindications: Safety information, warnings, and precautions (even if minimal, state "Generally safe when used as directed")
+1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements (in ${languageName})
+2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum, in ${languageName})
+3. contraindications: Safety information, warnings, and precautions (in ${languageName}, state "Generally safe when used as directed" equivalent in target language)
 
 These fields are MANDATORY. Never omit them.
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 
-Output: Valid JSON only, no markdown.`,
+Output: Valid JSON only, no markdown.`;
+
+    const model = ai.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction,
     });
 
     const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;

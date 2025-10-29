@@ -309,11 +309,14 @@ Output: Valid JSON only, no markdown.`;
 
     // Validate required fields in response
     if (!result.integrativeViewpoint || !result.westernHerbEntries || !result.supplementEntries) {
-      console.error('Missing required fields in response:', {
+      console.error('❌ Missing required fields in response:', {
         hasIntegrativeViewpoint: !!result.integrativeViewpoint,
         hasWesternHerbEntries: !!result.westernHerbEntries,
         hasSupplementEntries: !!result.supplementEntries,
+        kampoEntries: result.kampoEntries ? `${result.kampoEntries.length} entries` : 'undefined',
       });
+      console.error('Response structure:', JSON.stringify(result, null, 2).substring(0, 1000));
+      console.error('Query was:', query, 'Language:', language);
       return res
         .status(500)
         .json({ error: 'Incomplete response from AI service. Please try again.' });
@@ -321,18 +324,22 @@ Output: Valid JSON only, no markdown.`;
 
     return res.status(200).json(result);
   } catch (error) {
-    console.error('Compendium API error:', error);
+    console.error('❌ Compendium API error encountered');
+    console.error('Query:', query);
+    console.error('Language:', language);
 
     // Log detailed error information
     if (error instanceof Error) {
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      console.error('Error stack:', error.stack?.substring(0, 500));
+    } else if (error && typeof error === 'object') {
+      console.error('Error object:', JSON.stringify(error, null, 2).substring(0, 500));
     } else {
-      console.error('Non-Error object:', JSON.stringify(error, null, 2));
+      console.error('Unknown error type:', error);
     }
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : String(error || 'Unknown error');
 
     // Handle specific API errors
     if (

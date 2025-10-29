@@ -64,7 +64,7 @@ The application supports **bilingual content** (日本語 and English) and inclu
 
 ## Features
 
-### 🔍 Compendium Search
+### 🔍 Integrative Medicine Guide
 
 - Search for specific herbs, supplements, or health conditions
 - Get detailed information about remedies:

@@ -8,7 +8,7 @@
     }
   },
   "nav": {
-    "compendium": "Compendium",
+    "compendium": "Integrative Medicine Guide",
     "manual": "Guide"
   },
   "loadingSpinner": {
@@ -22,7 +22,7 @@
     "dismissErrorLabel": "Dismiss error"
   },
   "compendium": {
-    "title": "Herbal Compendium",
+    "title": "Integrative Medicine Guide",
     "description": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
     "searchLabel": "Search",
     "searchPlaceholder": "Enter herb name, formula, or symptom",
@@ -59,7 +59,7 @@
       "p2": "It offers two modes: Professional Mode for practitioners and General Mode for everyday wellness."
     },
     "compendium": {
-      "title": "Herbal Compendium",
+      "title": "Integrative Medicine Guide",
       "p1": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
       "p2": "Search by symptom or herb name to get detailed information from both Eastern and Western medicine perspectives."
     },

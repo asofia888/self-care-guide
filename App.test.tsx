@@ -20,16 +20,10 @@ vi.mock('./components/InstructionManual', () => ({
   default: () => <div data-testid="instruction-manual">Instruction Manual</div>,
 }));
 
-vi.mock('./components/PrivacyPolicy', () => ({
-  default: () => <div data-testid="privacy-policy">Privacy Policy</div>,
-}));
-
-vi.mock('./components/TermsOfService', () => ({
-  default: () => <div data-testid="terms-of-service">Terms of Service</div>,
-}));
-
-vi.mock('./components/DisclaimerPage', () => ({
-  default: () => <div data-testid="disclaimer-page">Disclaimer Page</div>,
+vi.mock('./components/legal', () => ({
+  PrivacyPolicy: () => <div data-testid="privacy-policy">Privacy Policy</div>,
+  TermsOfService: () => <div data-testid="terms-of-service">Terms of Service</div>,
+  DisclaimerPage: () => <div data-testid="disclaimer-page">Disclaimer Page</div>,
 }));
 
 vi.mock('./components/LoadingSpinner', () => ({

@@ -1,12 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { IntegrativeMedicineIcon, SparklesIcon, PrinterIcon } from './Icons';
-import { getCompendiumInfo } from '../services/geminiService';
-import type { CompendiumEntry, CompendiumResult } from '../types';
+import type { CompendiumEntry } from '../types';
 import { t } from '../i18n';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAppContext } from '../contexts/AppContext';
 import { ErrorDisplay } from './ErrorDisplay';
-import { formatErrorMessage } from '../utils/errorHandler';
+import { useCompendiumSearch } from '../hooks/useCompendiumSearch';
 
 const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) => {
   const { language } = useAppContext();
@@ -76,48 +75,9 @@ EntryCard.displayName = 'EntryCard';
 
 export const Compendium: React.FC = () => {
   const { language } = useAppContext();
-  const [query, setQuery] = useState('');
-  const [result, setResult] = useState<CompendiumResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const { query, setQuery, result, isLoading, error, infoMessage, handleSearch, clearError, clearInfoMessage } =
+    useCompendiumSearch();
   const translations = t(language).compendium;
-
-  const handleSearch = useCallback(
-    async (searchQuery: string) => {
-      if (!searchQuery.trim()) return;
-
-      setIsLoading(true);
-      setError(null);
-      setInfoMessage(null);
-      setResult(null);
-
-      try {
-        const data = await getCompendiumInfo(searchQuery, language);
-        setResult(data);
-        if (
-          !data ||
-          ((!data.kampoEntries || data.kampoEntries.length === 0) &&
-            !data.westernHerbEntries.length &&
-            !data.supplementEntries.length)
-        ) {
-          setInfoMessage(translations.noResults);
-        }
-      } catch (err) {
-        console.error('Compendium search error:', err);
-
-        // Use centralized error formatting
-        const errorMessage = formatErrorMessage(err, language);
-
-        setError(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-      // FIX: Property 'error' does not exist on `translations` because it's scoped to `t(language).compendium`.
-      // The `language` dependency is sufficient for updating error messages from `t(language).error`.
-    },
-    [language, translations.noResults]
-  );
 
   const submitForm = (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,7 +128,7 @@ export const Compendium: React.FC = () => {
       <div aria-busy={isLoading} aria-live="polite">
         {isLoading && <LoadingSpinner />}
 
-        <ErrorDisplay message={error || ''} onClear={() => setError(null)} />
+        <ErrorDisplay message={error || ''} onClear={clearError} />
 
         {infoMessage && !isLoading && (
           <div className="mt-8 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg shadow-md text-center no-print">

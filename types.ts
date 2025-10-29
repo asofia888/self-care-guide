@@ -1,6 +1,7 @@
 export type Language = 'ja' | 'en';
 export type View = 'compendium' | 'manual' | 'privacy' | 'terms' | 'disclaimer';
 export type FontSize = 'standard' | 'large';
+export type LegalPageType = 'privacy' | 'terms' | 'disclaimer';
 
 // --- COMPENDIUM TYPES ---
 

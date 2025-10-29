@@ -7,9 +7,21 @@ import { t } from './i18n';
 
 // --- Lazy Load Pages ---
 const InstructionManual = lazy(() => import('./components/InstructionManual'));
-const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
-const TermsOfService = lazy(() => import('./components/TermsOfService'));
-const DisclaimerPage = lazy(() => import('./components/DisclaimerPage'));
+const PrivacyPolicy = lazy(() =>
+  import('./components/legal').then(m => ({
+    default: m.PrivacyPolicy,
+  }))
+);
+const TermsOfService = lazy(() =>
+  import('./components/legal').then(m => ({
+    default: m.TermsOfService,
+  }))
+);
+const DisclaimerPage = lazy(() =>
+  import('./components/legal').then(m => ({
+    default: m.DisclaimerPage,
+  }))
+);
 
 const App: React.FC = () => {
   const { language, activeView, handleNavigate, fontSize } = useAppContext();

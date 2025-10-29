@@ -41,7 +41,7 @@ describe('i18n Translation System', () => {
 
     const requiredFields = ['compendium', 'manual'];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
       expect(typeof en[field as keyof typeof en]).toBe('string');
@@ -71,10 +71,10 @@ describe('i18n Translation System', () => {
       'clearButton',
       'searching',
       'printButton',
-      'noResults'
+      'noResults',
     ];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
       expect(typeof en[field as keyof typeof en]).toBe('string');
@@ -88,7 +88,7 @@ describe('i18n Translation System', () => {
 
     const requiredFields = ['unexpected', 'apiError', 'retry'];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
       expect(typeof en[field as keyof typeof en]).toBe('string');
@@ -140,10 +140,10 @@ describe('i18n Translation System', () => {
       'age',
       'gender',
       'chiefComplaint',
-      'chiefComplaintRequiredError'
+      'chiefComplaintRequiredError',
     ];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
     });
@@ -158,10 +158,10 @@ describe('i18n Translation System', () => {
       'age',
       'gender',
       'concernsTitle',
-      'concernsRequiredError'
+      'concernsRequiredError',
     ];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
     });
@@ -177,12 +177,12 @@ describe('i18n Translation System', () => {
     expect(ja.length).toBeGreaterThan(0);
 
     // Each option should have value and label
-    en.forEach(option => {
+    en.forEach((option) => {
       expect(option.value).toBeDefined();
       expect(option.label).toBeDefined();
     });
 
-    ja.forEach(option => {
+    ja.forEach((option) => {
       expect(option.value).toBeDefined();
       expect(option.label).toBeDefined();
     });
@@ -210,7 +210,7 @@ describe('i18n Translation System', () => {
 
     const requiredFields = ['privacy', 'terms', 'disclaimer'];
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       expect(en[field as keyof typeof en]).toBeDefined();
       expect(ja[field as keyof typeof ja]).toBeDefined();
     });
@@ -323,9 +323,9 @@ describe('i18n Translation System', () => {
     expect(enPlaceholders.length).toBe(jaPlaceholders.length);
 
     // Each placeholder should exist in both languages
-    enPlaceholders.forEach(placeholder => {
+    enPlaceholders.forEach((placeholder) => {
       const key = placeholder.split(':')[0];
-      const jaEquivalent = jaPlaceholders.find(jp => jp.startsWith(key));
+      const jaEquivalent = jaPlaceholders.find((jp) => jp.startsWith(key));
       expect(jaEquivalent, `Missing placeholder in Japanese for ${key}`).toBeDefined();
     });
   });
@@ -355,13 +355,13 @@ describe('i18n Translation System', () => {
     const ja = t('ja').userInput;
 
     // Gender values should match
-    const enGenderValues = en.genderOptions.map(o => o.value).sort();
-    const jaGenderValues = ja.genderOptions.map(o => o.value).sort();
+    const enGenderValues = en.genderOptions.map((o) => o.value).sort();
+    const jaGenderValues = ja.genderOptions.map((o) => o.value).sort();
     expect(enGenderValues).toEqual(jaGenderValues);
 
     // Concern values should match
-    const enConcernValues = en.general.concernOptions.map(o => o.value).sort();
-    const jaConcernValues = ja.general.concernOptions.map(o => o.value).sort();
+    const enConcernValues = en.general.concernOptions.map((o) => o.value).sort();
+    const jaConcernValues = ja.general.concernOptions.map((o) => o.value).sort();
     expect(enConcernValues).toEqual(jaConcernValues);
   });
 });

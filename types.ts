@@ -5,21 +5,21 @@ export type FontSize = 'standard' | 'large';
 // --- COMPENDIUM TYPES ---
 
 export interface CompendiumEntry {
-    name: string;
-    category: 'Western Herb' | 'Kampo Formula' | 'Supplement';
-    summary: string;
-    properties?: string;
-    channels?: string;
-    actions: string[];
-    indications: string[];
-    constituentHerbs?: string;
-    clinicalNotes?: string;
-    contraindications?: string;
+  name: string;
+  category: 'Western Herb' | 'Kampo Formula' | 'Supplement';
+  summary: string;
+  properties?: string;
+  channels?: string;
+  actions: string[];
+  indications: string[];
+  constituentHerbs?: string;
+  clinicalNotes?: string;
+  contraindications?: string;
 }
 
 export interface CompendiumResult {
-    integrativeViewpoint: string;
-    kampoEntries?: CompendiumEntry[];
-    westernHerbEntries: CompendiumEntry[];
-    supplementEntries: CompendiumEntry[];
+  integrativeViewpoint: string;
+  kampoEntries?: CompendiumEntry[];
+  westernHerbEntries: CompendiumEntry[];
+  supplementEntries: CompendiumEntry[];
 }

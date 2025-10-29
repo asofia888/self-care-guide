@@ -13,11 +13,7 @@ const customRender = (
   const { initialLanguage = 'en', ...renderOptions } = options;
 
   function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <AppProvider>
-        {children}
-      </AppProvider>
-    );
+    return <AppProvider>{children}</AppProvider>;
   }
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
@@ -25,86 +21,86 @@ const customRender = (
 
 // Mock data for testing
 export const mockCompendiumResult = {
-  integrativeViewpoint: "Test integrative viewpoint for ginger analysis.",
+  integrativeViewpoint: 'Test integrative viewpoint for ginger analysis.',
   kampoEntries: [
     {
-      name: "Shokenchuto",
-      category: "Kampo Formula" as const,
-      summary: "A warming formula for digestive support.",
-      properties: "Warm, pungent",
-      actions: ["Warm the middle jiao", "Dispel cold"],
-      indications: ["Cold limbs", "Digestive weakness"],
-      constituentHerbs: "Ginger, Cinnamon, Jujube",
-      clinicalNotes: "Use with caution in heat conditions."
-    }
+      name: 'Shokenchuto',
+      category: 'Kampo Formula' as const,
+      summary: 'A warming formula for digestive support.',
+      properties: 'Warm, pungent',
+      actions: ['Warm the middle jiao', 'Dispel cold'],
+      indications: ['Cold limbs', 'Digestive weakness'],
+      constituentHerbs: 'Ginger, Cinnamon, Jujube',
+      clinicalNotes: 'Use with caution in heat conditions.',
+    },
   ],
   herbEntries: [
     {
-      name: "Ginger",
-      category: "Herb" as const,
-      summary: "Warming herb for digestive health.",
-      properties: "Hot, pungent",
-      actions: ["Warm the stomach", "Stop nausea"],
-      indications: ["Nausea", "Cold stomach"],
-      clinicalNotes: "Fresh vs dried ginger have different properties."
-    }
+      name: 'Ginger',
+      category: 'Herb' as const,
+      summary: 'Warming herb for digestive health.',
+      properties: 'Hot, pungent',
+      actions: ['Warm the stomach', 'Stop nausea'],
+      indications: ['Nausea', 'Cold stomach'],
+      clinicalNotes: 'Fresh vs dried ginger have different properties.',
+    },
   ],
   supplementEntries: [
     {
-      name: "Ginger Extract",
-      category: "Supplement" as const,
-      summary: "Concentrated ginger for convenient dosing.",
-      actions: ["Support digestive health"],
-      indications: ["Occasional nausea", "Motion sickness"]
-    }
-  ]
+      name: 'Ginger Extract',
+      category: 'Supplement' as const,
+      summary: 'Concentrated ginger for convenient dosing.',
+      actions: ['Support digestive health'],
+      indications: ['Occasional nausea', 'Motion sickness'],
+    },
+  ],
 };
 
 export const mockAnalysisResult = {
-  analysisMode: "general" as const,
+  analysisMode: 'general' as const,
   wellnessProfile: {
-    title: "Digestive Wellness Profile",
-    summary: "You appear to have digestive sensitivity with occasional discomfort."
+    title: 'Digestive Wellness Profile',
+    summary: 'You appear to have digestive sensitivity with occasional discomfort.',
   },
   herbSuggestions: [
     {
-      name: "Chamomile",
-      reason: "Gentle digestive support",
-      usage: "Tea, 1-2 cups daily"
-    }
+      name: 'Chamomile',
+      reason: 'Gentle digestive support',
+      usage: 'Tea, 1-2 cups daily',
+    },
   ],
   supplementSuggestions: [
     {
-      name: "Probiotics",
-      reason: "Support digestive balance",
-      usage: "Daily with food"
-    }
+      name: 'Probiotics',
+      reason: 'Support digestive balance',
+      usage: 'Daily with food',
+    },
   ],
   folkRemedies: [
     {
-      name: "Warm Water",
-      description: "Drink warm water before meals"
-    }
+      name: 'Warm Water',
+      description: 'Drink warm water before meals',
+    },
   ],
   lifestyleAdvice: {
-    diet: ["Eat smaller, frequent meals"],
-    sleep: ["Maintain regular sleep schedule"],
-    exercise: ["Gentle walking after meals"]
+    diet: ['Eat smaller, frequent meals'],
+    sleep: ['Maintain regular sleep schedule'],
+    exercise: ['Gentle walking after meals'],
   },
-  precautions: ["Consult healthcare provider if symptoms persist"]
+  precautions: ['Consult healthcare provider if symptoms persist'],
 };
 
 export const mockUserProfile = {
   age: 30,
-  gender: "female" as const,
-  symptoms: "digestive discomfort",
-  currentMedications: "none",
-  allergies: "none",
-  lifestyle: "sedentary",
-  stressLevel: "moderate" as const,
-  sleepQuality: "fair" as const,
-  exerciseFrequency: "rarely" as const,
-  dietaryPreferences: "omnivore" as const
+  gender: 'female' as const,
+  symptoms: 'digestive discomfort',
+  currentMedications: 'none',
+  allergies: 'none',
+  lifestyle: 'sedentary',
+  stressLevel: 'moderate' as const,
+  sleepQuality: 'fair' as const,
+  exerciseFrequency: 'rarely' as const,
+  dietaryPreferences: 'omnivore' as const,
 };
 
 // Mock File for testing file uploads

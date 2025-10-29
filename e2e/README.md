@@ -5,6 +5,7 @@ This directory contains end-to-end tests for the Self-Care Guide for Wellness ap
 ## Test Coverage
 
 ### Compendium Search (`compendium.spec.ts`)
+
 - Display of search interface
 - Search functionality with API integration
 - Loading states
@@ -13,6 +14,7 @@ This directory contains end-to-end tests for the Self-Care Guide for Wellness ap
 - Text selection in results
 
 ### Language Toggle (`language-toggle.spec.ts`)
+
 - Language switcher display and functionality
 - Default language (Japanese)
 - Switching between Japanese and English
@@ -20,6 +22,7 @@ This directory contains end-to-end tests for the Self-Care Guide for Wellness ap
 - Language persistence across navigation
 
 ### Font Size Toggle (`font-size-toggle.spec.ts`)
+
 - Font size switcher display
 - Default font size (standard/16px)
 - Switching to large font (18px)
@@ -27,6 +30,7 @@ This directory contains end-to-end tests for the Self-Care Guide for Wellness ap
 - Visual size changes throughout the page
 
 ### Navigation (`navigation.spec.ts`)
+
 - Display of all navigation options
 - Default page (Compendium)
 - Navigation to all pages (Manual, Privacy, Terms, Disclaimer)
@@ -38,26 +42,31 @@ This directory contains end-to-end tests for the Self-Care Guide for Wellness ap
 ## Running Tests
 
 ### Run all E2E tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Run tests in UI mode (interactive)
+
 ```bash
 npm run test:e2e:ui
 ```
 
 ### Run tests in headed mode (see browser)
+
 ```bash
 npm run test:e2e:headed
 ```
 
 ### Debug tests
+
 ```bash
 npm run test:e2e:debug
 ```
 
 ### View test report
+
 ```bash
 npm run test:e2e:report
 ```
@@ -81,6 +90,7 @@ Tests are configured in `playwright.config.ts` with the following settings:
 5. Write tests using `test()` and assertions with `expect()`
 
 Example:
+
 ```typescript
 import { test, expect } from '@playwright/test';
 
@@ -124,14 +134,17 @@ Tests can be run in CI environments:
 ## Troubleshooting
 
 ### Tests timing out
+
 - Increase timeout in `playwright.config.ts`
 - Check if dev server is starting properly
 - Verify API endpoints are accessible
 
 ### Flaky tests
+
 - Add explicit waits for elements
 - Use `waitForSelector` or `waitForLoadState`
 - Check for race conditions
 
 ### Browser not found
+
 - Run `npx playwright install` to install browsers

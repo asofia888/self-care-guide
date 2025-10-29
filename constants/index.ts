@@ -24,16 +24,19 @@ export const RATE_LIMIT = {
 
 // Form CSS Classes
 export const FORM_STYLES = {
-  input: "w-full p-2 bg-amber-50/40 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors duration-200 placeholder:text-slate-400 text-sm",
-  label: "block text-sm font-semibold text-teal-800 mb-1",
-  textarea: "w-full p-2 bg-amber-50/40 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors duration-200 placeholder:text-slate-400 text-sm h-24",
-  legend: "text-lg font-bold text-teal-900 mb-3",
+  input:
+    'w-full p-2 bg-amber-50/40 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors duration-200 placeholder:text-slate-400 text-sm',
+  label: 'block text-sm font-semibold text-teal-800 mb-1',
+  textarea:
+    'w-full p-2 bg-amber-50/40 border-2 border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors duration-200 placeholder:text-slate-400 text-sm h-24',
+  legend: 'text-lg font-bold text-teal-900 mb-3',
   button: {
-    primary: "w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3 bg-amber-500 text-teal-900 font-bold rounded-full shadow-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-300 ease-in-out",
-    secondary: "text-left p-2 rounded-lg border-2 transition-all text-sm",
-    selected: "bg-teal-700 text-white border-teal-700",
-    unselected: "bg-white hover:bg-amber-50 border-amber-300",
-    disabled: "bg-slate-400 text-white cursor-not-allowed transform-none",
+    primary:
+      'w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3 bg-amber-500 text-teal-900 font-bold rounded-full shadow-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-300 ease-in-out',
+    secondary: 'text-left p-2 rounded-lg border-2 transition-all text-sm',
+    selected: 'bg-teal-700 text-white border-teal-700',
+    unselected: 'bg-white hover:bg-amber-50 border-amber-300',
+    disabled: 'bg-slate-400 text-white cursor-not-allowed transform-none',
   },
 } as const;
 

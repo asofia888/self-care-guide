@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { AppProvider, useAppContext } from './AppContext';
@@ -109,10 +110,10 @@ describe('AppContext', () => {
         'manual',
         'privacy',
         'terms',
-        'disclaimer'
+        'disclaimer',
       ];
 
-      views.forEach(view => {
+      views.forEach((view) => {
         act(() => {
           result.current.handleNavigate(view);
         });
@@ -120,7 +121,6 @@ describe('AppContext', () => {
       });
     });
   });
-
 
   describe('Compendium Integration', () => {
     it('navigates to compendium when viewing an item', () => {

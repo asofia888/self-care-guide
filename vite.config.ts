@@ -7,9 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
-    }
+    },
   },
   css: {
     postcss: './postcss.config.js',
-  }
+  },
 });

@@ -1,5 +1,3 @@
-
-
 // FIX: Import vitest matchers from jest-dom to provide types for expect extensions.
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -73,7 +71,7 @@ describe('Header component', () => {
     expect(mockHandleNavigate).toHaveBeenCalledWith('manual');
     expect(mockHandleNavigate).toHaveBeenCalledTimes(1);
   });
-  
+
   it('calls handleLanguageChange when a language button is clicked', () => {
     render(<Header />);
     const jaButtons = screen.getAllByRole('button', { name: 'JA' });

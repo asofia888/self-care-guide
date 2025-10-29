@@ -11,7 +11,9 @@ test.describe('Navigation', () => {
     await expect(page.getByRole('button', { name: /使い方|Guide/i })).toBeVisible();
 
     // Check footer links
-    await expect(page.getByRole('button', { name: /プライバシーポリシー|Privacy Policy/i })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /プライバシーポリシー|Privacy Policy/i })
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: /利用規約|Terms of Service/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /免責事項|Disclaimer/i })).toBeVisible();
   });
@@ -41,14 +43,18 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to privacy policy page', async ({ page }) => {
-    const privacyButton = page.getByRole('button', { name: /プライバシーポリシー|Privacy Policy/i });
+    const privacyButton = page.getByRole('button', {
+      name: /プライバシーポリシー|Privacy Policy/i,
+    });
 
     // Click privacy button
     await privacyButton.click();
     await page.waitForTimeout(500);
 
     // Check that privacy policy content is visible
-    await expect(page.getByRole('heading', { name: /プライバシーポリシー|Privacy Policy/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /プライバシーポリシー|Privacy Policy/i })
+    ).toBeVisible();
     await expect(page.getByText(/個人情報|personal information/i)).toBeVisible();
   });
 

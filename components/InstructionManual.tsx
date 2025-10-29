@@ -20,7 +20,7 @@ const Section: React.FC<{
     </div>
   </section>
 ));
-Section.displayName = "Section";
+Section.displayName = 'Section';
 
 const InstructionManual: React.FC = () => {
   const { language } = useAppContext();
@@ -37,21 +37,35 @@ const InstructionManual: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        <Section icon={<SparklesIcon className="w-6 h-6 text-sky-600"/>} title={translations.introduction.title}>
-            <p>{translations.introduction.p1}</p>
-            <p>{translations.introduction.p2}</p>
+        <Section
+          icon={<SparklesIcon className="w-6 h-6 text-sky-600" />}
+          title={translations.introduction.title}
+        >
+          <p>{translations.introduction.p1}</p>
+          <p>{translations.introduction.p2}</p>
         </Section>
 
-        <Section icon={<BookOpenIcon className="w-6 h-6 text-sky-600"/>} title={translations.compendium.title}>
-            <p>{translations.compendium.p1}</p>
-            <p>{translations.compendium.p2}</p>
+        <Section
+          icon={<BookOpenIcon className="w-6 h-6 text-sky-600" />}
+          title={translations.compendium.title}
+        >
+          <p>{translations.compendium.p1}</p>
+          <p>{translations.compendium.p2}</p>
         </Section>
-        
-        <Section icon={<AlertTriangleIcon className="w-6 h-6 text-sky-600"/>} title={translations.generalTips.title}>
-             <div className="mt-2">
-                <h4 className="font-bold flex items-center gap-2"><AlertTriangleIcon className="w-5 h-5"/>{translations.generalTips.disclaimer.title}</h4>
-                <p className="font-semibold text-red-700/80">{translations.generalTips.disclaimer.p1}</p>
-            </div>
+
+        <Section
+          icon={<AlertTriangleIcon className="w-6 h-6 text-sky-600" />}
+          title={translations.generalTips.title}
+        >
+          <div className="mt-2">
+            <h4 className="font-bold flex items-center gap-2">
+              <AlertTriangleIcon className="w-5 h-5" />
+              {translations.generalTips.disclaimer.title}
+            </h4>
+            <p className="font-semibold text-red-700/80">
+              {translations.generalTips.disclaimer.p1}
+            </p>
+          </div>
         </Section>
       </div>
     </div>

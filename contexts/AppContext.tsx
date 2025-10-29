@@ -1,9 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
-import type {
-    Language,
-    View,
-    FontSize
-} from '../types';
+import type { Language, View, FontSize } from '../types';
 
 interface AppState {
   language: Language;
@@ -46,20 +42,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     console.log(`Navigate to Compendium to search for: ${query}`);
   }, []);
 
-
-  const value: AppContextType = useMemo(() => ({
-    language,
-    activeView,
-    fontSize,
-    handleLanguageChange,
-    handleNavigate,
-    handleFontSizeChange,
-    viewCompendiumItem,
-  }), [
-    language, activeView, fontSize,
-    handleLanguageChange, handleNavigate, handleFontSizeChange,
-    viewCompendiumItem
-  ]);
+  const value: AppContextType = useMemo(
+    () => ({
+      language,
+      activeView,
+      fontSize,
+      handleLanguageChange,
+      handleNavigate,
+      handleFontSizeChange,
+      viewCompendiumItem,
+    }),
+    [
+      language,
+      activeView,
+      fontSize,
+      handleLanguageChange,
+      handleNavigate,
+      handleFontSizeChange,
+      viewCompendiumItem,
+    ]
+  );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

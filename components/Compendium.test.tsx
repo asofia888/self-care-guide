@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Compendium } from './Compendium';
-import { render, mockFetchSuccess, mockFetchError, mockCompendiumResult } from '../__tests__/test-utils';
+import {
+  render,
+  mockFetchSuccess,
+  mockFetchError,
+  mockCompendiumResult,
+} from '../__tests__/test-utils';
 
 // Mock the geminiService
 vi.mock('../services/geminiService', () => ({
@@ -25,7 +30,7 @@ describe('Compendium Component', () => {
 
   it('renders the compendium interface correctly', () => {
     render(<Compendium />);
-    
+
     // Check if main elements are present
     expect(screen.getByRole('heading', { name: /compendium/i })).toBeInTheDocument();
     expect(screen.getByRole('searchbox')).toBeInTheDocument();
@@ -35,7 +40,7 @@ describe('Compendium Component', () => {
 
   it('handles search input correctly', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -45,14 +50,14 @@ describe('Compendium Component', () => {
     // Type in search input
     await user.type(searchInput, 'ginger');
     expect(searchInput).toHaveValue('ginger');
-    
+
     // Search button should be enabled
     expect(searchButton).toBeEnabled();
   });
 
   it('performs search and displays results', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -74,7 +79,7 @@ describe('Compendium Component', () => {
 
   it('shows loading state during search', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -88,9 +93,9 @@ describe('Compendium Component', () => {
 
   it('handles search errors gracefully', async () => {
     mockFetchError(500, 'Server Error');
-    
+
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -101,11 +106,11 @@ describe('Compendium Component', () => {
     await waitFor(() => {
       expect(screen.getByText(/error/i)).toBeInTheDocument();
     });
-    
+
     // Check that error can be cleared
     const clearButton = screen.getByRole('button', { name: /clear/i });
     await user.click(clearButton);
-    
+
     await waitFor(() => {
       expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
     });
@@ -113,14 +118,14 @@ describe('Compendium Component', () => {
 
   it('shows no results message when search returns empty', async () => {
     mockFetchSuccess({
-      integrativeViewpoint: "",
+      integrativeViewpoint: '',
       kampoEntries: [],
       herbEntries: [],
-      supplementEntries: []
+      supplementEntries: [],
     });
-    
+
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -134,9 +139,9 @@ describe('Compendium Component', () => {
 
   it('handles form submission via Enter key', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
-    
+
     await user.type(searchInput, 'ginger');
     await user.keyboard('{Enter}');
 
@@ -148,7 +153,7 @@ describe('Compendium Component', () => {
 
   it('shows print button when results are available', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -162,9 +167,9 @@ describe('Compendium Component', () => {
 
   it('calls window.print when print button is clicked', async () => {
     const printSpy = vi.spyOn(window, 'print').mockImplementation(() => {});
-    
+
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 
@@ -184,24 +189,24 @@ describe('Compendium Component', () => {
 
   it('prevents search with empty query', async () => {
     render(<Compendium />);
-    
+
     const searchButton = screen.getByRole('button', { name: /search/i });
-    
+
     // Button should be disabled with empty input
     expect(searchButton).toBeDisabled();
-    
+
     // Type and then clear input
     const searchInput = screen.getByRole('searchbox');
     await user.type(searchInput, 'test');
     await user.clear(searchInput);
-    
+
     // Button should be disabled again
     expect(searchButton).toBeDisabled();
   });
 
   it('displays different result sections correctly', async () => {
     render(<Compendium />);
-    
+
     const searchInput = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /search/i });
 

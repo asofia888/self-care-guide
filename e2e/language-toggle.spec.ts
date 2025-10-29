@@ -42,7 +42,9 @@ test.describe('Language Toggle', () => {
     await expect(page.getByText('Your Wellness Guide')).toBeVisible();
   });
 
-  test('should switch to Japanese when JA button is clicked after being in English', async ({ page }) => {
+  test('should switch to Japanese when JA button is clicked after being in English', async ({
+    page,
+  }) => {
     const enButton = page.getByRole('button', { name: 'EN' });
     const jaButton = page.getByRole('button', { name: 'JA' });
 

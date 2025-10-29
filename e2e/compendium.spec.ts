@@ -7,7 +7,9 @@ test.describe('Compendium Search', () => {
 
   test('should display compendium search interface', async ({ page }) => {
     // Check that the main heading is visible
-    await expect(page.getByRole('heading', { name: /Self-Care Guide for Wellness/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Self-Care Guide for Wellness/i })
+    ).toBeVisible();
 
     // Check that the compendium title is visible
     await expect(page.getByRole('heading', { name: /薬草事典|Herbal Compendium/i })).toBeVisible();
@@ -29,17 +31,28 @@ test.describe('Compendium Search', () => {
     await searchButton.click();
 
     // Wait for loading to complete (loading spinner should appear and disappear)
-    await expect(page.getByText(/検索中|Searching/i)).toBeVisible({ timeout: 2000 }).catch(() => {});
+    await expect(page.getByText(/検索中|Searching/i))
+      .toBeVisible({ timeout: 2000 })
+      .catch(() => {});
 
     // Wait for results to appear (with a reasonable timeout for API call)
     // Look for either results or "no results" message
-    await page.waitForSelector('text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i', {
-      timeout: 30000
-    });
+    await page.waitForSelector(
+      'text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i',
+      {
+        timeout: 30000,
+      }
+    );
 
     // Check if we got results or no results message
-    const hasResults = await page.getByText(/統合的な視点|Integrative Viewpoint/i).isVisible().catch(() => false);
-    const noResults = await page.getByText(/検索結果がありません|No results/i).isVisible().catch(() => false);
+    const hasResults = await page
+      .getByText(/統合的な視点|Integrative Viewpoint/i)
+      .isVisible()
+      .catch(() => false);
+    const noResults = await page
+      .getByText(/検索結果がありません|No results/i)
+      .isVisible()
+      .catch(() => false);
 
     // Either results or no results message should be visible
     expect(hasResults || noResults).toBeTruthy();
@@ -88,12 +101,18 @@ test.describe('Compendium Search', () => {
     await searchButton.click();
 
     // Wait for results
-    await page.waitForSelector('text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i', {
-      timeout: 30000
-    });
+    await page.waitForSelector(
+      'text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i',
+      {
+        timeout: 30000,
+      }
+    );
 
     // If we have results, print button should be visible
-    const hasResults = await page.getByText(/統合的な視点|Integrative Viewpoint/i).isVisible().catch(() => false);
+    const hasResults = await page
+      .getByText(/統合的な視点|Integrative Viewpoint/i)
+      .isVisible()
+      .catch(() => false);
 
     if (hasResults) {
       const printButton = page.getByRole('button', { name: /印刷|Print/i });
@@ -109,9 +128,12 @@ test.describe('Compendium Search', () => {
     await searchButton.click();
 
     // Wait for results
-    await page.waitForSelector('text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i', {
-      timeout: 30000
-    });
+    await page.waitForSelector(
+      'text=/統合的な視点|Integrative Viewpoint|検索結果がありません|No results/i',
+      {
+        timeout: 30000,
+      }
+    );
 
     // Check if results area exists
     const resultsArea = page.locator('.printable-area').first();
@@ -119,9 +141,7 @@ test.describe('Compendium Search', () => {
 
     if (hasResults) {
       // Check that user-select is set to text (CSS property)
-      const userSelect = await resultsArea.evaluate((el) =>
-        window.getComputedStyle(el).userSelect
-      );
+      const userSelect = await resultsArea.evaluate((el) => window.getComputedStyle(el).userSelect);
 
       // Should be 'text' or 'auto' (not 'none')
       expect(userSelect).not.toBe('none');

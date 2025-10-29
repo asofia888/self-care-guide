@@ -1,29 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    
+
     <!-- Favicon and Touch Icons -->
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    
+
     <!-- Basic Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Self-Care Guide for Wellness | AI-Powered Integrative Medicine & Kampo Consultation</title>
-    <meta name="description" content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches. Professional and general consultation modes available." />
-    <meta name="keywords" content="kampo medicine, tcm, traditional chinese medicine, integrative medicine, wellness, self-care, ai consultation, herbal medicine, holistic health, personalized wellness" />
+    <title>
+      Self-Care Guide for Wellness | AI-Powered Integrative Medicine & Kampo Consultation
+    </title>
+    <meta
+      name="description"
+      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches. Professional and general consultation modes available."
+    />
+    <meta
+      name="keywords"
+      content="kampo medicine, tcm, traditional chinese medicine, integrative medicine, wellness, self-care, ai consultation, herbal medicine, holistic health, personalized wellness"
+    />
     <meta name="author" content="Self-Care Guide for Wellness" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://self-care-guide.vercel.app/" />
-    
+
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Self-Care Guide for Wellness" />
-    <meta property="og:title" content="Self-Care Guide for Wellness | AI-Powered Integrative Medicine" />
-    <meta property="og:description" content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches." />
+    <meta
+      property="og:title"
+      content="Self-Care Guide for Wellness | AI-Powered Integrative Medicine"
+    />
+    <meta
+      property="og:description"
+      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches."
+    />
     <meta property="og:image" content="https://self-care-guide.vercel.app/logo.png" />
     <meta property="og:image:alt" content="Self-Care Guide for Wellness Logo" />
     <meta property="og:image:width" content="1200" />
@@ -31,14 +45,20 @@
     <meta property="og:url" content="https://self-care-guide.vercel.app/" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="ja_JP" />
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Self-Care Guide for Wellness | AI-Powered Integrative Medicine" />
-    <meta name="twitter:description" content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches." />
+    <meta
+      name="twitter:title"
+      content="Self-Care Guide for Wellness | AI-Powered Integrative Medicine"
+    />
+    <meta
+      name="twitter:description"
+      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches."
+    />
     <meta name="twitter:image" content="https://self-care-guide.vercel.app/logo.png" />
     <meta name="twitter:image:alt" content="Self-Care Guide for Wellness Logo" />
-    
+
     <!-- Additional SEO Meta Tags -->
     <meta name="theme-color" content="#0ea5e9" />
     <meta name="application-name" content="Self-Care Guide for Wellness" />
@@ -47,94 +67,101 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="format-detection" content="telephone=no" />
-    
+
     <!-- Language and Region -->
     <meta http-equiv="content-language" content="en,ja" />
     <meta name="geo.region" content="JP" />
     <meta name="geo.placename" content="Japan" />
-    
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Self-Care Guide for Wellness",
-      "alternateName": "Self-Care Guide",
-      "description": "AI-powered integrative medicine consultation platform combining traditional Kampo medicine, TCM, and modern wellness approaches for personalized health recommendations.",
-      "url": "https://self-care-guide.vercel.app/",
-      "logo": "https://self-care-guide.vercel.app/logo.png",
-      "image": "https://self-care-guide.vercel.app/logo.png",
-      "applicationCategory": "HealthApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "AI-powered health analysis",
-        "Traditional Kampo medicine recommendations", 
-        "TCM integration",
-        "Personalized wellness plans",
-        "Professional and general consultation modes",
-        "Multi-language support (English/Japanese)",
-        "Image-based diagnosis support"
-      ],
-      "inLanguage": ["en", "ja"],
-      "audience": {
-        "@type": "Audience",
-        "audienceType": "Healthcare seekers, Wellness enthusiasts, Traditional medicine practitioners"
-      },
-      "publisher": {
-        "@type": "Organization",
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
         "name": "Self-Care Guide for Wellness",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://self-care-guide.vercel.app/logo.png"
-        }
-      },
-      "datePublished": "2025-01-01",
-      "dateModified": "2025-09-01"
-    }
+        "alternateName": "Self-Care Guide",
+        "description": "AI-powered integrative medicine consultation platform combining traditional Kampo medicine, TCM, and modern wellness approaches for personalized health recommendations.",
+        "url": "https://self-care-guide.vercel.app/",
+        "logo": "https://self-care-guide.vercel.app/logo.png",
+        "image": "https://self-care-guide.vercel.app/logo.png",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "AI-powered health analysis",
+          "Traditional Kampo medicine recommendations",
+          "TCM integration",
+          "Personalized wellness plans",
+          "Professional and general consultation modes",
+          "Multi-language support (English/Japanese)",
+          "Image-based diagnosis support"
+        ],
+        "inLanguage": ["en", "ja"],
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Healthcare seekers, Wellness enthusiasts, Traditional medicine practitioners"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Self-Care Guide for Wellness",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://self-care-guide.vercel.app/logo.png"
+          }
+        },
+        "datePublished": "2025-01-01",
+        "dateModified": "2025-09-01"
+      }
     </script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
         font-family: 'Sarabun', sans-serif;
         background-color: #f8fafc; /* Equivalent to slate-50 */
       }
-      
+
       /* Mobile-first responsive improvements */
       @media (max-width: 640px) {
         /* Larger tap targets for mobile */
-        button, input[type="submit"], .button {
+        button,
+        input[type='submit'],
+        .button {
           min-height: 44px;
           min-width: 44px;
           padding: 12px 16px;
         }
-        
+
         /* Better text readability on mobile */
         body {
           font-size: 16px;
           line-height: 1.6;
         }
-        
+
         /* Improved spacing for mobile */
         .container {
           padding-left: 16px;
           padding-right: 16px;
         }
-        
+
         /* Better mobile form styling */
-        input[type="search"], input[type="text"], textarea {
+        input[type='search'],
+        input[type='text'],
+        textarea {
           font-size: 16px; /* Prevents zoom on iOS */
           padding: 12px 16px;
           border-radius: 8px;
         }
-        
+
         /* Mobile-optimized cards */
         .card {
           margin-bottom: 16px;
@@ -142,34 +169,39 @@
           border-radius: 12px;
         }
       }
-      
+
       /* Touch-friendly interactions */
-      button, .button, [role="button"] {
+      button,
+      .button,
+      [role='button'] {
         touch-action: manipulation;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
       }
-      
+
       /* iOS specific fixes */
-      input, textarea, select {
+      input,
+      textarea,
+      select {
         -webkit-appearance: none;
         -webkit-border-radius: 0;
         border-radius: inherit;
       }
-      
+
       /* Fix for iOS double-tap zoom */
       * {
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         -webkit-user-select: none;
         -webkit-touch-callout: none;
       }
-      
-      input, textarea {
+
+      input,
+      textarea {
         -webkit-user-select: text;
         user-select: text;
       }
-      
+
       .sr-only {
         position: absolute;
         width: 1px;
@@ -195,46 +227,48 @@
           padding-bottom: 0 !important;
         }
         .printable-area {
-           box-shadow: none !important;
-           border: 1px solid #ccc !important;
-           padding: 0 !important;
-           margin-top: 0 !important;
+          box-shadow: none !important;
+          border: 1px solid #ccc !important;
+          padding: 0 !important;
+          margin-top: 0 !important;
         }
         .printable-area * {
-            color: black !important;
-            border-color: #ccc !important;
+          color: black !important;
+          border-color: #ccc !important;
         }
-        .printable-area .bg-gradient-to-br, 
+        .printable-area .bg-gradient-to-br,
         .printable-area .bg-white {
-            background: transparent !important;
+          background: transparent !important;
         }
         .printable-area .prose-invert {
-            color: #000 !important;
+          color: #000 !important;
         }
         .printable-area a {
-           text-decoration: none !important;
+          text-decoration: none !important;
         }
-        .printable-area .text-red-600, .printable-area .text-red-700, .printable-area .text-red-700\/80 {
-            color: #000 !important;
-            font-weight: bold;
+        .printable-area .text-red-600,
+        .printable-area .text-red-700,
+        .printable-area .text-red-700\/80 {
+          color: #000 !important;
+          font-weight: bold;
         }
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react": "https://esm.sh/react@^19.1.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "vitest": "https://aistudiocdn.com/vitest@^3.2.4",
-    "vitest/": "https://aistudiocdn.com/vitest@^3.2.4/",
-    "@testing-library/react": "https://aistudiocdn.com/@testing-library/react@^16.3.0",
-    "@testing-library/jest-dom/": "https://aistudiocdn.com/@testing-library/jest-dom@^6.8.0/"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+      {
+        "imports": {
+          "react/": "https://esm.sh/react@^19.1.0/",
+          "react": "https://esm.sh/react@^19.1.0",
+          "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+          "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+          "vitest": "https://aistudiocdn.com/vitest@^3.2.4",
+          "vitest/": "https://aistudiocdn.com/vitest@^3.2.4/",
+          "@testing-library/react": "https://aistudiocdn.com/@testing-library/react@^16.3.0",
+          "@testing-library/jest-dom/": "https://aistudiocdn.com/@testing-library/jest-dom@^6.8.0/"
+        }
+      }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

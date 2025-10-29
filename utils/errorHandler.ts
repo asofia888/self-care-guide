@@ -28,38 +28,58 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
     // Handle specific HTTP status codes with user-friendly messages
     switch (error.status) {
       case 400:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? '無効なリクエストです' : 'Invalid request');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja' ? '無効なリクエストです' : 'Invalid request'
+        );
       case 401:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? '認証が必要です' : 'Authentication required');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja' ? '認証が必要です' : 'Authentication required'
+        );
       case 403:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? 'アクセスが拒否されました' : 'Access denied');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja' ? 'アクセスが拒否されました' : 'Access denied'
+        );
       case 404:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? 'リソースが見つかりません' : 'Resource not found');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja' ? 'リソースが見つかりません' : 'Resource not found'
+        );
       case 429:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? 'リクエストが多すぎます。しばらく待ってから再試行してください' : 'Too many requests. Please try again later');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja'
+            ? 'リクエストが多すぎます。しばらく待ってから再試行してください'
+            : 'Too many requests. Please try again later'
+        );
       case 500:
       case 502:
       case 503:
       case 504:
-        return translations.apiError.replace('{message}',
-          language === 'ja' ? 'サービスが一時的に利用できません。しばらく待ってから再試行してください' : 'Service temporarily unavailable. Please try again later');
+        return translations.apiError.replace(
+          '{message}',
+          language === 'ja'
+            ? 'サービスが一時的に利用できません。しばらく待ってから再試行してください'
+            : 'Service temporarily unavailable. Please try again later'
+        );
       default:
         // Use the error message if available
-        return translations.apiError.replace('{message}',
-          error.message || (language === 'ja' ? 'エラーが発生しました' : 'An error occurred'));
+        return translations.apiError.replace(
+          '{message}',
+          error.message || (language === 'ja' ? 'エラーが発生しました' : 'An error occurred')
+        );
     }
   }
 
   if (error instanceof Error) {
     // Check for network errors
-    if (error.message.toLowerCase().includes('network') ||
-        error.message.toLowerCase().includes('fetch') ||
-        error.message.toLowerCase().includes('connection')) {
+    if (
+      error.message.toLowerCase().includes('network') ||
+      error.message.toLowerCase().includes('fetch') ||
+      error.message.toLowerCase().includes('connection')
+    ) {
       return translations.networkError;
     }
 
@@ -115,11 +135,13 @@ export const shouldRetry = (error: unknown): boolean => {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
     // Retry on network errors
-    return message.includes('network') ||
-           message.includes('timeout') ||
-           message.includes('econnrefused') ||
-           message.includes('fetch failed') ||
-           message.includes('connection');
+    return (
+      message.includes('network') ||
+      message.includes('timeout') ||
+      message.includes('econnrefused') ||
+      message.includes('fetch failed') ||
+      message.includes('connection')
+    );
   }
 
   return false;

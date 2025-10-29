@@ -1,0 +1,11 @@
+dist
+build
+node_modules
+coverage
+.next
+out
+public
+*.min.js
+*.min.css
+*.lock
+*.log

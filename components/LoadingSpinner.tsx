@@ -8,34 +8,39 @@ export const LoadingSpinner: React.FC = React.memo(() => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDots(prev => prev.length >= 3 ? '' : prev + '.');
+      setDots((prev) => (prev.length >= 3 ? '' : prev + '.'));
     }, 500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center my-12 text-sky-700 no-print" role="status">
+    <div
+      className="flex flex-col items-center justify-center my-12 text-sky-700 no-print"
+      role="status"
+    >
       {/* Animated herb/medicine icon */}
       <div className="relative w-24 h-24 mb-6">
         {/* Outer rotating ring */}
-        <div className="absolute inset-0 border-4 border-sky-200 rounded-full animate-spin"
-             style={{ animationDuration: '3s', borderTopColor: 'rgb(14 165 233)' }}></div>
+        <div
+          className="absolute inset-0 border-4 border-sky-200 rounded-full animate-spin"
+          style={{ animationDuration: '3s', borderTopColor: 'rgb(14 165 233)' }}
+        ></div>
 
         {/* Middle pulsing ring */}
-        <div className="absolute inset-2 border-4 border-emerald-200 rounded-full animate-ping"
-             style={{ animationDuration: '2s' }}></div>
+        <div
+          className="absolute inset-2 border-4 border-emerald-200 rounded-full animate-ping"
+          style={{ animationDuration: '2s' }}
+        ></div>
 
         {/* Inner spinning reverse */}
-        <div className="absolute inset-4 border-4 border-transparent border-r-sky-500 rounded-full animate-spin"
-             style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+        <div
+          className="absolute inset-4 border-4 border-transparent border-r-sky-500 rounded-full animate-spin"
+          style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}
+        ></div>
 
         {/* Center logo */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <img
-            src="/logo.png"
-            alt="Loading"
-            className="w-12 h-12 object-contain animate-pulse"
-          />
+          <img src="/logo.png" alt="Loading" className="w-12 h-12 object-contain animate-pulse" />
         </div>
       </div>
 
@@ -52,12 +57,13 @@ export const LoadingSpinner: React.FC = React.memo(() => {
 
       {/* Progress bar animation */}
       <div className="w-64 h-1.5 bg-slate-200 rounded-full mt-6 overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-sky-400 via-emerald-400 to-sky-400 rounded-full animate-pulse"
-             style={{
-               animation: 'shimmer 2s ease-in-out infinite',
-               backgroundSize: '200% 100%'
-             }}>
-        </div>
+        <div
+          className="h-full bg-gradient-to-r from-sky-400 via-emerald-400 to-sky-400 rounded-full animate-pulse"
+          style={{
+            animation: 'shimmer 2s ease-in-out infinite',
+            backgroundSize: '200% 100%',
+          }}
+        ></div>
       </div>
 
       <span className="sr-only">{t(language).loadingSpinner.message}</span>
@@ -71,4 +77,4 @@ export const LoadingSpinner: React.FC = React.memo(() => {
     </div>
   );
 });
-LoadingSpinner.displayName = "LoadingSpinner";
+LoadingSpinner.displayName = 'LoadingSpinner';

@@ -22,7 +22,7 @@ export default defineConfig({
         'contexts/**/*',
         'utils/**/*',
         'i18n.ts',
-        'types.ts'
+        'types.ts',
       ],
       exclude: [
         'node_modules/**',
@@ -32,16 +32,16 @@ export default defineConfig({
         'setupTests.ts',
         'vitest.config.ts',
         '__tests__/**',
-        'dist/**'
+        'dist/**',
       ],
       thresholds: {
         global: {
           branches: 70,
           functions: 70,
           lines: 70,
-          statements: 70
-        }
-      }
+          statements: 70,
+        },
+      },
     },
     // Test timeout - reasonable for most tests
     testTimeout: 10000,
@@ -51,25 +51,25 @@ export default defineConfig({
     pool: 'forks',
     poolOptions: {
       forks: {
-        singleFork: true
-      }
+        singleFork: true,
+      },
     },
     // Disable isolation for faster execution on WSL
     isolate: false,
     // Retry flaky tests once
     retry: 1,
     // Limit concurrent test files
-    fileParallelism: false
+    fileParallelism: false,
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
-    }
+    },
   },
   // WSL compatibility settings
   server: {
     watch: {
-      usePolling: true
-    }
-  }
+      usePolling: true,
+    },
+  },
 });

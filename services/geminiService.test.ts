@@ -3,42 +3,52 @@ import { getCompendiumInfo } from './geminiService';
 
 // Mock data
 const mockCompendiumResult = {
-  integrativeViewpoint: "Test integrative viewpoint for ginger analysis.",
-  kampoEntries: [{
-    name: "Shokenchuto",
-    category: "Kampo Formula" as const,
-    summary: "A warming formula for digestive support.",
-    properties: "Warm, pungent",
-    channels: "Spleen, Stomach",
-    actions: ["Warm the middle jiao", "Dispel cold"],
-    indications: ["Cold limbs", "Digestive weakness"],
-    constituentHerbs: "Ginger, Cinnamon, Jujube",
-    clinicalNotes: "Use with caution in heat conditions."
-  }],
-  westernHerbEntries: [{
-    name: "Ginger",
-    category: "Western Herb" as const,
-    summary: "Warming herb for digestive health.",
-    properties: "Hot, pungent",
-    actions: ["Warm the stomach", "Stop nausea"],
-    indications: ["Nausea", "Cold stomach"],
-    clinicalNotes: "Fresh vs dried ginger have different properties."
-  }],
-  supplementEntries: [{
-    name: "Ginger Extract",
-    category: "Supplement" as const,
-    summary: "Concentrated ginger for convenient dosing.",
-    actions: ["Support digestive health"],
-    indications: ["Occasional nausea", "Motion sickness"]
-  }]
+  integrativeViewpoint: 'Test integrative viewpoint for ginger analysis.',
+  kampoEntries: [
+    {
+      name: 'Shokenchuto',
+      category: 'Kampo Formula' as const,
+      summary: 'A warming formula for digestive support.',
+      properties: 'Warm, pungent',
+      channels: 'Spleen, Stomach',
+      actions: ['Warm the middle jiao', 'Dispel cold'],
+      indications: ['Cold limbs', 'Digestive weakness'],
+      constituentHerbs: 'Ginger, Cinnamon, Jujube',
+      clinicalNotes: 'Use with caution in heat conditions.',
+    },
+  ],
+  westernHerbEntries: [
+    {
+      name: 'Ginger',
+      category: 'Western Herb' as const,
+      summary: 'Warming herb for digestive health.',
+      properties: 'Hot, pungent',
+      actions: ['Warm the stomach', 'Stop nausea'],
+      indications: ['Nausea', 'Cold stomach'],
+      clinicalNotes: 'Fresh vs dried ginger have different properties.',
+    },
+  ],
+  supplementEntries: [
+    {
+      name: 'Ginger Extract',
+      category: 'Supplement' as const,
+      summary: 'Concentrated ginger for convenient dosing.',
+      actions: ['Support digestive health'],
+      indications: ['Occasional nausea', 'Motion sickness'],
+    },
+  ],
 };
-
 
 // Mock fetch globally
 global.fetch = vi.fn();
 
 // Helper to create mock Response objects
-const createMockResponse = (data: any, ok: boolean, status: number, statusText: string = ''): Response => {
+const createMockResponse = (
+  data: any,
+  ok: boolean,
+  status: number,
+  statusText: string = ''
+): Response => {
   const response = {
     ok,
     status,
@@ -50,7 +60,7 @@ const createMockResponse = (data: any, ok: boolean, status: number, statusText: 
     formData: vi.fn().mockResolvedValue(new FormData()),
     headers: new Headers(),
     redirected: false,
-    type: 'basic' as ResponseType,
+    type: 'basic' as const,
     url: '',
     body: null,
     bodyUsed: false,
@@ -84,7 +94,7 @@ describe('GeminiService', () => {
         },
         body: JSON.stringify({
           query: 'ginger',
-          language: 'en'
+          language: 'en',
         }),
       });
 
@@ -104,7 +114,7 @@ describe('GeminiService', () => {
         },
         body: JSON.stringify({
           query: 'ginger',
-          language: 'en'
+          language: 'en',
         }),
       });
     });
@@ -113,7 +123,9 @@ describe('GeminiService', () => {
       const mockFetch = vi.mocked(fetch);
       // Mock all retry attempts to fail
       for (let i = 0; i < 4; i++) {
-        mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500, 'Internal Server Error'));
+        mockFetch.mockResolvedValueOnce(
+          createMockResponse({ error: 'Server Error' }, false, 500, 'Internal Server Error')
+        );
       }
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow();
@@ -161,14 +173,11 @@ describe('GeminiService', () => {
     });
   });
 
-
   describe('Error handling and resilience', () => {
     it('handles timeout scenarios', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockImplementation(() =>
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 100)
-        )
+      mockFetch.mockImplementation(
+        () => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 100))
       );
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Timeout');
@@ -176,7 +185,9 @@ describe('GeminiService', () => {
 
     it('properly formats error messages', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Custom error message' }, false, 422));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Custom error message' }, false, 422)
+      );
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Custom error message');
     });
@@ -186,16 +197,16 @@ describe('GeminiService', () => {
       mockFetch.mockResolvedValueOnce(createMockResponse({}, false, 500, 'Internal Server Error'));
 
       // Should throw an error after retries
-      await expect(getCompendiumInfo('ginger', 'en'))
-        .rejects.toThrow();
+      await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow();
     });
 
     it('handles unknown API errors gracefully', async () => {
       const mockFetch = vi.mocked(fetch);
-      mockFetch.mockResolvedValueOnce(createMockResponse({ error: null }, false, 500, 'Internal Server Error'));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: null }, false, 500, 'Internal Server Error')
+      );
 
-      await expect(getCompendiumInfo('test', 'en'))
-        .rejects.toThrow();
+      await expect(getCompendiumInfo('test', 'en')).rejects.toThrow();
     });
   });
 });

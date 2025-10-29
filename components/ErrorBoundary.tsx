@@ -73,9 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                問題が発生しました
-              </h2>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">問題が発生しました</h2>
               <p className="text-slate-600 mb-6">
                 アプリケーションでエラーが発生しました。ページを再読み込みしてください。
               </p>

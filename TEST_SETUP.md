@@ -7,12 +7,14 @@ WSL2環境では、vitestのesbuildが`write EPIPE`エラーで失敗する既�
 ### 解決方法
 
 #### オプション1: Windowsネイティブで実行（推奨）
+
 ```bash
 # PowerShellまたはCmd.exeで実行
 npm run test:run
 ```
 
 #### オプション2: WSLでnode_modulesを再インストール
+
 ```bash
 # WSL内でLinuxバイナリを使用
 rm -rf node_modules package-lock.json
@@ -21,11 +23,13 @@ npm run test:run
 ```
 
 #### オプション3: Docker環境で実行
+
 ```bash
 docker run -it --rm -v $(pwd):/app -w /app node:20 npm run test:run
 ```
 
 #### オプション4: CI/CDで実行（GitHub Actions）
+
 プロジェクトに`.github/workflows/test.yml`が設定されている場合、
 GitHubにpushすると自動的にテストが実行されます。
 
@@ -55,6 +59,7 @@ npm run test:ui
 ## カバレッジ閾値
 
 現在の閾値設定：
+
 - Branches: 80%
 - Functions: 80%
 - Lines: 80%

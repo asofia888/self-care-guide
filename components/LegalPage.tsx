@@ -12,12 +12,12 @@ export const LegalPage: React.FC<LegalPageProps> = React.memo(({ title, content 
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200">
         <div className="flex items-center gap-4 mb-6">
           <div className="flex-shrink-0 w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center">
-            <FileTextIcon className="w-7 h-7 text-sky-600"/>
+            <FileTextIcon className="w-7 h-7 text-sky-600" />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-slate-800">{title}</h2>
         </div>
-        
-        <div 
+
+        <div
           className="prose prose-sm md:prose-base prose-slate max-w-none text-slate-700 
                      prose-headings:text-slate-800 prose-headings:font-bold 
                      prose-strong:text-slate-800 
@@ -26,10 +26,10 @@ export const LegalPage: React.FC<LegalPageProps> = React.memo(({ title, content 
         >
           {content.split('\n\n').map((paragraph, index) => {
             const parts = paragraph.split(/(\*\*.*?\*\*)/g).map((part, i) => {
-                if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i}>{part.slice(2, -2)}</strong>;
-                }
-                return part;
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i}>{part.slice(2, -2)}</strong>;
+              }
+              return part;
             });
             return <p key={index}>{parts}</p>;
           })}
@@ -38,4 +38,4 @@ export const LegalPage: React.FC<LegalPageProps> = React.memo(({ title, content 
     </div>
   );
 });
-LegalPage.displayName = "LegalPage";
+LegalPage.displayName = 'LegalPage';

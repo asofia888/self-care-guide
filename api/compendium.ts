@@ -202,7 +202,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 
     // Initialize Gemini AI
-    const ai = new GoogleGenerativeAI({ apiKey: API_KEY });
+    const ai = new GoogleGenerativeAI(API_KEY);
     const model = ai.getGenerativeModel({
       model: GEMINI_MODEL,
       systemInstruction: `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations.
@@ -256,9 +256,31 @@ Output: Valid JSON only, no markdown.`,
     });
 
     // Validate response before parsing
-    const responseText = response.text.trim();
+    let responseText = '';
+
+    // Try different ways to extract text from response
+    if (response.response?.text) {
+      const textValue = response.response.text;
+      // Handle if it's a function or a string
+      responseText = typeof textValue === 'function' ? textValue() : textValue;
+    } else if ((response as any)?.text) {
+      const textValue = (response as any).text;
+      responseText = typeof textValue === 'function' ? textValue() : textValue;
+    } else if (Array.isArray((response as any)?.candidates) && (response as any).candidates.length > 0) {
+      const content = (response as any).candidates[0]?.content;
+      if (content?.parts && content.parts.length > 0) {
+        responseText = content.parts[0].text || '';
+      }
+    }
+
+    responseText = responseText.trim();
+
     if (!responseText) {
       console.error('Empty response from Gemini API');
+      console.error('Response keys:', Object.keys(response));
+      if ((response as any)?.response) {
+        console.error('Response.response keys:', Object.keys((response as any).response));
+      }
       return res.status(500).json({ error: 'Empty response from AI service. Please try again.' });
     }
 

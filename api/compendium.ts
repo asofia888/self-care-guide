@@ -213,7 +213,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const languageName = getLanguageName(language);
 
     // Build language-specific system instruction
-    const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
+    const systemInstruction = `You are a medical and health information assistant. You provide factual, educational information about herbs, supplements, and traditional medicine practices. This is legitimate medical education content.
+
+You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
+
+IMPORTANT: All responses are educational medical information. This is NOT sexual content - it is health and wellness information for professional and educational purposes.
 
 QUERY TYPE DETECTION (Critical):
 1. If the query is for a SPECIFIC SUBSTANCE (herb, supplement, Kampo formula, botanical name like "Tongkat Ali", "Ginseng", "Turmeric", "Echinacea", etc.):
@@ -255,16 +259,6 @@ Output: Valid JSON only, no markdown.`;
     const model = ai.getGenerativeModel({
       model: GEMINI_MODEL,
       systemInstruction,
-    });
-
-    const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
-
-    const response = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: textPrompt }] }],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: compendiumResponseSchema,
-      },
       safetySettings: [
         {
           category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
@@ -282,7 +276,17 @@ Output: Valid JSON only, no markdown.`;
           category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
           threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         },
-      ],
+      ] as any,
+    });
+
+    const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
+
+    const response = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: textPrompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: compendiumResponseSchema,
+      },
     } as any);
 
     // Validate response before parsing

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { BookOpenIcon, SparklesIcon, PrinterIcon } from './Icons';
+import { IntegrativeMedicineIcon, SparklesIcon, PrinterIcon } from './Icons';
 import { getCompendiumInfo } from '../services/geminiService';
 import type { CompendiumEntry, CompendiumResult } from '../types';
 import { t } from '../i18n';
@@ -133,7 +133,7 @@ export const Compendium: React.FC = () => {
       <div className="no-print">
         <div className="text-center p-8 bg-white rounded-2xl shadow-md border border-slate-200 mb-8">
           <div className="flex justify-center mb-4">
-            <BookOpenIcon className="w-16 h-16 text-sky-500" />
+            <IntegrativeMedicineIcon className="w-16 h-16 text-sky-500" />
           </div>
           <h2 className="text-2xl font-bold text-slate-800 mb-2">{translations.title}</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">{translations.description}</p>

@@ -291,3 +291,37 @@ export const PillIcon: React.FC<IconProps> = ({ className }) => (
     <path d="m8.5 8.5 7 7" />
   </svg>
 );
+
+export const IntegrativeMedicineIcon: React.FC<IconProps> = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    {/* Left side - Eastern medicine (leaf/herbal symbol) */}
+    <path d="M3 12c0-4.5 3-8 5-9" />
+    <path d="M8 3c1.5 1 4 3 4 9" />
+    <path d="M6 12c0 3 2 5 4 6" />
+
+    {/* Center - Unity/Integration symbol (two circles merging) */}
+    <circle cx="12" cy="12" r="2" />
+    <circle cx="10" cy="12" r="3" opacity="0.5" />
+    <circle cx="14" cy="12" r="3" opacity="0.5" />
+
+    {/* Right side - Western medicine (medical cross/scientific symbol) */}
+    <path d="M16 12c0-4.5-3-8-5-9" />
+    <path d="M16 3c-1.5 1-4 3-4 9" />
+    <path d="M18 12c0 3-2 5-4 6" />
+
+    {/* Bottom connectors showing integration */}
+    <path d="M6 18c2 1 4 1 6 1" />
+    <path d="M18 18c-2 1-4 1-6 1" />
+  </svg>
+);

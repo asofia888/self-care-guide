@@ -153,8 +153,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 
+  let query = '';
+  let language = '';
+
   try {
-    const { query, language } = req.body;
+    const reqData = req.body;
+    query = reqData.query;
+    language = reqData.language;
 
     // Input validation
     if (!query || typeof query !== 'string' || query.trim().length === 0) {

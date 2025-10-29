@@ -29,7 +29,7 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "@google/genai": "^1.11.0",
+    "@google/generative-ai": "^0.21.0",
     "@vercel/node": "^3.0.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

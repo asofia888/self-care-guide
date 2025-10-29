@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 
 // Constants (defined locally for Vercel serverless function compatibility)
 const GEMINI_MODEL = 'gemini-flash-latest';
@@ -18,31 +18,31 @@ const LANGUAGES = ['ja', 'en'] as const;
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const compendiumEntrySchema = {
-  type: Type.OBJECT,
+  type: SchemaType.OBJECT,
   properties: {
-    name: { type: Type.STRING },
+    name: { type: SchemaType.STRING },
     category: {
-      type: Type.STRING,
+      type: SchemaType.STRING,
       description:
         "Category of the entry. For English: 'Western Herb', 'Kampo Formula', or 'Supplement'. For Japanese: '西洋ハーブ', '漢方処方', or 'サプリメント'.",
     },
-    summary: { type: Type.STRING },
-    properties: { type: Type.STRING },
-    channels: { type: Type.STRING },
-    actions: { type: Type.ARRAY, items: { type: Type.STRING } },
-    indications: { type: Type.ARRAY, items: { type: Type.STRING } },
+    summary: { type: SchemaType.STRING },
+    properties: { type: SchemaType.STRING },
+    channels: { type: SchemaType.STRING },
+    actions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    indications: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
     constituentHerbs: {
-      type: Type.STRING,
+      type: SchemaType.STRING,
       description:
         'Key constituent herbs in Kampo formulas, or active compounds in Western herbs/supplements. Always provide this.',
     },
     clinicalNotes: {
-      type: Type.STRING,
+      type: SchemaType.STRING,
       description:
         'Clinical applications, research evidence, and traditional use notes. Always provide this information.',
     },
     contraindications: {
-      type: Type.STRING,
+      type: SchemaType.STRING,
       description:
         'Important contraindications, warnings, and precautions. Always provide this information.',
     },
@@ -60,16 +60,16 @@ const compendiumEntrySchema = {
 };
 
 const compendiumResponseSchema = {
-  type: Type.OBJECT,
+  type: SchemaType.OBJECT,
   properties: {
     integrativeViewpoint: {
-      type: Type.STRING,
+      type: SchemaType.STRING,
       description:
         'Integrative perspective explaining the holistic approach combining Eastern and Western medicine. IMPORTANT: Must be 280-320 characters for Japanese, 180-220 words for English. Provide sufficient detail within this range.',
     },
-    kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
-    westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
-    supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+    kampoEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
+    westernHerbEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
+    supplementEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
   },
   required: ['integrativeViewpoint', 'westernHerbEntries', 'supplementEntries'],
 };
@@ -189,10 +189,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Initialize Gemini AI
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-    const languageName = getLanguageName(language);
-
-    const systemInstruction = `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations in ${languageName}.
+    const ai = new GoogleGenerativeAI({ apiKey: API_KEY });
+    const model = ai.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: `You are an expert integrative medicine AI combining Kampo and Western herbal traditions. Provide concise, evidence-based recommendations.
 
 QUERY TYPE DETECTION (Critical):
 1. If the query is for a SPECIFIC SUBSTANCE (herb, supplement, Kampo formula, botanical name like "Tongkat Ali", "Ginseng", "Turmeric", "Echinacea", etc.):
@@ -217,29 +217,26 @@ The integrativeViewpoint field MUST be detailed and comprehensive within the spe
 Do NOT write shorter than the minimum. Provide sufficient detail about how Eastern and Western approaches complement each other.
 
 CRITICAL - LANGUAGE REQUIREMENT:
-ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language.
-- For Japanese: Use '西洋ハーブ' for Western Herb, '漢方処方' for Kampo Formula, 'サプリメント' for Supplement
-- For English: Use 'Western Herb', 'Kampo Formula', 'Supplement'
+ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in English. Do not mix languages. Every single word must be in English.
+- Use 'Western Herb', 'Kampo Formula', 'Supplement' for categories
 
 CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
-1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements (in ${languageName})
-2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum, in ${languageName})
-3. contraindications: Safety information, warnings, and precautions (in ${languageName}, even if minimal, state equivalent of "Generally safe when used as directed" in the target language)
+1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements
+2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum)
+3. contraindications: Safety information, warnings, and precautions (even if minimal, state "Generally safe when used as directed")
 
-These fields are MANDATORY. Never omit them. All content must be in ${languageName}.
+These fields are MANDATORY. Never omit them.
 
 Order by clinical relevance. Be concise but complete. Focus on accessible, well-researched options.
 
-Output: Valid JSON only, no markdown.`;
+Output: Valid JSON only, no markdown.`,
+    });
 
     const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
-    const contents = { parts: [{ text: textPrompt }] };
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents,
-      config: {
-        systemInstruction,
+    const response = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: textPrompt }] }],
+      generationConfig: {
         responseMimeType: 'application/json',
         responseSchema: compendiumResponseSchema,
       },

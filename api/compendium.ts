@@ -174,19 +174,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Validate API key
     if (!API_KEY || API_KEY === 'PLACEHOLDER_API_KEY' || API_KEY.trim() === '') {
-      console.error('API key validation failed');
-      console.error('API_KEY value:', API_KEY ? `${API_KEY.substring(0, 10)}...` : 'undefined');
-      console.error(
-        'Environment variables with API/GEMINI:',
-        Object.keys(process.env)
-          .filter((key) => key.includes('API') || key.includes('GEMINI'))
-          .map((key) => `${key}=${process.env[key]?.substring(0, 10)}...`)
-      );
+      console.error('❌ API key validation failed');
+      console.error('API_KEY present:', !!API_KEY);
+      console.error('API_KEY is placeholder:', API_KEY === 'PLACEHOLDER_API_KEY');
+      console.error('API_KEY is empty string:', API_KEY?.trim() === '');
+
+      // Log all environment variables for debugging (safe approach - only in error case)
+      const envVars = Object.keys(process.env)
+        .filter((key) => key.includes('GEMINI') || key.includes('GOOGLE') || key.includes('API'))
+        .map((key) => `${key}=${process.env[key] ? '✓ set' : '✗ undefined'}`);
+
+      if (envVars.length > 0) {
+        console.error('Relevant environment variables:', envVars.join(', '));
+      } else {
+        console.error('⚠️ No GEMINI, GOOGLE, or API environment variables found!');
+      }
+
       return res.status(500).json({
-        error: 'Service configuration error. API key not properly configured.',
-        hint: 'Please ensure GEMINI_API_KEY is set in Vercel environment variables',
+        error: 'Service configuration error. Please contact support.',
+        code: 'API_KEY_NOT_CONFIGURED',
       });
     }
+
+    console.log('✓ API key validation passed - key is configured');
+    console.log('API key length:', API_KEY.length, 'characters');
+    console.log('API key format (first 15 + last 5):', `${API_KEY.substring(0, 15)}...${API_KEY.substring(API_KEY.length - 5)}`);
+
 
     // Initialize Gemini AI
     const ai = new GoogleGenerativeAI({ apiKey: API_KEY });

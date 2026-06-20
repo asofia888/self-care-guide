@@ -133,17 +133,14 @@ describe('ErrorBoundary component', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    const callArgs = logError.mock.calls[0][1];
+    const callArgs = vi.mocked(logError).mock.calls[0][1];
     expect(callArgs).toHaveProperty('error');
     expect(callArgs).toHaveProperty('componentStack');
   });
 
   it('shows error details in development mode', () => {
-    const originalEnv = process.env.NODE_ENV;
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'development',
-      configurable: true,
-    });
+    // `vi.stubEnv` reliably overrides process.env.NODE_ENV for the component read.
+    vi.stubEnv('NODE_ENV', 'development');
 
     render(
       <ErrorBoundary>
@@ -154,10 +151,7 @@ describe('ErrorBoundary component', () => {
     // Should show details section in development
     expect(screen.getByText(/エラー詳細/)).toBeInTheDocument();
 
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: originalEnv,
-      configurable: true,
-    });
+    vi.unstubAllEnvs();
   });
 
   it('applies correct styling classes to error container', () => {
@@ -225,7 +219,15 @@ describe('ErrorBoundary component', () => {
   });
 
   it('calls window.location.reload when reload button is clicked', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
+    // jsdom's window.location.reload is not directly spy-able, so replace the
+    // whole location object with one whose reload is a mock, then restore it.
+    const originalLocation = window.location;
+    const reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...originalLocation, reload: reloadMock },
+    });
+
     render(
       <ErrorBoundary>
         <ThrowError />
@@ -233,7 +235,11 @@ describe('ErrorBoundary component', () => {
     );
     const reloadButton = screen.getByRole('button', { name: /ページを再読み込み/ });
     fireEvent.click(reloadButton);
-    expect(reloadSpy).toHaveBeenCalled();
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
+
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    });
   });
 });

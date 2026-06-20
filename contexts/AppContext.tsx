@@ -16,8 +16,11 @@ export interface AppContextType extends AppState {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('ja');
+export const AppProvider: React.FC<{ children: React.ReactNode; initialLanguage?: Language }> = ({
+  children,
+  initialLanguage = 'ja',
+}) => {
+  const [language, setLanguage] = useState<Language>(initialLanguage);
   const [activeView, setActiveView] = useState<View>('compendium');
   const [fontSize, setFontSize] = useState<FontSize>('standard');
 

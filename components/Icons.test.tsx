@@ -79,8 +79,8 @@ describe('Icon components', () => {
     it('has stroke-linecap and stroke-linejoin attributes', () => {
       const { container } = render(<BrainCircuitIcon />);
       const svg = container.querySelector('svg');
-      expect(svg).toHaveAttribute('strokeLinecap', 'round');
-      expect(svg).toHaveAttribute('strokeLinejoin', 'round');
+      expect(svg).toHaveAttribute('stroke-linecap', 'round');
+      expect(svg).toHaveAttribute('stroke-linejoin', 'round');
     });
   });
 
@@ -122,7 +122,7 @@ describe('Icon components', () => {
     it('has correct stroke attributes', () => {
       const { container } = render(<AlertTriangleIcon />);
       const svg = container.querySelector('svg');
-      expect(svg).toHaveAttribute('strokeWidth', '2');
+      expect(svg).toHaveAttribute('stroke-width', '2');
       expect(svg).toHaveAttribute('stroke', 'currentColor');
     });
   });
@@ -140,7 +140,7 @@ describe('Icon components', () => {
         const svg = container.querySelector('svg');
         expect(svg).toHaveAttribute('fill', 'none');
         expect(svg).toHaveAttribute('stroke', 'currentColor');
-        expect(svg).toHaveAttribute('strokeWidth', '2');
+        expect(svg).toHaveAttribute('stroke-width', '2');
       });
     });
 

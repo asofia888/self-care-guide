@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenerativeAI, SchemaType, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
+import { GoogleGenAI, Type, HarmBlockThreshold, HarmCategory } from '@google/genai';
 
 // Constants (defined locally for Vercel serverless function compatibility)
 const GEMINI_MODEL = 'gemini-flash-latest';
@@ -18,31 +18,31 @@ const LANGUAGES = ['ja', 'en'] as const;
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const compendiumEntrySchema = {
-  type: SchemaType.OBJECT,
+  type: Type.OBJECT,
   properties: {
-    name: { type: SchemaType.STRING },
+    name: { type: Type.STRING },
     category: {
-      type: SchemaType.STRING,
+      type: Type.STRING,
       description:
         "Category of the entry. For English: 'Western Herb', 'Kampo Formula', or 'Supplement'. For Japanese: '西洋ハーブ', '漢方処方', or 'サプリメント'.",
     },
-    summary: { type: SchemaType.STRING },
-    properties: { type: SchemaType.STRING },
-    channels: { type: SchemaType.STRING },
-    actions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-    indications: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+    summary: { type: Type.STRING },
+    properties: { type: Type.STRING },
+    channels: { type: Type.STRING },
+    actions: { type: Type.ARRAY, items: { type: Type.STRING } },
+    indications: { type: Type.ARRAY, items: { type: Type.STRING } },
     constituentHerbs: {
-      type: SchemaType.STRING,
+      type: Type.STRING,
       description:
         'Key constituent herbs in Kampo formulas, or active compounds in Western herbs/supplements. Always provide this.',
     },
     clinicalNotes: {
-      type: SchemaType.STRING,
+      type: Type.STRING,
       description:
         'Clinical applications, research evidence, and traditional use notes. Always provide this information.',
     },
     contraindications: {
-      type: SchemaType.STRING,
+      type: Type.STRING,
       description:
         'Important contraindications, warnings, and precautions. Always provide this information.',
     },
@@ -60,16 +60,16 @@ const compendiumEntrySchema = {
 };
 
 const compendiumResponseSchema = {
-  type: SchemaType.OBJECT,
+  type: Type.OBJECT,
   properties: {
     integrativeViewpoint: {
-      type: SchemaType.STRING,
+      type: Type.STRING,
       description:
         'Integrative perspective explaining the holistic approach combining Eastern and Western medicine. IMPORTANT: Must be 280-320 characters for Japanese, 180-220 words for English. Provide sufficient detail within this range.',
     },
-    kampoEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
-    westernHerbEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
-    supplementEntries: { type: SchemaType.ARRAY, items: compendiumEntrySchema },
+    kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+    westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
+    supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
   },
   required: ['integrativeViewpoint', 'westernHerbEntries', 'supplementEntries'],
 };
@@ -201,13 +201,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    console.log('✓ API key validation passed - key is configured');
-    console.log('API key length:', API_KEY.length, 'characters');
-    console.log('API key format (first 15 + last 5):', `${API_KEY.substring(0, 15)}...${API_KEY.substring(API_KEY.length - 5)}`);
-
-
     // Initialize Gemini AI
-    const ai = new GoogleGenerativeAI(API_KEY);
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     // Get language name
     const languageName = getLanguageName(language);
@@ -256,65 +251,41 @@ Order by clinical relevance. Be concise but complete. Focus on accessible, well-
 
 Output: Valid JSON only, no markdown.`;
 
-    const model = ai.getGenerativeModel({
-      model: GEMINI_MODEL,
-      systemInstruction,
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ] as any,
-    });
-
     const textPrompt = `Provide integrative compendium information for the query: "${query.trim()}"`;
 
-    const response = await model.generateContent({
+    const response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
       contents: [{ role: 'user', parts: [{ text: textPrompt }] }],
-      generationConfig: {
+      config: {
+        systemInstruction,
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+          },
+        ],
         responseMimeType: 'application/json',
         responseSchema: compendiumResponseSchema,
       },
-    } as any);
+    });
 
-    // Validate response before parsing
-    let responseText = '';
-
-    // Try different ways to extract text from response
-    if (response.response?.text) {
-      const textValue = response.response.text;
-      // Handle if it's a function or a string
-      responseText = typeof textValue === 'function' ? textValue() : textValue;
-    } else if ((response as any)?.text) {
-      const textValue = (response as any).text;
-      responseText = typeof textValue === 'function' ? textValue() : textValue;
-    } else if (Array.isArray((response as any)?.candidates) && (response as any).candidates.length > 0) {
-      const content = (response as any).candidates[0]?.content;
-      if (content?.parts && content.parts.length > 0) {
-        responseText = content.parts[0].text || '';
-      }
-    }
-
-    responseText = responseText.trim();
+    // The SDK exposes the aggregated response text via the `text` getter.
+    const responseText = (response.text ?? '').trim();
 
     if (!responseText) {
       console.error('Empty response from Gemini API');
-      console.error('Response keys:', Object.keys(response));
-      if ((response as any)?.response) {
-        console.error('Response.response keys:', Object.keys((response as any).response));
-      }
       return res.status(500).json({ error: 'Empty response from AI service. Please try again.' });
     }
 

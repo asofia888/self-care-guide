@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "@google/genai": "^2.9.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "@vercel/node": "^3.0.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

@@ -425,8 +425,11 @@ Content-Type: application/json
 
 #### Rate Limiting
 
-- **Limit:** 10 requests per minute per IP address
+- **Limit:** 10 requests per minute per IP address (sliding window)
 - **Status Code:** 429 Too Many Requests when exceeded
+- **Backend:** Distributed via Upstash Redis / Vercel KV when configured (see
+  [Environment Variables](#environment-variables-required)). Falls back to a
+  per-instance in-memory limiter when no Redis store is set.
 
 #### CORS
 
@@ -642,9 +645,15 @@ npm run test:e2e:debug    # Debug mode
 
 ### Environment Variables Required
 
-| Variable         | Value                      | Required         |
-| :--------------- | :------------------------- | :--------------- |
-| `GEMINI_API_KEY` | Your Google Gemini API key | Yes (production) |
+| Variable                   | Value                                           | Required                     |
+| :------------------------- | :---------------------------------------------- | :--------------------------- |
+| `GEMINI_API_KEY`           | Your Google Gemini API key                      | Yes (production)             |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL (distributed rate limit) | No (falls back to in-memory) |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                        | No (falls back to in-memory) |
+
+> Vercel KV stores work too — the function also reads `KV_REST_API_URL` /
+> `KV_REST_API_TOKEN`. Without any of these, rate limiting uses a per-instance
+> in-memory fallback (fine for low traffic, but not shared across instances).
 
 **Get your API key:**
 

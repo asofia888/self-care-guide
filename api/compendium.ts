@@ -1,12 +1,12 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type, HarmBlockThreshold, HarmCategory } from '@google/genai';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 // Constants (defined locally for Vercel serverless function compatibility)
 const GEMINI_MODEL = 'gemini-flash-latest';
-const RATE_LIMIT = {
-  REQUESTS_PER_MINUTE: 5,
-  WINDOW_MS: 60 * 1000,
-};
+const RATE_LIMIT_MAX = 10; // requests per window, per IP
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const ALLOWED_ORIGINS = [
   'https://self-care-guide.vercel.app',
   'https://self-care-guide-git-main-asofia888.vercel.app',
@@ -14,7 +14,23 @@ const ALLOWED_ORIGINS = [
 ];
 const LANGUAGES = ['ja', 'en'] as const;
 
-// Rate limiting in-memory store (for production, use Redis)
+// Distributed rate limiter (Upstash Redis / Vercel KV). Active only when the
+// relevant environment variables are configured; otherwise the in-memory
+// fallback below is used. Supports both Upstash and Vercel KV variable names.
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+const ratelimit =
+  redisUrl && redisToken
+    ? new Ratelimit({
+        redis: new Redis({ url: redisUrl, token: redisToken }),
+        limiter: Ratelimit.slidingWindow(RATE_LIMIT_MAX, '60 s'),
+        prefix: 'ratelimit:compendium',
+        analytics: false,
+      })
+    : null;
+
+// In-memory fallback (per serverless instance; used only when no Redis store is
+// configured). Not shared across instances — provision Redis for production.
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const compendiumEntrySchema = {
@@ -86,26 +102,31 @@ const getLanguageName = (langCode: string) => {
   }
 };
 
-const checkRateLimit = (ip: string): boolean => {
+const checkRateLimitInMemory = (ip: string): boolean => {
   const now = Date.now();
-  const limit = RATE_LIMIT.REQUESTS_PER_MINUTE * 2; // 10 requests per minute for compendium
-  const windowMs = RATE_LIMIT.WINDOW_MS;
-
-  const key = ip;
-  const record = rateLimitStore.get(key);
+  const record = rateLimitStore.get(ip);
 
   if (!record || now > record.resetTime) {
-    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
     return true;
   }
 
-  if (record.count >= limit) {
+  if (record.count >= RATE_LIMIT_MAX) {
     return false;
   }
 
   record.count++;
-  rateLimitStore.set(key, record);
   return true;
+};
+
+// Returns true when the request is within limits. Uses the distributed limiter
+// when configured, otherwise the per-instance in-memory fallback.
+const isWithinRateLimit = async (ip: string): Promise<boolean> => {
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    return success;
+  }
+  return checkRateLimitInMemory(ip);
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -149,7 +170,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
   const ip = Array.isArray(clientIP) ? clientIP[0] : clientIP;
 
-  if (!checkRateLimit(ip)) {
+  if (!(await isWithinRateLimit(ip))) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 

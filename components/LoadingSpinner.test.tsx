@@ -91,7 +91,7 @@ describe('LoadingSpinner component', () => {
   it('renders a decorative animated icon', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue());
     const { container } = render(<LoadingSpinner />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.querySelector('img[src="/logo.png"]')).toBeInTheDocument();
     expect(container.querySelector('.animate-breathe')).toBeInTheDocument();
   });
 

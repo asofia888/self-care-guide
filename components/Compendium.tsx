@@ -1,5 +1,5 @@
 import React from 'react';
-import { IntegrativeMedicineIcon, SparklesIcon, PrinterIcon } from './Icons';
+import { SparklesIcon, PrinterIcon } from './Icons';
 import type { CompendiumEntry } from '../types';
 import { t } from '../i18n';
 import { LoadingSpinner } from './LoadingSpinner';
@@ -119,9 +119,12 @@ export const Compendium: React.FC = () => {
       <div className="no-print">
         <div className="mb-10 rounded-[2rem] border border-white/60 bg-white/70 p-10 text-center shadow-elegant backdrop-blur-md sm:p-14">
           <div className="mb-6 flex justify-center">
-            <div className="flex h-20 w-20 animate-drift items-center justify-center rounded-full bg-gradient-to-br from-cream-50 to-champagne-50 ring-1 ring-champagne-200/60">
-              <IntegrativeMedicineIcon className="h-10 w-10 text-champagne-500" />
-            </div>
+            <img
+              src="/logo.png"
+              alt=""
+              aria-hidden="true"
+              className="h-24 w-24 animate-drift object-contain drop-shadow-[0_10px_22px_rgba(193,156,104,0.22)]"
+            />
           </div>
           <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-600">
             Integrative Wellness

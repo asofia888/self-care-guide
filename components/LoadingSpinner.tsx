@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { t } from '../i18n';
 import { useAppContext } from '../contexts/AppContext';
-import { SparklesIcon } from './Icons';
 
 export const LoadingSpinner: React.FC = React.memo(() => {
   const { language } = useAppContext();
@@ -38,9 +37,9 @@ export const LoadingSpinner: React.FC = React.memo(() => {
         {/* Soft glow */}
         <span className="absolute h-24 w-24 animate-breathe rounded-full bg-champagne-200/30 blur-2xl" />
 
-        {/* Breathing center orb */}
-        <span className="relative flex h-[4.5rem] w-[4.5rem] animate-breathe items-center justify-center rounded-full bg-gradient-to-br from-white to-champagne-100 shadow-glow ring-1 ring-champagne-200/50">
-          <SparklesIcon className="h-7 w-7 text-champagne-500" />
+        {/* Breathing center orb with the brand logo */}
+        <span className="relative flex h-[4.5rem] w-[4.5rem] animate-breathe items-center justify-center rounded-full bg-white/90 shadow-glow ring-1 ring-champagne-200/50">
+          <img src="/logo.png" alt="" aria-hidden="true" className="h-10 w-10 object-contain" />
         </span>
       </div>
 

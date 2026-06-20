@@ -79,7 +79,12 @@ describe('ErrorDisplay component', () => {
     const onClear = vi.fn();
     const { container } = render(<ErrorDisplay message="Test error" onClear={onClear} />);
     const alertDiv = container.querySelector('[role="alert"]');
-    expect(alertDiv).toHaveClass('bg-red-100', 'border-l-4', 'border-red-500', 'text-red-800');
+    expect(alertDiv).toHaveClass(
+      'bg-rose-50/60',
+      'rounded-2xl',
+      'border-rose-200/70',
+      'shadow-soft'
+    );
   });
 
   it('has no-print class to hide during printing', () => {

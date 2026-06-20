@@ -50,10 +50,10 @@ describe('Header component', () => {
     expect(manualButtons.length).toBeGreaterThanOrEqual(2);
 
     // The first active button should have specific styles and aria-current attribute.
-    expect(compendiumButtons[0].className).toContain('bg-sky-100');
+    expect(compendiumButtons[0].className).toContain('text-champagne-700');
     expect(compendiumButtons[0]).toHaveAttribute('aria-current', 'page');
 
-    expect(manualButtons[0].className).not.toContain('bg-sky-100');
+    expect(manualButtons[0].className).not.toContain('text-champagne-700');
     expect(manualButtons[0]).not.toHaveAttribute('aria-current');
   });
 

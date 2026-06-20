@@ -174,7 +174,7 @@ describe('ErrorBoundary component', () => {
     );
     const errorContainer = container.querySelector('.bg-gradient-to-br');
     expect(errorContainer).toBeInTheDocument();
-    expect(errorContainer).toHaveClass('from-slate-50', 'to-slate-100');
+    expect(errorContainer).toHaveClass('from-cream-50', 'to-cream-100');
   });
 
   it('renders alert icon with correct styling', () => {
@@ -183,7 +183,7 @@ describe('ErrorBoundary component', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    const iconContainer = container.querySelector('.bg-red-100.rounded-full');
+    const iconContainer = container.querySelector('.bg-rose-50.rounded-full');
     expect(iconContainer).toBeInTheDocument();
     expect(iconContainer).toHaveClass('w-16', 'h-16');
   });
@@ -205,7 +205,7 @@ describe('ErrorBoundary component', () => {
       </ErrorBoundary>
     );
     const retryButton = container.querySelector('button');
-    expect(retryButton).toHaveClass('px-6', 'py-3', 'font-semibold', 'rounded-lg');
+    expect(retryButton).toHaveClass('px-6', 'py-3', 'font-medium', 'rounded-full');
   });
 
   it('renders two buttons in error state', () => {

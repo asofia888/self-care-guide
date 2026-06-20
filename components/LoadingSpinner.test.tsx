@@ -88,26 +88,25 @@ describe('LoadingSpinner component', () => {
     expect(srOnlyText).toHaveClass('sr-only');
   });
 
-  it('renders loading icon with alt text', () => {
+  it('renders a decorative animated icon', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue());
-    render(<LoadingSpinner />);
-    const icon = screen.getByAltText('Loading');
-    expect(icon).toBeInTheDocument();
-    expect(icon).toHaveClass('w-12', 'h-12', 'animate-pulse');
+    const { container } = render(<LoadingSpinner />);
+    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.querySelector('.animate-breathe')).toBeInTheDocument();
   });
 
   it('has proper styling classes', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue());
     const { container } = render(<LoadingSpinner />);
     const statusDiv = container.querySelector('[role="status"]');
-    expect(statusDiv).toHaveClass('flex', 'flex-col', 'items-center', 'justify-center', 'my-12');
+    expect(statusDiv).toHaveClass('flex', 'flex-col', 'items-center', 'justify-center', 'my-16');
   });
 
   it('applies proper color classes to loading element', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue());
     const { container } = render(<LoadingSpinner />);
     const statusDiv = container.querySelector('[role="status"]');
-    expect(statusDiv).toHaveClass('text-sky-700');
+    expect(statusDiv).toHaveClass('text-stone-600');
   });
 
   it('renders with memo optimization (displayName)', () => {

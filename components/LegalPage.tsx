@@ -8,26 +8,24 @@ interface LegalPageProps {
 
 export const LegalPage: React.FC<LegalPageProps> = React.memo(({ title, content }) => {
   return (
-    <div className="animate-fade-in space-y-8">
-      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="flex-shrink-0 w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center">
-            <FileTextIcon className="w-7 h-7 text-sky-600" />
+    <div className="animate-fade-in-up">
+      <div className="rounded-[1.8rem] border border-cream-200/80 bg-white/80 p-8 shadow-soft backdrop-blur-sm sm:p-12">
+        <div className="mb-8 flex items-center gap-4">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cream-50 to-champagne-50 ring-1 ring-champagne-200/60">
+            <FileTextIcon className="h-6 w-6 text-champagne-500" />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-800">{title}</h2>
+          <h2 className="font-display text-3xl font-medium text-stone-800 md:text-4xl">{title}</h2>
         </div>
 
-        <div
-          className="prose prose-sm md:prose-base prose-slate max-w-none text-slate-700 
-                     prose-headings:text-slate-800 prose-headings:font-bold 
-                     prose-strong:text-slate-800 
-                     prose-p:my-2 prose-ul:my-3 prose-li:my-1 prose-h2:text-xl prose-h2:mb-2 prose-h2:mt-4
-                     prose-h3:text-lg prose-h3:mb-2 prose-h3:mt-3"
-        >
+        <div className="space-y-3 leading-relaxed text-stone-600">
           {content.split('\n\n').map((paragraph, index) => {
             const parts = paragraph.split(/(\*\*.*?\*\*)/g).map((part, i) => {
               if (part.startsWith('**') && part.endsWith('**')) {
-                return <strong key={i}>{part.slice(2, -2)}</strong>;
+                return (
+                  <strong key={i} className="font-medium text-stone-800">
+                    {part.slice(2, -2)}
+                  </strong>
+                );
               }
               return part;
             });

@@ -79,13 +79,11 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-5 md:px-8">
         <div className="flex flex-wrap items-center justify-between gap-y-3 py-3.5 md:py-5">
           <div className="flex min-w-0 items-center gap-3 sm:gap-3.5">
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft ring-1 ring-cream-200 sm:h-12 sm:w-12">
-              <img
-                src="/logo.png"
-                alt="Self-Care Guide for Wellness Logo"
-                className="h-7 w-7 object-contain sm:h-8 sm:w-8"
-              />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Self-Care Guide for Wellness Logo"
+              className="h-10 w-10 flex-shrink-0 object-contain drop-shadow-[0_2px_6px_rgba(124,92,57,0.15)] sm:h-11 sm:w-11"
+            />
             <div className="min-w-0">
               <h1 className="truncate font-display text-xl font-medium leading-none tracking-wide text-stone-800 sm:text-2xl md:text-[1.7rem]">
                 Self-Care Guide for Wellness

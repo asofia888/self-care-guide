@@ -8,17 +8,17 @@ import { t } from './i18n';
 // --- Lazy Load Pages ---
 const InstructionManual = lazy(() => import('./components/InstructionManual'));
 const PrivacyPolicy = lazy(() =>
-  import('./components/legal').then(m => ({
+  import('./components/legal').then((m) => ({
     default: m.PrivacyPolicy,
   }))
 );
 const TermsOfService = lazy(() =>
-  import('./components/legal').then(m => ({
+  import('./components/legal').then((m) => ({
     default: m.TermsOfService,
   }))
 );
 const DisclaimerPage = lazy(() =>
-  import('./components/legal').then(m => ({
+  import('./components/legal').then((m) => ({
     default: m.DisclaimerPage,
   }))
 );
@@ -54,40 +54,45 @@ const App: React.FC = () => {
     }
   };
 
+  const footerLink =
+    'px-3 py-1 min-h-[44px] sm:min-h-[auto] text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-champagne-600 active:text-champagne-700 transition-colors duration-300';
+
   return (
-    <div className="min-h-screen text-slate-800 flex flex-col">
+    <div className="min-h-screen flex flex-col text-stone-700">
       <Header />
-      <main className="container mx-auto p-4 md:p-8 flex-grow">
+      <main className="container mx-auto px-5 py-10 md:px-8 md:py-16 flex-grow">
         <div className="max-w-4xl mx-auto">
           <Suspense fallback={<LoadingSpinner />}>{renderActiveView()}</Suspense>
         </div>
       </main>
-      <footer className="text-center p-4 text-slate-500 text-sm mt-8 no-print">
-        <nav aria-label={t(language).footer.navigationLabel}>
-          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 mb-2">
-            <button
-              onClick={() => handleNavigate('privacy')}
-              className="px-2 py-1 min-h-[44px] sm:min-h-[auto] hover:text-sky-600 hover:underline active:text-sky-700 transition-colors"
-            >
-              {t(language).footer.privacy}
-            </button>
-            <span className="opacity-50 hidden sm:inline">|</span>
-            <button
-              onClick={() => handleNavigate('terms')}
-              className="px-2 py-1 min-h-[44px] sm:min-h-[auto] hover:text-sky-600 hover:underline active:text-sky-700 transition-colors"
-            >
-              {t(language).footer.terms}
-            </button>
-            <span className="opacity-50 hidden sm:inline">|</span>
-            <button
-              onClick={() => handleNavigate('disclaimer')}
-              className="px-2 py-1 min-h-[44px] sm:min-h-[auto] hover:text-sky-600 hover:underline active:text-sky-700 transition-colors"
-            >
-              {t(language).footer.disclaimerLink}
-            </button>
-          </div>
-        </nav>
-        <p>Self-Care Guide for Wellness</p>
+      <footer className="no-print mt-16 border-t border-cream-200/80 bg-white/40 backdrop-blur-sm">
+        <div className="container mx-auto px-5 py-9 text-center">
+          <nav aria-label={t(language).footer.navigationLabel}>
+            <div className="flex flex-wrap justify-center items-center gap-x-1 gap-y-1 mb-5">
+              <button onClick={() => handleNavigate('privacy')} className={footerLink}>
+                {t(language).footer.privacy}
+              </button>
+              <span className="text-cream-300 hidden sm:inline" aria-hidden="true">
+                ·
+              </span>
+              <button onClick={() => handleNavigate('terms')} className={footerLink}>
+                {t(language).footer.terms}
+              </button>
+              <span className="text-cream-300 hidden sm:inline" aria-hidden="true">
+                ·
+              </span>
+              <button onClick={() => handleNavigate('disclaimer')} className={footerLink}>
+                {t(language).footer.disclaimerLink}
+              </button>
+            </div>
+          </nav>
+          <p className="font-display text-lg italic tracking-wide text-stone-500">
+            Self-Care Guide for Wellness
+          </p>
+          <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-champagne-500/80">
+            Integrative Wellness
+          </p>
+        </div>
       </footer>
     </div>
   );

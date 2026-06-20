@@ -12,16 +12,14 @@
 
     <!-- Basic Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Self-Care Guide for Wellness | AI-Powered Integrative Medicine & Kampo Consultation
-    </title>
+    <title>Self-Care Guide for Wellness | AI-Powered Integrative Medicine & Kampo Reference</title>
     <meta
       name="description"
-      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches. Professional and general consultation modes available."
+      content="An AI-powered integrative medicine reference combining traditional Kampo, Western herbal traditions, and modern supplements. Search detailed, bilingual (English & Japanese) information on herbs, formulas, and supplements from an integrative perspective."
     />
     <meta
       name="keywords"
-      content="kampo medicine, tcm, traditional chinese medicine, integrative medicine, wellness, self-care, ai consultation, herbal medicine, holistic health, personalized wellness"
+      content="kampo medicine, tcm, traditional chinese medicine, integrative medicine, western herbs, supplements, herbal medicine, materia medica, holistic health, self-care"
     />
     <meta name="author" content="Self-Care Guide for Wellness" />
     <meta name="robots" content="index, follow" />
@@ -36,7 +34,7 @@
     />
     <meta
       property="og:description"
-      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches."
+      content="An AI-powered integrative medicine reference combining traditional Kampo, Western herbs, and modern supplements, with bilingual (English & Japanese) information on herbs, formulas, and supplements."
     />
     <meta property="og:image" content="https://self-care-guide.vercel.app/logo.png" />
     <meta property="og:image:alt" content="Self-Care Guide for Wellness Logo" />
@@ -54,13 +52,13 @@
     />
     <meta
       name="twitter:description"
-      content="Get personalized wellness recommendations through AI-powered analysis combining traditional Kampo medicine, TCM, and modern integrative health approaches."
+      content="An AI-powered integrative medicine reference combining traditional Kampo, Western herbs, and modern supplements, with bilingual (English & Japanese) information on herbs, formulas, and supplements."
     />
     <meta name="twitter:image" content="https://self-care-guide.vercel.app/logo.png" />
     <meta name="twitter:image:alt" content="Self-Care Guide for Wellness Logo" />
 
     <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="theme-color" content="#fbf9f5" />
     <meta name="application-name" content="Self-Care Guide for Wellness" />
     <meta name="apple-mobile-web-app-title" content="Self-Care Guide" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -80,7 +78,7 @@
         "@type": "WebApplication",
         "name": "Self-Care Guide for Wellness",
         "alternateName": "Self-Care Guide",
-        "description": "AI-powered integrative medicine consultation platform combining traditional Kampo medicine, TCM, and modern wellness approaches for personalized health recommendations.",
+        "description": "AI-powered integrative medicine reference combining traditional Kampo, Western herbs, and modern supplements, with bilingual (English & Japanese) information for practitioners and enthusiasts.",
         "url": "https://self-care-guide.vercel.app/",
         "logo": "https://self-care-guide.vercel.app/logo.png",
         "image": "https://self-care-guide.vercel.app/logo.png",
@@ -92,13 +90,12 @@
           "priceCurrency": "USD"
         },
         "featureList": [
-          "AI-powered health analysis",
-          "Traditional Kampo medicine recommendations",
-          "TCM integration",
-          "Personalized wellness plans",
-          "Professional and general consultation modes",
+          "AI-powered integrative medicine reference",
+          "Kampo formula information",
+          "Western herb information",
+          "Supplement information",
           "Multi-language support (English/Japanese)",
-          "Image-based diagnosis support"
+          "Printable results"
         ],
         "inLanguage": ["en", "ja"],
         "audience": {
@@ -121,13 +118,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=Shippori+Mincho:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <style>
       body {
-        font-family: 'Sarabun', sans-serif;
-        background-color: #f8fafc; /* Equivalent to slate-50 */
+        font-family: 'Jost', 'Noto Sans JP', system-ui, sans-serif;
+        color: #4a443c;
+        background-color: #fbf9f5;
+        background-image:
+          radial-gradient(1100px 700px at 12% -8%, rgba(224, 205, 174, 0.28), transparent 60%),
+          radial-gradient(900px 650px at 100% 0%, rgba(200, 209, 190, 0.22), transparent 55%),
+          radial-gradient(1000px 800px at 50% 120%, rgba(239, 227, 208, 0.4), transparent 60%);
+        background-attachment: fixed;
       }
 
       /* Mobile-first responsive improvements */
@@ -254,20 +257,6 @@
         }
       }
     </style>
-    <script type="importmap">
-      {
-        "imports": {
-          "react/": "https://esm.sh/react@^19.1.0/",
-          "react": "https://esm.sh/react@^19.1.0",
-          "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
-          "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-          "vitest": "https://aistudiocdn.com/vitest@^3.2.4",
-          "vitest/": "https://aistudiocdn.com/vitest@^3.2.4/",
-          "@testing-library/react": "https://aistudiocdn.com/@testing-library/react@^16.3.0",
-          "@testing-library/jest-dom/": "https://aistudiocdn.com/@testing-library/jest-dom@^6.8.0/"
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -18,15 +18,9 @@ describe('ErrorDisplay component', () => {
     language: 'en',
     activeView: 'compendium',
     fontSize: 'standard',
-    analysisResult: null,
-    streamingContent: '',
-    isLoading: false,
-    error: null,
     handleLanguageChange: vi.fn(),
     handleNavigate: vi.fn(),
     handleFontSizeChange: vi.fn(),
-    handleAnalysis: vi.fn(),
-    clearError: vi.fn(),
     viewCompendiumItem: vi.fn(),
     ...overrides,
   });
@@ -85,7 +79,12 @@ describe('ErrorDisplay component', () => {
     const onClear = vi.fn();
     const { container } = render(<ErrorDisplay message="Test error" onClear={onClear} />);
     const alertDiv = container.querySelector('[role="alert"]');
-    expect(alertDiv).toHaveClass('bg-red-100', 'border-l-4', 'border-red-500', 'text-red-800');
+    expect(alertDiv).toHaveClass(
+      'bg-rose-50/60',
+      'rounded-2xl',
+      'border-rose-200/70',
+      'shadow-soft'
+    );
   });
 
   it('has no-print class to hide during printing', () => {

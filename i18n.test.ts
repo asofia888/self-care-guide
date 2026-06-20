@@ -49,16 +49,6 @@ describe('i18n Translation System', () => {
     });
   });
 
-  it('provides complete welcome translations', () => {
-    const en = t('en').welcome;
-    const ja = t('ja').welcome;
-
-    expect(en.title).toBeDefined();
-    expect(en.description).toBeDefined();
-    expect(ja.title).toBeDefined();
-    expect(ja.description).toBeDefined();
-  });
-
   it('provides complete compendium translations', () => {
     const en = t('en').compendium;
     const ja = t('ja').compendium;
@@ -68,9 +58,7 @@ describe('i18n Translation System', () => {
       'searchLabel',
       'searchPlaceholder',
       'searchButton',
-      'clearButton',
       'searching',
-      'printButton',
       'noResults',
     ];
 
@@ -103,105 +91,6 @@ describe('i18n Translation System', () => {
     // API error should have placeholder
     expect(en.error.apiError).toContain('{message}');
     expect(ja.error.apiError).toContain('{message}');
-  });
-
-  it('provides user input form translations', () => {
-    const en = t('en').userInput;
-    const ja = t('ja').userInput;
-
-    expect(en).toBeDefined();
-    expect(ja).toBeDefined();
-
-    // Check submit buttons
-    expect(en.submitButton).toBeDefined();
-    expect(en.submitButtonLoading).toBeDefined();
-    expect(ja.submitButton).toBeDefined();
-    expect(ja.submitButtonLoading).toBeDefined();
-
-    // Check mode-specific translations
-    expect(en.professional).toBeDefined();
-    expect(en.general).toBeDefined();
-    expect(ja.professional).toBeDefined();
-    expect(ja.general).toBeDefined();
-
-    // Check modes
-    expect(en.modes.professional).toBeDefined();
-    expect(en.modes.general).toBeDefined();
-    expect(ja.modes.professional).toBeDefined();
-    expect(ja.modes.general).toBeDefined();
-  });
-
-  it('provides professional form translations', () => {
-    const en = t('en').userInput.professional;
-    const ja = t('ja').userInput.professional;
-
-    const requiredFields = [
-      'patientInfoTitle',
-      'age',
-      'gender',
-      'chiefComplaint',
-      'chiefComplaintRequiredError',
-    ];
-
-    requiredFields.forEach((field) => {
-      expect(en[field as keyof typeof en]).toBeDefined();
-      expect(ja[field as keyof typeof ja]).toBeDefined();
-    });
-  });
-
-  it('provides general form translations', () => {
-    const en = t('en').userInput.general;
-    const ja = t('ja').userInput.general;
-
-    const requiredFields = [
-      'basicInfoTitle',
-      'age',
-      'gender',
-      'concernsTitle',
-      'concernsRequiredError',
-    ];
-
-    requiredFields.forEach((field) => {
-      expect(en[field as keyof typeof en]).toBeDefined();
-      expect(ja[field as keyof typeof ja]).toBeDefined();
-    });
-  });
-
-  it('provides gender options as arrays', () => {
-    const en = t('en').userInput.genderOptions;
-    const ja = t('ja').userInput.genderOptions;
-
-    expect(Array.isArray(en)).toBe(true);
-    expect(Array.isArray(ja)).toBe(true);
-    expect(en.length).toBeGreaterThan(0);
-    expect(ja.length).toBeGreaterThan(0);
-
-    // Each option should have value and label
-    en.forEach((option) => {
-      expect(option.value).toBeDefined();
-      expect(option.label).toBeDefined();
-    });
-
-    ja.forEach((option) => {
-      expect(option.value).toBeDefined();
-      expect(option.label).toBeDefined();
-    });
-  });
-
-  it('provides analysis display translations', () => {
-    const en = t('en').analysisDisplay;
-    const ja = t('ja').analysisDisplay;
-
-    expect(en).toBeDefined();
-    expect(ja).toBeDefined();
-
-    // Check for essential fields
-    expect(en.printButton).toBeDefined();
-    expect(ja.printButton).toBeDefined();
-    expect(en.professional).toBeDefined();
-    expect(ja.professional).toBeDefined();
-    expect(en.general).toBeDefined();
-    expect(ja.general).toBeDefined();
   });
 
   it('provides footer translations', () => {
@@ -244,11 +133,16 @@ describe('i18n Translation System', () => {
     const ja = t('ja').manual;
 
     expect(en.title).toBeDefined();
-    expect(en.overviewTitle).toBeDefined();
-    expect(en.overviewContent).toBeDefined();
+    expect(en.description).toBeDefined();
+    expect(en.introduction.title).toBeDefined();
+    expect(en.compendium.title).toBeDefined();
+    expect(en.generalTips.title).toBeDefined();
+
     expect(ja.title).toBeDefined();
-    expect(ja.overviewTitle).toBeDefined();
-    expect(ja.overviewContent).toBeDefined();
+    expect(ja.description).toBeDefined();
+    expect(ja.introduction.title).toBeDefined();
+    expect(ja.compendium.title).toBeDefined();
+    expect(ja.generalTips.title).toBeDefined();
   });
 
   it('returns fallback to Japanese for invalid language codes', () => {
@@ -328,40 +222,5 @@ describe('i18n Translation System', () => {
       const jaEquivalent = jaPlaceholders.find((jp) => jp.startsWith(key));
       expect(jaEquivalent, `Missing placeholder in Japanese for ${key}`).toBeDefined();
     });
-  });
-
-  it('has matching array lengths for options', () => {
-    const en = t('en').userInput;
-    const ja = t('ja').userInput;
-
-    // Gender options
-    expect(en.genderOptions.length).toBe(ja.genderOptions.length);
-
-    // Professional occupation options
-    expect(en.professional.occupationOptions.length).toBe(ja.professional.occupationOptions.length);
-
-    // General occupation options
-    expect(en.general.occupationOptions.length).toBe(ja.general.occupationOptions.length);
-
-    // Concern options
-    expect(en.general.concernOptions.length).toBe(ja.general.concernOptions.length);
-
-    // Self-assessment options
-    expect(en.general.selfAssessmentOptions.length).toBe(ja.general.selfAssessmentOptions.length);
-  });
-
-  it('has consistent option values across languages', () => {
-    const en = t('en').userInput;
-    const ja = t('ja').userInput;
-
-    // Gender values should match
-    const enGenderValues = en.genderOptions.map((o) => o.value).sort();
-    const jaGenderValues = ja.genderOptions.map((o) => o.value).sort();
-    expect(enGenderValues).toEqual(jaGenderValues);
-
-    // Concern values should match
-    const enConcernValues = en.general.concernOptions.map((o) => o.value).sort();
-    const jaConcernValues = ja.general.concernOptions.map((o) => o.value).sort();
-    expect(enConcernValues).toEqual(jaConcernValues);
   });
 });

@@ -11,18 +11,11 @@ import type { LegalPageType } from '../../types';
 export function createLegalPageComponent(pageType: LegalPageType) {
   const Component: React.FC = () => {
     const { language } = useAppContext();
-    const translations = t(language).legal;
+    // The translations expose each legal page under its own key
+    // (privacy / terms / disclaimer), each shaped as { title, content }.
+    const page = t(language)[pageType];
 
-    // Map page types to their corresponding translation keys
-    const titleKey = `${pageType}Title` as const;
-    const contentKey = `${pageType}Content` as const;
-
-    return (
-      <LegalPage
-        title={translations[titleKey] as string}
-        content={translations[contentKey] as string}
-      />
-    );
+    return <LegalPage title={page.title} content={page.content} />;
   };
 
   Component.displayName = `${pageType.charAt(0).toUpperCase() + pageType.slice(1)}Page`;

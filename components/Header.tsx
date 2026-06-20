@@ -13,10 +13,12 @@ const ToggleButton = React.memo<{
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-2 min-h-[44px] sm:min-h-[auto] sm:py-1 rounded-full transition-colors duration-200 ${isSmall ? 'text-sm sm:text-xs' : 'text-base sm:text-sm'} ${
+      className={`px-3.5 py-2 min-h-[44px] sm:min-h-[auto] sm:py-1.5 rounded-full uppercase transition-all duration-300 ${
+        isSmall ? 'text-[11px] tracking-wider' : 'text-xs tracking-[0.12em]'
+      } ${
         isActive
-          ? 'bg-sky-600 text-white font-semibold shadow-sm'
-          : 'bg-transparent text-slate-600 hover:bg-slate-200/50 active:bg-slate-300'
+          ? 'bg-gradient-to-r from-champagne-400 to-champagne-500 text-white shadow-soft'
+          : 'text-stone-500 hover:text-champagne-600'
       }`}
     >
       {children}
@@ -38,13 +40,21 @@ const NavButton = React.memo<{
       onClick={() => onClick(view)}
       aria-current={isActive ? 'page' : undefined}
       aria-label={label}
-      className={`flex items-center gap-2 px-4 py-3 min-h-[44px] sm:min-h-[auto] sm:px-3 sm:py-2 rounded-lg text-base sm:text-sm transition-all duration-200 ${
+      className={`group flex items-center gap-2.5 px-4 py-3 min-h-[44px] sm:min-h-[auto] sm:py-2 rounded-full text-sm tracking-wide transition-all duration-300 ${
         isActive
-          ? 'bg-sky-100 text-sky-700 font-semibold'
-          : 'text-slate-600 hover:bg-slate-100 active:bg-slate-200'
+          ? 'bg-white text-champagne-700 shadow-soft'
+          : 'text-stone-500 hover:text-champagne-600 hover:bg-white/60'
       }`}
     >
-      {icon}
+      <span
+        className={
+          isActive
+            ? 'text-champagne-500'
+            : 'text-stone-400 transition-colors group-hover:text-champagne-500'
+        }
+      >
+        {icon}
+      </span>
       <span>{label}</span>
     </button>
   );
@@ -65,48 +75,50 @@ export const Header: React.FC = () => {
   const navTranslations = translations.nav;
 
   return (
-    <header className="py-3 md:py-4 bg-white/80 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-20 no-print">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="flex items-center justify-between flex-wrap gap-y-3">
-          <div className="flex items-center justify-center space-x-2 sm:space-x-3 min-w-0">
-            <img
-              src="/logo.png"
-              alt="Self-Care Guide for Wellness Logo"
-              className="w-8 h-8 sm:w-10 sm:h-10 object-contain flex-shrink-0"
-            />
+    <header className="sticky top-0 z-20 no-print border-b border-cream-200/70 bg-cream-50/70 backdrop-blur-xl">
+      <div className="container mx-auto px-5 md:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-y-3 py-3.5 md:py-5">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-3.5">
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft ring-1 ring-cream-200 sm:h-12 sm:w-12">
+              <img
+                src="/logo.png"
+                alt="Self-Care Guide for Wellness Logo"
+                className="h-7 w-7 object-contain sm:h-8 sm:w-8"
+              />
+            </div>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-slate-800 truncate">
+              <h1 className="truncate font-display text-xl font-medium leading-none tracking-wide text-stone-800 sm:text-2xl md:text-[1.7rem]">
                 Self-Care Guide for Wellness
               </h1>
-              <p className="text-xs text-sky-600 -mt-1 hidden sm:block">
+              <p className="mt-1.5 text-[10px] uppercase tracking-[0.3em] text-champagne-600 sm:text-[11px]">
                 {headerTranslations.tagline}
               </p>
             </div>
           </div>
 
           <nav
-            className="hidden md:flex items-center justify-center gap-2"
+            className="hidden items-center gap-1.5 rounded-full bg-cream-100/60 p-1 md:flex"
             aria-label="Main navigation"
           >
             <NavButton
               view="compendium"
               activeView={activeView}
               onClick={handleNavigate}
-              icon={<IntegrativeMedicineIcon className="w-5 h-5" />}
+              icon={<IntegrativeMedicineIcon className="h-5 w-5" />}
               label={navTranslations.compendium}
             />
             <NavButton
               view="manual"
               activeView={activeView}
               onClick={handleNavigate}
-              icon={<HelpCircleIcon className="w-5 h-5" />}
+              icon={<HelpCircleIcon className="h-5 w-5" />}
               label={navTranslations.manual}
             />
           </nav>
 
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex flex-shrink-0 items-center gap-2">
             <div
-              className="flex items-center space-x-1 p-0.5 bg-slate-100/80 rounded-full border border-slate-200"
+              className="flex items-center gap-0.5 rounded-full bg-cream-100/70 p-0.5 ring-1 ring-cream-200/70"
               role="group"
               aria-label={headerTranslations.fontSize.label}
             >
@@ -126,7 +138,7 @@ export const Header: React.FC = () => {
               </ToggleButton>
             </div>
             <div
-              className="flex items-center space-x-1 p-0.5 bg-slate-100/80 rounded-full border border-slate-200"
+              className="flex items-center gap-0.5 rounded-full bg-cream-100/70 p-0.5 ring-1 ring-cream-200/70"
               role="group"
               aria-label="Language selection"
             >
@@ -140,20 +152,20 @@ export const Header: React.FC = () => {
           </div>
         </div>
       </div>
-      <nav className="md:hidden container mx-auto px-4 mt-3" aria-label="Mobile navigation">
-        <div className="flex items-center justify-center gap-2 p-1 bg-slate-100/50 rounded-lg">
+      <nav className="container mx-auto px-5 pb-3 md:hidden" aria-label="Mobile navigation">
+        <div className="flex items-center justify-center gap-1.5 rounded-full bg-cream-100/60 p-1">
           <NavButton
             view="compendium"
             activeView={activeView}
             onClick={handleNavigate}
-            icon={<IntegrativeMedicineIcon className="w-5 h-5" />}
+            icon={<IntegrativeMedicineIcon className="h-5 w-5" />}
             label={navTranslations.compendium}
           />
           <NavButton
             view="manual"
             activeView={activeView}
             onClick={handleNavigate}
-            icon={<HelpCircleIcon className="w-5 h-5" />}
+            icon={<HelpCircleIcon className="h-5 w-5" />}
             label={navTranslations.manual}
           />
         </div>

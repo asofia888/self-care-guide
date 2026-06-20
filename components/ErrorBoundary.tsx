@@ -55,12 +55,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default fallback UI
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-slate-100">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-red-200">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-cream-50 to-cream-100">
+          <div className="max-w-md w-full bg-white/90 rounded-[1.8rem] shadow-elegant p-8 border border-cream-200 backdrop-blur-sm">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-50 rounded-full mb-5 ring-1 ring-rose-100">
                 <svg
-                  className="w-8 h-8 text-red-600"
+                  className="w-8 h-8 text-rose-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -73,16 +73,18 @@ export class ErrorBoundary extends Component<Props, State> {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">問題が発生しました</h2>
-              <p className="text-slate-600 mb-6">
+              <h2 className="font-display text-2xl font-medium text-stone-800 mb-2">
+                問題が発生しました
+              </h2>
+              <p className="text-stone-500 leading-relaxed mb-6">
                 アプリケーションでエラーが発生しました。ページを再読み込みしてください。
               </p>
               {this.state.error && process.env.NODE_ENV === 'development' && (
-                <details className="text-left mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <summary className="cursor-pointer font-semibold text-slate-700 mb-2">
+                <details className="text-left mb-6 p-4 bg-cream-50 rounded-xl border border-cream-200">
+                  <summary className="cursor-pointer font-medium text-stone-600 mb-2">
                     エラー詳細
                   </summary>
-                  <pre className="text-xs text-red-600 overflow-auto">
+                  <pre className="text-xs text-rose-500 overflow-auto">
                     {this.state.error.toString()}
                   </pre>
                 </details>
@@ -90,13 +92,13 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={this.handleReset}
-                  className="flex-1 px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-colors"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-champagne-400 to-champagne-500 text-white font-medium rounded-full shadow-soft hover:shadow-elegant transition-all duration-300"
                 >
                   再試行
                 </button>
                 <button
                   onClick={() => window.location.reload()}
-                  className="flex-1 px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition-colors"
+                  className="flex-1 px-6 py-3 bg-cream-100 text-stone-600 font-medium rounded-full hover:bg-cream-200 transition-colors duration-300"
                 >
                   ページを再読み込み
                 </button>

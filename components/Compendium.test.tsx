@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { screen, waitFor, fireEvent } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Compendium } from './Compendium';
-import {
-  render,
-  mockFetchSuccess,
-  mockFetchError,
-  mockCompendiumResult,
-} from '../__tests__/test-utils';
+import { getCompendiumInfo } from '../services/geminiService';
+import { APIError } from '../utils/errorHandler';
+import { render, mockCompendiumResult } from '../__tests__/test-utils';
+import type { CompendiumResult } from '../types';
 
-// Mock the geminiService
+// Mock the geminiService so the component talks to a controllable fake.
 vi.mock('../services/geminiService', () => ({
   getCompendiumInfo: vi.fn(),
 }));
@@ -18,10 +16,9 @@ describe('Compendium Component', () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    // Reset all mocks before each test
     vi.clearAllMocks();
-    // Mock successful fetch by default
-    mockFetchSuccess(mockCompendiumResult);
+    // Default: searches resolve with the mock compendium result.
+    vi.mocked(getCompendiumInfo).mockResolvedValue(mockCompendiumResult);
   });
 
   afterEach(() => {
@@ -32,10 +29,12 @@ describe('Compendium Component', () => {
     render(<Compendium />);
 
     // Check if main elements are present
-    expect(screen.getByRole('heading', { name: /compendium/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /integrative medicine guide/i })
+    ).toBeInTheDocument();
     expect(screen.getByRole('searchbox')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
-    expect(screen.getByText(/provide detailed, accurate information/i)).toBeInTheDocument();
+    expect(screen.getByText(/search for information on kampo formulas/i)).toBeInTheDocument();
   });
 
   it('handles search input correctly', async () => {
@@ -65,19 +64,22 @@ describe('Compendium Component', () => {
     await user.type(searchInput, 'ginger');
     await user.click(searchButton);
 
-    // Wait for loading to complete
+    // Wait for loading to complete and results to render
     await waitFor(() => {
-      expect(screen.queryByText(/searching/i)).not.toBeInTheDocument();
+      expect(screen.getByText('Shokenchuto')).toBeInTheDocument();
     });
 
-    // Check if results are displayed
-    expect(screen.getByText('Shokenchuto')).toBeInTheDocument();
     expect(screen.getByText('Ginger')).toBeInTheDocument();
     expect(screen.getByText('Ginger Extract')).toBeInTheDocument();
-    expect(screen.getByText(/integrative viewpoint/i)).toBeInTheDocument();
+    // Use the heading role so we match the section title, not the viewpoint body text.
+    expect(screen.getByRole('heading', { name: /integrative viewpoint/i })).toBeInTheDocument();
+    expect(getCompendiumInfo).toHaveBeenCalledWith('ginger', 'en');
   });
 
   it('shows loading state during search', async () => {
+    // Keep the request pending so the loading state stays visible.
+    vi.mocked(getCompendiumInfo).mockImplementation(() => new Promise<CompendiumResult>(() => {}));
+
     render(<Compendium />);
 
     const searchInput = screen.getByRole('searchbox');
@@ -86,13 +88,14 @@ describe('Compendium Component', () => {
     await user.type(searchInput, 'ginger');
     await user.click(searchButton);
 
-    // Check loading state
-    expect(screen.getByText(/searching/i)).toBeInTheDocument();
-    expect(searchButton).toBeDisabled();
+    // The submit button switches to its "searching" label and is disabled.
+    const searchingButton = screen.getByRole('button', { name: /searching/i });
+    expect(searchingButton).toBeInTheDocument();
+    expect(searchingButton).toBeDisabled();
   });
 
   it('handles search errors gracefully', async () => {
-    mockFetchError(500, 'Server Error');
+    vi.mocked(getCompendiumInfo).mockRejectedValue(new APIError(500, 'Server Error'));
 
     render(<Compendium />);
 
@@ -104,23 +107,23 @@ describe('Compendium Component', () => {
 
     // Wait for error to be displayed
     await waitFor(() => {
-      expect(screen.getByText(/error/i)).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toBeInTheDocument();
     });
 
-    // Check that error can be cleared
-    const clearButton = screen.getByRole('button', { name: /clear/i });
-    await user.click(clearButton);
+    // Check that error can be dismissed
+    const dismissButton = screen.getByRole('button', { name: /dismiss/i });
+    await user.click(dismissButton);
 
     await waitFor(() => {
-      expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
   });
 
   it('shows no results message when search returns empty', async () => {
-    mockFetchSuccess({
+    vi.mocked(getCompendiumInfo).mockResolvedValue({
       integrativeViewpoint: '',
       kampoEntries: [],
-      herbEntries: [],
+      westernHerbEntries: [],
       supplementEntries: [],
     });
 
@@ -145,9 +148,9 @@ describe('Compendium Component', () => {
     await user.type(searchInput, 'ginger');
     await user.keyboard('{Enter}');
 
-    // Should trigger search
+    // Should trigger the search
     await waitFor(() => {
-      expect(screen.getByText(/searching/i)).toBeInTheDocument();
+      expect(getCompendiumInfo).toHaveBeenCalledWith('ginger', 'en');
     });
   });
 
@@ -214,10 +217,11 @@ describe('Compendium Component', () => {
     await user.click(searchButton);
 
     await waitFor(() => {
-      // Check section headers
-      expect(screen.getByText(/kampo formula/i)).toBeInTheDocument();
-      expect(screen.getByText(/herb/i)).toBeInTheDocument();
-      expect(screen.getByText(/supplement/i)).toBeInTheDocument();
+      // Use heading role + exact titles so card category labels (singular) don't
+      // collide with the plural section headings.
+      expect(screen.getByRole('heading', { name: 'Kampo Formulas' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Western Herbs' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Supplements' })).toBeInTheDocument();
     });
   });
 });

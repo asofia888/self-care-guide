@@ -18,20 +18,13 @@ describe('Header component', () => {
   const mockHandleFontSizeChange = vi.fn();
 
   // Define a base mock context value that can be reused and overridden in tests.
-  // FIX: Added all missing properties to satisfy the AppContextType interface.
   const mockContextValue: AppContextType = {
     language: 'en',
     activeView: 'compendium',
     fontSize: 'standard',
-    analysisResult: null,
-    streamingContent: '',
-    isLoading: false,
-    error: null,
     handleLanguageChange: mockHandleLanguageChange,
     handleNavigate: mockHandleNavigate,
     handleFontSizeChange: mockHandleFontSizeChange,
-    handleAnalysis: vi.fn(),
-    clearError: vi.fn(),
     viewCompendiumItem: vi.fn(),
   };
 
@@ -49,24 +42,24 @@ describe('Header component', () => {
 
   it('renders navigation buttons and highlights the active one with aria-current', () => {
     render(<Header />);
-    const compendiumButtons = screen.getAllByRole('button', { name: /Compendium/i });
-    const manualButtons = screen.getAllByRole('button', { name: /Guide/i });
+    const compendiumButtons = screen.getAllByRole('button', { name: 'Integrative Medicine Guide' });
+    const manualButtons = screen.getAllByRole('button', { name: 'Guide' });
 
     // Should have at least 2 of each (desktop and mobile)
     expect(compendiumButtons.length).toBeGreaterThanOrEqual(2);
     expect(manualButtons.length).toBeGreaterThanOrEqual(2);
 
     // The first active button should have specific styles and aria-current attribute.
-    expect(compendiumButtons[0].className).toContain('bg-sky-100');
+    expect(compendiumButtons[0].className).toContain('text-champagne-700');
     expect(compendiumButtons[0]).toHaveAttribute('aria-current', 'page');
 
-    expect(manualButtons[0].className).not.toContain('bg-sky-100');
+    expect(manualButtons[0].className).not.toContain('text-champagne-700');
     expect(manualButtons[0]).not.toHaveAttribute('aria-current');
   });
 
   it('calls handleNavigate when a navigation button is clicked', () => {
     render(<Header />);
-    const manualButtons = screen.getAllByRole('button', { name: /Guide/i });
+    const manualButtons = screen.getAllByRole('button', { name: 'Guide' });
     fireEvent.click(manualButtons[0]);
     expect(mockHandleNavigate).toHaveBeenCalledWith('manual');
     expect(mockHandleNavigate).toHaveBeenCalledTimes(1);
@@ -97,7 +90,7 @@ describe('Header component', () => {
 
     render(<Header />);
     expect(screen.getByText('あなたのウェルネス・ガイド')).toBeInTheDocument();
-    const compendiumButtons = screen.getAllByRole('button', { name: /薬草事典/i });
+    const compendiumButtons = screen.getAllByRole('button', { name: '統合医学ガイド' });
     expect(compendiumButtons).toHaveLength(2); // Desktop and mobile
   });
 });

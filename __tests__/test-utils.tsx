@@ -13,7 +13,7 @@ const customRender = (
   const { initialLanguage = 'en', ...renderOptions } = options;
 
   function Wrapper({ children }: { children: React.ReactNode }) {
-    return <AppProvider>{children}</AppProvider>;
+    return <AppProvider initialLanguage={initialLanguage}>{children}</AppProvider>;
   }
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
@@ -34,10 +34,10 @@ export const mockCompendiumResult = {
       clinicalNotes: 'Use with caution in heat conditions.',
     },
   ],
-  herbEntries: [
+  westernHerbEntries: [
     {
       name: 'Ginger',
-      category: 'Herb' as const,
+      category: 'Western Herb' as const,
       summary: 'Warming herb for digestive health.',
       properties: 'Hot, pungent',
       actions: ['Warm the stomach', 'Stop nausea'],

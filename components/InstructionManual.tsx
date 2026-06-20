@@ -8,16 +8,14 @@ const Section: React.FC<{
   title: string;
   children: React.ReactNode;
 }> = React.memo(({ icon, title, children }) => (
-  <section className="bg-white p-5 rounded-xl shadow-md border border-slate-200 flex flex-col">
-    <div className="flex items-center gap-3 mb-4">
-      <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center">
+  <section className="rounded-2xl border border-cream-200/80 bg-white/85 p-7 shadow-soft sm:p-8">
+    <div className="mb-5 flex items-center gap-3.5">
+      <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cream-50 to-champagne-50 ring-1 ring-champagne-200/50">
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-slate-800">{title}</h3>
+      <h3 className="font-display text-2xl font-medium text-stone-800">{title}</h3>
     </div>
-    <div className="prose prose-sm prose-slate max-w-none text-slate-700 prose-p:my-2 prose-strong:text-slate-800 prose-ul:my-2 prose-li:my-1">
-      {children}
-    </div>
+    <div className="space-y-3 leading-relaxed text-stone-600">{children}</div>
   </section>
 ));
 Section.displayName = 'Section';
@@ -27,18 +25,25 @@ const InstructionManual: React.FC = () => {
   const translations = t(language).manual;
 
   return (
-    <div className="animate-fade-in space-y-8">
-      <div className="text-center p-8 bg-white rounded-2xl shadow-md border border-slate-200">
-        <div className="flex justify-center mb-4">
-          <HelpCircleIcon className="w-16 h-16 text-sky-500" />
+    <div className="animate-fade-in-up space-y-8">
+      <div className="rounded-[2rem] border border-white/60 bg-white/70 p-10 text-center shadow-elegant backdrop-blur-md sm:p-14">
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-cream-50 to-champagne-50 ring-1 ring-champagne-200/60">
+            <HelpCircleIcon className="h-10 w-10 text-champagne-500" />
+          </div>
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">{translations.title}</h2>
-        <p className="text-slate-600 max-w-2xl mx-auto">{translations.description}</p>
+        <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-600">Guide</p>
+        <h2 className="font-display text-3xl font-medium text-stone-800 sm:text-4xl">
+          {translations.title}
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl leading-relaxed text-stone-500">
+          {translations.description}
+        </p>
       </div>
 
       <div className="space-y-6">
         <Section
-          icon={<SparklesIcon className="w-6 h-6 text-sky-600" />}
+          icon={<SparklesIcon className="h-6 w-6 text-champagne-500" />}
           title={translations.introduction.title}
         >
           <p>{translations.introduction.p1}</p>
@@ -46,7 +51,7 @@ const InstructionManual: React.FC = () => {
         </Section>
 
         <Section
-          icon={<BookOpenIcon className="w-6 h-6 text-sky-600" />}
+          icon={<BookOpenIcon className="h-6 w-6 text-sage-500" />}
           title={translations.compendium.title}
         >
           <p>{translations.compendium.p1}</p>
@@ -54,17 +59,15 @@ const InstructionManual: React.FC = () => {
         </Section>
 
         <Section
-          icon={<AlertTriangleIcon className="w-6 h-6 text-sky-600" />}
+          icon={<AlertTriangleIcon className="h-6 w-6 text-champagne-500" />}
           title={translations.generalTips.title}
         >
-          <div className="mt-2">
-            <h4 className="font-bold flex items-center gap-2">
-              <AlertTriangleIcon className="w-5 h-5" />
+          <div className="rounded-xl border border-champagne-200/50 bg-champagne-50/40 p-5">
+            <h4 className="mb-2 flex items-center gap-2 font-display text-lg text-stone-800">
+              <AlertTriangleIcon className="h-5 w-5 text-champagne-500" />
               {translations.generalTips.disclaimer.title}
             </h4>
-            <p className="font-semibold text-red-700/80">
-              {translations.generalTips.disclaimer.p1}
-            </p>
+            <p className="text-stone-600">{translations.generalTips.disclaimer.p1}</p>
           </div>
         </Section>
       </div>

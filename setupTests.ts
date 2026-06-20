@@ -1,5 +1,12 @@
 // This file extends Vitest's `expect` function with matchers from jest-dom.
 // This allows us to use convenient assertions like `toBeInTheDocument()`.
-// For this to work in an environment without package.json, the test runner
-// would need to be configured to resolve this module, potentially from a CDN.
 import '@testing-library/jest-dom/vitest';
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+
+// `vitest.config.ts` runs with `isolate: false`, so the jsdom document is
+// shared across test files. Unmount React trees after every test to prevent
+// rendered output from accumulating and causing "multiple elements" errors.
+afterEach(() => {
+  cleanup();
+});

@@ -9,4 +9,6 @@ import { cleanup } from '@testing-library/react';
 // rendered output from accumulating and causing "multiple elements" errors.
 afterEach(() => {
   cleanup();
+  // Saved settings and search history must not leak between tests.
+  localStorage.clear();
 });

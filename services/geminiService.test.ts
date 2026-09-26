@@ -74,6 +74,8 @@ const createMockResponse = (
 describe('GeminiService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Drop queued responses and implementations left over from earlier tests.
+    vi.mocked(fetch).mockReset();
   });
 
   afterEach(() => {
@@ -96,6 +98,7 @@ describe('GeminiService', () => {
           query: 'ginger',
           language: 'en',
         }),
+        signal: expect.any(AbortSignal),
       });
 
       expect(result).toEqual(mockCompendiumResult);
@@ -116,13 +119,14 @@ describe('GeminiService', () => {
           query: 'ginger',
           language: 'en',
         }),
+        signal: expect.any(AbortSignal),
       });
     });
 
     it('handles API errors correctly', async () => {
       const mockFetch = vi.mocked(fetch);
-      // Mock all retry attempts to fail
-      for (let i = 0; i < 4; i++) {
+      // Mock all attempts (initial + 1 retry) to fail
+      for (let i = 0; i < 2; i++) {
         mockFetch.mockResolvedValueOnce(
           createMockResponse({ error: 'Server Error' }, false, 500, 'Internal Server Error')
         );
@@ -133,8 +137,8 @@ describe('GeminiService', () => {
 
     it('handles network errors', async () => {
       const mockFetch = vi.mocked(fetch);
-      // Mock all retry attempts to fail
-      for (let i = 0; i < 4; i++) {
+      // Mock all attempts (initial + 1 retry) to fail
+      for (let i = 0; i < 2; i++) {
         mockFetch.mockRejectedValueOnce(new Error('Network Error'));
       }
 
@@ -143,15 +147,14 @@ describe('GeminiService', () => {
 
     it('retries on server errors with exponential backoff', async () => {
       const mockFetch = vi.mocked(fetch);
-      // First two calls fail, third succeeds
+      // First call fails, the retry succeeds
       mockFetch
-        .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500))
         .mockResolvedValueOnce(createMockResponse({ error: 'Server Error' }, false, 500))
         .mockResolvedValueOnce(createMockResponse(mockCompendiumResult, true, 200));
 
       const result = await getCompendiumInfo('ginger', 'en');
 
-      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
       expect(result).toEqual(mockCompendiumResult);
     });
 
@@ -163,13 +166,29 @@ describe('GeminiService', () => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
 
+    it('does not retry when rate limited (429)', async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockResolvedValue(createMockResponse({ error: 'Too many requests' }, false, 429));
+
+      await expect(getCompendiumInfo('ginger', 'en')).rejects.toMatchObject({ status: 429 });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a client-side timeout as 408 without retrying', async () => {
+      const mockFetch = vi.mocked(fetch);
+      mockFetch.mockRejectedValue(new DOMException('The operation timed out.', 'TimeoutError'));
+
+      await expect(getCompendiumInfo('ginger', 'en')).rejects.toMatchObject({ status: 408 });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
     it('stops retrying after max retries', async () => {
       const mockFetch = vi.mocked(fetch);
       mockFetch.mockResolvedValue(createMockResponse({ error: 'Server Error' }, false, 500));
 
       await expect(getCompendiumInfo('ginger', 'en')).rejects.toThrow('Server Error');
-      // Should try 4 times total (initial + 3 retries)
-      expect(mockFetch).toHaveBeenCalledTimes(4);
+      // Should try 2 times total (initial + 1 retry)
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
 

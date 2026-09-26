@@ -47,6 +47,8 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
           '{message}',
           language === 'ja' ? 'リソースが見つかりません' : 'Resource not found'
         );
+      case 408:
+        return translations.timeout;
       case 429:
         return translations.apiError.replace(
           '{message}',
@@ -118,18 +120,10 @@ export const formatErrorMessage = (error: unknown, language: Language): string =
  */
 export const shouldRetry = (error: unknown): boolean => {
   if (error instanceof APIError) {
-    // Retry on server errors (5xx) and rate limiting (429)
-    // Don't retry on authentication errors (401, 403) or bad requests (400, 404)
-    if (error.status === 429) {
-      // Rate limiting - retry with backoff
-      return true;
-    }
-    if (error.status >= 500 && error.status < 600) {
-      // Server errors - retry
-      return true;
-    }
-    // Client errors - don't retry
-    return false;
+    // Retry only transient server errors (5xx). Client errors are not retried,
+    // including rate limiting (429): repeating the request would only use up
+    // more of the limit.
+    return error.status >= 500 && error.status < 600;
   }
 
   if (error instanceof Error) {

@@ -44,9 +44,6 @@ npm run test:coverage
 
 # ウォッチモードで実行
 npm run test:watch
-
-# UIモードで実行（ブラウザで結果確認）
-npm run test:ui
 ```
 
 ## テストファイルの場所

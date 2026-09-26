@@ -136,9 +136,7 @@ The application supports **bilingual content** (日本語 and English) and inclu
 ### DevOps & Deployment
 
 - **Vercel** - Hosting and serverless functions
-- **GitHub Actions** - CI/CD pipeline
-- **Codecov** - Test coverage tracking
-- **Lighthouse CI** - Performance monitoring
+- **GitHub Actions** - CI pipeline
 
 ---
 
@@ -271,7 +269,6 @@ npm run type-check       # Check TypeScript types
 npm run test             # Run tests in watch mode
 npm run test:run         # Run tests once (CI mode)
 npm run test:coverage    # Generate coverage report
-npm run test:ui          # Open Vitest UI dashboard
 npm run test:e2e         # Run end-to-end tests
 npm run test:e2e:ui      # Run E2E tests with UI
 npm run test:e2e:headed  # Run E2E tests with visible browser
@@ -578,7 +575,6 @@ For detailed security information, see [SECURITY.md](SECURITY.md).
 npm run test              # Watch mode
 npm run test:run          # Single run (CI mode)
 npm run test:coverage     # With coverage report
-npm run test:ui           # Interactive UI
 ```
 
 Test coverage targets: **70%+** across branches, functions, lines, and statements
@@ -617,13 +613,8 @@ npm run test:e2e:debug    # Debug mode
 ### Automatic Deployment (GitHub)
 
 1. Push to `main` branch
-2. GitHub Actions automatically:
-   - Runs ESLint & Prettier checks
-   - Runs type checking
-   - Runs unit & E2E tests
-   - Runs security audit
-   - Runs Lighthouse performance tests
-   - Deploys to Vercel (if all checks pass)
+2. GitHub Actions runs type checking, ESLint & Prettier checks, unit tests, and a production build
+3. Vercel deploys `main` through its GitHub integration (the CI workflow does not deploy)
 
 ### Manual Deployment to Vercel
 

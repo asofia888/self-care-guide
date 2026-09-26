@@ -32,6 +32,9 @@ export const mockCompendiumResult = {
       indications: ['Cold limbs', 'Digestive weakness'],
       constituentHerbs: 'Ginger, Cinnamon, Jujube',
       clinicalNotes: 'Use with caution in heat conditions.',
+      constitution: 'Suits deficiency-cold patterns; avoid in excess-heat patterns.',
+      evidenceLevel: 'limited' as const,
+      interactions: 'Contains licorice; avoid combining with other licorice-containing formulas.',
     },
   ],
   westernHerbEntries: [

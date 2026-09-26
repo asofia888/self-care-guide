@@ -54,6 +54,32 @@ describe('AppContext', () => {
       rerender();
       expect(result.current.language).toBe('en');
     });
+
+    it('restores the saved language and font size in a new session', () => {
+      const first = renderHook(() => useAppContext(), { wrapper });
+      act(() => {
+        first.result.current.handleLanguageChange('en');
+        first.result.current.handleFontSizeChange('large');
+      });
+      first.unmount();
+
+      const { result } = renderHook(() => useAppContext(), { wrapper });
+
+      expect(result.current.language).toBe('en');
+      expect(result.current.fontSize).toBe('large');
+    });
+
+    it('prefers an explicit initialLanguage over the saved one', () => {
+      localStorage.setItem('scg:language', JSON.stringify('ja'));
+
+      const { result } = renderHook(() => useAppContext(), {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <AppProvider initialLanguage="en">{children}</AppProvider>
+        ),
+      });
+
+      expect(result.current.language).toBe('en');
+    });
   });
 
   describe('Font Size Management', () => {

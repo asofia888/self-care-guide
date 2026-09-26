@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -10,11 +9,9 @@ vi.mock('../utils/errorHandler', () => {
 });
 
 // Component that throws error for testing
-class ThrowError extends Component {
-  render(): React.ReactNode {
-    throw new Error('Test error');
-  }
-}
+const ThrowError = (): never => {
+  throw new Error('Test error');
+};
 
 // Component that renders normally
 const NormalComponent = () => <div>Normal Component</div>;

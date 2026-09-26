@@ -1,4 +1,4 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type, HarmBlockThreshold, HarmCategory } from '@google/genai';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -57,10 +57,27 @@ const compendiumEntrySchema = {
       description:
         'Clinical applications, research evidence, and traditional use notes. Always provide this information.',
     },
+    constitution: {
+      type: Type.STRING,
+      description:
+        'Kampo formulas only: the pattern (証) the formula suits and the pattern it does not suit, in terms of excess/deficiency (虚実), heat/cold (寒熱), and qi-blood-fluid (気血水). Omit for Western herbs and supplements.',
+    },
+    evidenceLevel: {
+      type: Type.STRING,
+      format: 'enum',
+      enum: ['traditional', 'limited', 'moderate', 'strong'],
+      description:
+        "Strength of human clinical evidence for the listed indications: 'traditional' = traditional use only, 'limited' = small or preliminary human studies, 'moderate' = several controlled trials with modest or mixed results, 'strong' = consistent controlled trials or meta-analyses.",
+    },
+    interactions: {
+      type: Type.STRING,
+      description:
+        'Clinically relevant interactions with drugs, herbs, or supplements. Always provide this information.',
+    },
     contraindications: {
       type: Type.STRING,
       description:
-        'Important contraindications, warnings, and precautions. Always provide this information.',
+        'Contraindications, cautions for special populations, and notable adverse effects. Always provide this information.',
     },
   },
   required: [
@@ -71,6 +88,8 @@ const compendiumEntrySchema = {
     'indications',
     'constituentHerbs',
     'clinicalNotes',
+    'evidenceLevel',
+    'interactions',
     'contraindications',
   ],
 };
@@ -258,13 +277,18 @@ The integrativeViewpoint field MUST be detailed and comprehensive within the spe
 Do NOT write shorter than the minimum. Provide sufficient detail about how Eastern and Western approaches complement each other.
 
 CRITICAL - LANGUAGE REQUIREMENT:
-ALL fields including name, category, summary, properties, actions, indications, constituentHerbs, clinicalNotes, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language.
+ALL text fields including name, category, summary, properties, constitution, actions, indications, constituentHerbs, clinicalNotes, interactions, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language. The only exception is evidenceLevel, which must be one of its fixed English values.
 ${language === 'ja' ? "- Use '西洋ハーブ' for Western Herb, '漢方処方' for Kampo Formula, 'サプリメント' for Supplement" : "- Use 'Western Herb', 'Kampo Formula', 'Supplement' for categories"}
 
 CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
 1. constituentHerbs: Main herbs in Kampo formulas, or active compounds in Western herbs/supplements (in ${languageName})
 2. clinicalNotes: Clinical applications, research evidence, and traditional use (1-2 sentences minimum, in ${languageName})
-3. contraindications: Safety information, warnings, and precautions (in ${languageName}, state "Generally safe when used as directed" equivalent in target language)
+3. evidenceLevel: Rate honestly from human clinical evidence for the listed indications. Do not inflate it; traditional use alone is 'traditional'.
+4. interactions: Name specific drugs or drug classes (e.g. anticoagulants, antidiabetics, antihypertensives, CYP3A4 substrates, interferon) and overlapping herbs (e.g. licorice or ephedra duplicated across Kampo formulas). If no clinically significant interaction is documented, say exactly that; never describe the substance as safe.
+5. contraindications: Cover pregnancy and breastfeeding, children, older adults, relevant medical conditions, and notable adverse effects (e.g. pseudoaldosteronism from licorice/甘草, palpitations or raised blood pressure from ephedra/麻黄, interstitial pneumonia or liver injury where reported). Never fall back to a generic "generally safe" statement.
+
+FOR KAMPO FORMULAS ALSO INCLUDE:
+- constitution: The pattern (証) the formula suits and the pattern it does not suit, in terms of excess/deficiency (虚実), heat/cold (寒熱), and qi-blood-fluid (気血水) (in ${languageName}).
 
 These fields are MANDATORY. Never omit them.
 

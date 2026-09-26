@@ -18,6 +18,7 @@
     "unexpected": "An unexpected error occurred.",
     "apiError": "Communication error: {message}",
     "networkError": "Network error occurred. Please check your connection.",
+    "timeout": "The request took too long. Please try again in a moment.",
     "retry": "Please try again.",
     "dismissErrorLabel": "Dismiss error"
   },
@@ -42,13 +43,29 @@
     "summary": "Summary",
     "properties": "Properties",
     "channels": "Channels",
+    "constitution": "Suitable Constitution (Sho)",
     "actions": "Actions",
     "indications": "Indications",
     "constituentHerbs": "Constituent Herbs",
     "constituentHerbsRationale": "Constituent Herbs / Formula Rationale",
     "contraindications": "Contraindications",
+    "interactions": "Interactions",
     "clinicalNotes": "Clinical Notes",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "evidence": {
+      "label": "Evidence",
+      "traditional": "Traditional use",
+      "limited": "Limited",
+      "moderate": "Moderate",
+      "strong": "Strong"
+    },
+    "history": {
+      "title": "Recent searches",
+      "clear": "Clear history",
+      "clearConfirm": "Clear all search history?",
+      "fromHistory": "Shown from history (fetched {date})",
+      "refresh": "Refresh"
+    }
   },
   "manual": {
     "title": "User Guide",
@@ -61,7 +78,7 @@
     "compendium": {
       "title": "Integrative Medicine Guide",
       "p1": "Search for information on Kampo formulas, Western herbs, and supplements from an integrative perspective.",
-      "p2": "Each entry displays: properties and channels, actions, indications, constituent herbs/active compounds, clinical notes, and contraindications/precautions."
+      "p2": "Each entry displays: properties and channels, suitable constitution (Sho) for Kampo formulas, actions, indications, constituent herbs/active compounds, clinical notes, evidence level, interactions, and contraindications/precautions."
     },
     "generalTips": {
       "title": "Important Notes",

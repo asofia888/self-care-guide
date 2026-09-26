@@ -37,6 +37,11 @@ const App: React.FC = () => {
     };
   }, [fontSize]);
 
+  useEffect(() => {
+    // Keeps Japanese glyph selection and screen reader pronunciation in sync with the UI language.
+    document.documentElement.lang = language;
+  }, [language]);
+
   const renderActiveView = () => {
     switch (activeView) {
       case 'compendium':

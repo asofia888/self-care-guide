@@ -42,25 +42,19 @@ export default defineConfig({
         'dist/**',
       ],
       thresholds: {
-        global: {
-          branches: 70,
-          functions: 70,
-          lines: 70,
-          statements: 70,
-        },
+        branches: 70,
+        functions: 70,
+        lines: 70,
+        statements: 70,
       },
     },
     // Test timeout - reasonable for most tests
     testTimeout: 10000,
     // Hook timeout
     hookTimeout: 10000,
-    // Run tests sequentially for WSL compatibility
+    // Run tests sequentially in a single worker for WSL compatibility
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    maxWorkers: 1,
     // Isolate each test file (fresh module registry) so per-file `vi.mock`
     // calls don't leak across files. Disabling this trades correctness for
     // speed and breaks module mocking when the whole suite runs together.

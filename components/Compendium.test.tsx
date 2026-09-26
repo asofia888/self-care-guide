@@ -76,6 +76,61 @@ describe('Compendium Component', () => {
     expect(getCompendiumInfo).toHaveBeenCalledWith('ginger', 'en');
   });
 
+  it('displays constitution, evidence level, and interactions for an entry', async () => {
+    render(<Compendium />);
+
+    await user.type(screen.getByRole('searchbox'), 'ginger');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Evidence: Limited')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByRole('heading', { name: 'Suitable Constitution (Sho)' })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/suits deficiency-cold patterns/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Interactions' })).toBeInTheDocument();
+    expect(screen.getByText(/avoid combining with other licorice/i)).toBeInTheDocument();
+  });
+
+  it('reuses a saved result from history without calling the API again', async () => {
+    const { unmount } = render(<Compendium />);
+    await user.type(screen.getByRole('searchbox'), 'ginger');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+    await waitFor(() => expect(screen.getByText('Shokenchuto')).toBeInTheDocument());
+    unmount();
+
+    // A new session restores the history from storage.
+    render(<Compendium />);
+    await user.click(screen.getByRole('button', { name: 'ginger' }));
+
+    await waitFor(() => expect(screen.getByText('Shokenchuto')).toBeInTheDocument());
+    expect(screen.getByText(/shown from history/i)).toBeInTheDocument();
+    expect(screen.getByRole('searchbox')).toHaveValue('ginger');
+    expect(getCompendiumInfo).toHaveBeenCalledTimes(1);
+
+    // Refresh bypasses the history and fetches again.
+    await user.click(screen.getByRole('button', { name: /refresh/i }));
+    await waitFor(() => expect(getCompendiumInfo).toHaveBeenCalledTimes(2));
+    await waitFor(() => {
+      expect(screen.queryByText(/shown from history/i)).not.toBeInTheDocument();
+      expect(screen.getByText('Shokenchuto')).toBeInTheDocument();
+    });
+  });
+
+  it('clears the search history after confirmation', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    render(<Compendium />);
+    await user.type(screen.getByRole('searchbox'), 'ginger');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'ginger' })).toBeInTheDocument());
+
+    await user.click(screen.getByRole('button', { name: /clear history/i }));
+
+    expect(screen.queryByRole('button', { name: 'ginger' })).not.toBeInTheDocument();
+    expect(localStorage.getItem('scg:searchHistory')).toBeNull();
+  });
+
   it('shows loading state during search', async () => {
     // Keep the request pending so the loading state stays visible.
     vi.mocked(getCompendiumInfo).mockImplementation(() => new Promise<CompendiumResult>(() => {}));

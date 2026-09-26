@@ -4,8 +4,11 @@
 
 // API Configuration
 export const API_CONFIG = {
-  RETRY_COUNT: 3,
-  TIMEOUT: 30000, // 30 seconds
+  // A single retry for transient server errors; each AI call is slow and billed.
+  RETRY_COUNT: 1,
+  // Slightly above the API function's 60s maxDuration (vercel.json), so a
+  // server-side timeout is reported before the client gives up.
+  TIMEOUT: 65000,
   BASE_URL: typeof window !== 'undefined' ? '/api' : '',
 } as const;
 

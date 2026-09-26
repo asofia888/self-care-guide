@@ -18,6 +18,13 @@ const apiCall = async <T>(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
+      }).catch((error: unknown) => {
+        // Report a client-side timeout as 408 so it is shown clearly and not retried.
+        if ((error as { name?: string } | null)?.name === 'TimeoutError') {
+          throw new APIError(408, 'Request timeout');
+        }
+        throw error;
       });
 
       if (!response.ok) {

@@ -11,12 +11,12 @@ describe('Constants', () => {
   describe('API_CONFIG', () => {
     it('has RETRY_COUNT property', () => {
       expect(API_CONFIG).toHaveProperty('RETRY_COUNT');
-      expect(API_CONFIG.RETRY_COUNT).toBe(3);
+      expect(API_CONFIG.RETRY_COUNT).toBe(1);
     });
 
     it('has TIMEOUT property in milliseconds', () => {
       expect(API_CONFIG).toHaveProperty('TIMEOUT');
-      expect(API_CONFIG.TIMEOUT).toBe(30000);
+      expect(API_CONFIG.TIMEOUT).toBe(65000);
     });
 
     it('has BASE_URL property', () => {
@@ -26,7 +26,7 @@ describe('Constants', () => {
     it('is a constant object (declared as const)', () => {
       // Since they're declared as const, they can't be reassigned
       expect(API_CONFIG).toBeDefined();
-      expect(API_CONFIG.RETRY_COUNT).toBe(3);
+      expect(API_CONFIG.RETRY_COUNT).toBe(1);
     });
   });
 

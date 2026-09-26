@@ -18,6 +18,7 @@
     "unexpected": "予期しないエラーが発生しました。",
     "apiError": "通信中にエラーが発生しました: {message}",
     "networkError": "ネットワークエラーが発生しました。接続を確認してください。",
+    "timeout": "応答に時間がかかりすぎました。しばらくしてからもう一度お試しください。",
     "retry": "もう一度お試しください。",
     "dismissErrorLabel": "エラーを閉じる"
   },
@@ -42,13 +43,29 @@
     "summary": "概要",
     "properties": "性味",
     "channels": "帰経",
+    "constitution": "適応する証・体質",
     "actions": "作用",
     "indications": "適応",
     "constituentHerbs": "構成生薬",
     "constituentHerbsRationale": "構成生薬・方剤理論",
     "contraindications": "禁忌",
+    "interactions": "飲み合わせ・相互作用",
     "clinicalNotes": "臨床ノート",
-    "noResults": "検索結果がありません"
+    "noResults": "検索結果がありません",
+    "evidence": {
+      "label": "エビデンス",
+      "traditional": "伝統的使用",
+      "limited": "限定的",
+      "moderate": "中程度",
+      "strong": "強い"
+    },
+    "history": {
+      "title": "最近の検索",
+      "clear": "履歴を消去",
+      "clearConfirm": "検索履歴をすべて消去しますか？",
+      "fromHistory": "履歴から表示（{date}に取得）",
+      "refresh": "最新の情報で再検索"
+    }
   },
   "manual": {
     "title": "使い方ガイド",
@@ -61,7 +78,7 @@
     "compendium": {
       "title": "統合医学ガイド",
       "p1": "漢方薬、西洋ハーブ、サプリメントについて、統合的な視点で情報を検索できます。",
-      "p2": "各項目では以下の情報が表示されます：性味・帰経、作用、適応、構成生薬・活性成分、臨床ノート、禁忌・注意事項。"
+      "p2": "各項目では以下の情報が表示されます：性味・帰経、適応する証・体質（漢方）、作用、適応、構成生薬・活性成分、臨床ノート、エビデンスの強さ、飲み合わせ・相互作用、禁忌・注意事項。"
     },
     "generalTips": {
       "title": "注意事項",

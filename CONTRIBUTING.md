@@ -314,9 +314,7 @@ All PRs must pass:
 - ✅ Prettier formatting
 - ✅ TypeScript type checking
 - ✅ Unit tests
-- ✅ E2E tests
-- ✅ Security audit
-- ✅ Lighthouse performance tests
+- ✅ Production build
 
 ### 3. Code Review
 

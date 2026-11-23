@@ -262,6 +262,75 @@ describe('Compendium Component', () => {
     expect(searchButton).toBeDisabled();
   });
 
+  it('shows support resources instead of results for a crisis query', async () => {
+    render(<Compendium />);
+
+    await user.type(screen.getByRole('searchbox'), 'I want to die');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    expect(
+      screen.getByRole('heading', { name: /you don't have to face this alone/i })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /call or text 988/i })).toHaveAttribute(
+      'href',
+      'tel:988'
+    );
+    // A crisis query is never sent to the AI and cannot be continued.
+    expect(screen.queryByRole('button', { name: /show the information anyway/i })).toBeNull();
+    expect(getCompendiumInfo).not.toHaveBeenCalled();
+  });
+
+  it('recommends seeing a doctor for urgent symptoms and lets the person continue', async () => {
+    render(<Compendium />);
+
+    await user.type(screen.getByRole('searchbox'), 'chest pain');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    expect(
+      screen.getByRole('heading', { name: /please consider seeing a doctor/i })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '#7119' })).toBeInTheDocument();
+    expect(getCompendiumInfo).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: /show the information anyway/i }));
+
+    await waitFor(() => expect(screen.getByText('Shokenchuto')).toBeInTheDocument());
+    expect(getCompendiumInfo).toHaveBeenCalledWith('chest pain', 'en');
+    expect(screen.queryByRole('heading', { name: /please consider seeing a doctor/i })).toBeNull();
+  });
+
+  it('shows an AI-generated content notice under the search box and with results', async () => {
+    render(<Compendium />);
+
+    expect(screen.getByText(/ai-generated reference information/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /learn more/i })).toBeInTheDocument();
+
+    await user.type(screen.getByRole('searchbox'), 'ginger');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    const notice = await screen.findByRole('complementary', {
+      name: /before you use this information/i,
+    });
+    expect(notice).toHaveTextContent(/generated automatically by AI/i);
+    expect(notice).toHaveTextContent(/consult a doctor or pharmacist/i);
+  });
+
+  it('lists the warning signs for when to seek medical care', async () => {
+    vi.mocked(getCompendiumInfo).mockResolvedValue({
+      ...mockCompendiumResult,
+      whenToSeeDoctor: ['See a doctor if symptoms last more than two weeks.'],
+    });
+    render(<Compendium />);
+
+    await user.type(screen.getByRole('searchbox'), 'ginger');
+    await user.click(screen.getByRole('button', { name: /search/i }));
+
+    expect(
+      await screen.findByRole('heading', { name: /when to seek medical care/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/symptoms last more than two weeks/i)).toBeInTheDocument();
+  });
+
   it('displays different result sections correctly', async () => {
     render(<Compendium />);
 

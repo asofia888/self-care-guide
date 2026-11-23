@@ -14,11 +14,11 @@ const ToggleButton = React.memo<{
     <button
       onClick={onClick}
       className={`px-3.5 py-2 min-h-[44px] sm:min-h-[auto] sm:py-1.5 rounded-full uppercase transition-all duration-300 ${
-        isSmall ? 'text-[11px] tracking-wider' : 'text-xs tracking-[0.12em]'
+        isSmall ? 'text-xs tracking-wider' : 'text-xs tracking-[0.12em]'
       } ${
         isActive
-          ? 'bg-gradient-to-r from-champagne-400 to-champagne-500 text-white shadow-soft'
-          : 'text-stone-500 hover:text-champagne-600'
+          ? 'bg-gradient-to-r from-champagne-600 to-champagne-700 text-white shadow-soft'
+          : 'text-stone-500 hover:text-champagne-700'
       }`}
     >
       {children}
@@ -43,7 +43,7 @@ const NavButton = React.memo<{
       className={`group flex items-center gap-2.5 px-4 py-3 min-h-[44px] sm:min-h-[auto] sm:py-2 rounded-full text-sm tracking-wide transition-all duration-300 ${
         isActive
           ? 'bg-white text-champagne-700 shadow-soft'
-          : 'text-stone-500 hover:text-champagne-600 hover:bg-white/60'
+          : 'text-stone-500 hover:text-champagne-700 hover:bg-white/60'
       }`}
     >
       <span
@@ -88,7 +88,7 @@ export const Header: React.FC = () => {
               <h1 className="truncate font-display text-xl font-medium leading-none tracking-wide text-stone-800 sm:text-2xl md:text-[1.7rem]">
                 Self-Care Guide for Wellness
               </h1>
-              <p className="mt-1.5 text-[10px] uppercase tracking-[0.3em] text-champagne-600 sm:text-[11px]">
+              <p className="mt-1.5 text-[0.625rem] uppercase tracking-[0.3em] text-champagne-700 sm:text-xs">
                 {headerTranslations.tagline}
               </p>
             </div>

@@ -19,11 +19,11 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = React.memo(({ message, 
     >
       <div className="flex items-center gap-3">
         <AlertTriangleIcon className="h-5 w-5 flex-shrink-0 text-rose-400" />
-        <span className="text-sm text-rose-700/90">{message}</span>
+        <span className="text-sm text-rose-800">{message}</span>
       </div>
       <button
         onClick={onClear}
-        className="ml-4 rounded-full p-1.5 text-rose-400 transition-colors duration-300 hover:bg-rose-100 hover:text-rose-600"
+        className="ml-4 rounded-full p-1.5 text-rose-600 transition-colors duration-300 hover:bg-rose-100 hover:text-rose-800"
         aria-label={t(language).error.dismissErrorLabel}
       >
         <svg

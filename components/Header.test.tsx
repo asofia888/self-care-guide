@@ -50,10 +50,12 @@ describe('Header component', () => {
     expect(manualButtons.length).toBeGreaterThanOrEqual(2);
 
     // The first active button should have specific styles and aria-current attribute.
-    expect(compendiumButtons[0].className).toContain('text-champagne-700');
+    // Compare whole class tokens: inactive buttons use `hover:text-champagne-700`.
+    const classTokens = (el: HTMLElement) => el.className.split(/\s+/);
+    expect(classTokens(compendiumButtons[0])).toContain('text-champagne-700');
     expect(compendiumButtons[0]).toHaveAttribute('aria-current', 'page');
 
-    expect(manualButtons[0].className).not.toContain('text-champagne-700');
+    expect(classTokens(manualButtons[0])).not.toContain('text-champagne-700');
     expect(manualButtons[0]).not.toHaveAttribute('aria-current');
   });
 

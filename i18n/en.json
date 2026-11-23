@@ -52,6 +52,66 @@
     "interactions": "Interactions",
     "clinicalNotes": "Clinical Notes",
     "noResults": "No results found",
+    "whenToSeeDoctor": "When to seek medical care",
+    "notice": {
+      "search": "AI-generated reference information. Not a substitute for diagnosis or treatment.",
+      "learnMore": "Learn more",
+      "resultTitle": "Before you use this information",
+      "result": "This content was generated automatically by AI and may contain errors (fetched {date}). It is not a substitute for diagnosis or treatment by a doctor. Kampo formulas are medicines. If you take any medication, are pregnant or breastfeeding, have a medical condition, or are giving it to a child or older adult, always consult a doctor or pharmacist first.",
+      "printQuery": "Search: {query}"
+    },
+    "safety": {
+      "crisis": {
+        "title": "You don't have to face this alone",
+        "body": "Talking to someone can help. This app won't show herb or supplement information for this search.",
+        "emergency": "If your life is in immediate danger, call your local emergency number now (119 in Japan, 911 in the US, 999 in the UK, 112 in the EU).",
+        "resources": [
+          {
+            "name": "988 Suicide & Crisis Lifeline (US)",
+            "contact": "Call or text 988",
+            "href": "tel:988",
+            "note": "Free, confidential support, 24/7"
+          },
+          {
+            "name": "Samaritans (UK & Ireland)",
+            "contact": "116 123",
+            "href": "tel:116123",
+            "note": "Free to call, 24/7"
+          },
+          {
+            "name": "TELL Lifeline (English support in Japan)",
+            "contact": "telljp.com/lifeline",
+            "href": "https://telljp.com/lifeline/",
+            "note": "Check the website for current phone and chat hours"
+          },
+          {
+            "name": "Other countries",
+            "contact": "findahelpline.com",
+            "href": "https://findahelpline.com/",
+            "note": "Find a free helpline near you"
+          }
+        ]
+      },
+      "urgent": {
+        "title": "Please consider seeing a doctor",
+        "body": "Your search includes symptoms that may need prompt medical attention. Please talk to a healthcare professional before trying herbs or supplements.",
+        "resources": [
+          {
+            "name": "Ambulance (Japan)",
+            "contact": "119",
+            "href": "tel:119",
+            "note": "Call right away if symptoms are severe, sudden, or getting worse. Elsewhere, call your local emergency number (911 in the US, 999 in the UK, 112 in the EU)."
+          },
+          {
+            "name": "Emergency Medical Consultation (Japan)",
+            "contact": "#7119",
+            "href": "tel:%237119",
+            "note": "Advice when you're unsure whether to call an ambulance (not available in all areas)"
+          }
+        ],
+        "proceed": "I understand — show the information anyway"
+      }
+    },
     "evidence": {
       "label": "Evidence",
       "traditional": "Traditional use",
@@ -97,14 +157,14 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "content": "This app does not collect or store personal information. Data entered is used only for analysis and is not saved on servers."
+    "content": "This Privacy Policy explains how Self-Care Guide for Wellness (\"the App\") handles information about its users. The App requires no account and never asks for your name or email address.\n\n**1. Where your searches are sent**\nWhen you search, your search terms and display language are sent through the App's server (provided by Vercel Inc.) to the Gemini API, a generative AI service provided by Google LLC, which uses them to generate the answer. The App's server does not store your search terms or write them to its logs.\nGoogle handles the content it receives under the Google Privacy Policy and the Gemini API Terms of Service. Google may use submitted content to improve its services, so please do not enter information that could identify you, such as your name, contact details, or patient ID numbers.\n\n**2. Information stored on your device**\nYour recent searches (search terms and their results, up to 20), display language, and font size are stored only in your browser (localStorage) and are never sent to the App's server.\nYou can delete your search history with \"Clear history\" on the search screen, and the other settings by clearing this site's data in your browser. Please keep this in mind on shared devices.\n\n**3. Use of IP addresses**\nTo prevent excessive requests in a short time (rate limiting), your IP address is converted into a form that cannot be reversed (hashed) and kept only temporarily, for a few minutes. The App may use a database service from Upstash, Inc. for this. Your IP address itself is never stored.\n\n**4. Access logs**\nVercel Inc., which hosts the App, may record access logs such as IP addresses and access times to operate and secure the service.\n\n**5. Cookies, analytics, and advertising**\nThe App does not use cookies, analytics tools, or advertising.\n\n**6. Changes to this policy**\nThis policy may be updated as needed. Significant changes will be announced on this page.\n\n**7. Contact**\nFor questions about this policy, please open an issue in the App's GitHub repository.\n\nEffective date: November 23, 2026"
   },
   "terms": {
     "title": "Terms of Service",
-    "content": "By using this application, you agree to the following terms. This service is for informational purposes only and is not medical advice."
+    "content": "These Terms of Service (\"the Terms\") set out the conditions for using Self-Care Guide for Wellness (\"the App\"). By using the App, you agree to the Terms.\n\n**1. The service**\nThe App is a free information service that uses generative AI (Google Gemini) to provide general information about Kampo formulas, Western herbs, and supplements. The content shown is generated automatically by AI and has not been individually reviewed by the operator.\n\n**2. Not medical care**\nThe App is not a substitute for diagnosis, treatment, or advice from a doctor or other healthcare professional. Do not use it to diagnose or treat any condition, or to decide whether to start, change, or stop any medication.\nIf you have symptoms, take any medication, have a medical condition, or are pregnant or breastfeeding, always consult a doctor or pharmacist before use. In an emergency, do not use the App — call your local emergency number (119 in Japan) immediately.\n\n**3. Your responsibility**\nYou use the information obtained from the App at your own judgment and responsibility.\n\n**4. Prohibited conduct**\nYou must not:\n• Violate any law or public order and morals\n• Place an excessive load on the App's servers or network, including sending large numbers of automated requests\n• Gain or attempt to gain unauthorized access\n• Interfere with the operation of the App\n• Present content generated by the App to others as if it were medical advice\n• Engage in any other conduct the operator deems inappropriate\n\n**5. Disclaimer of warranties and liability**\nThe operator makes no warranty as to the accuracy, completeness, timeliness, or usefulness of the information provided by the App.\nExcept in cases of the operator's intent or gross negligence, the operator is not liable for any damage arising from the use of, or inability to use, the App. This does not apply where the operator is liable under the Consumer Contract Act of Japan or other applicable laws.\n\n**6. Changes to or suspension of the service**\nThe operator may change the App or suspend it temporarily or permanently without prior notice.\n\n**7. Changes to the Terms**\nThe operator may change the Terms as needed. The revised Terms take effect when posted on this page.\n\n**8. Governing law and jurisdiction**\nThe Terms are governed by the laws of Japan. Any dispute concerning the App shall be subject to the exclusive jurisdiction, in the first instance, of the court having jurisdiction over the operator's location.\n\nEffective date: November 23, 2026"
   },
   "disclaimer": {
     "title": "Disclaimer",
-    "content": "The information provided by this application is for educational and informational purposes only. It is not intended as a substitute for medical diagnosis, treatment, or professional medical advice. Please consult a qualified healthcare professional for any health concerns or symptoms."
+    "content": "The information provided by the App is for educational and general informational purposes only. It is not a substitute for diagnosis, treatment, or professional medical advice from a doctor.\n\n**About AI-generated content**\nSearch results are created automatically by generative AI (Google Gemini). They may contain errors, outdated information, or omissions, and the same search can return different content. Before making any important decision, always check with a doctor, pharmacist, or other professional, or with official sources.\n\n**Using Kampo formulas, herbs, and supplements**\nKampo formulas are medicines. Herbs and supplements can also cause harm depending on drug interactions and individual constitution. If you take any medication, are pregnant or breastfeeding, have a medical condition, or are considering use for a child or older adult, always consult a doctor or pharmacist first. If you notice anything unusual, stop using the product and see a doctor.\n\n**In an emergency**\nIf symptoms are severe, sudden, or getting worse, do not use the App — see a doctor or call your local emergency number (119 in Japan) immediately."
   }
 }

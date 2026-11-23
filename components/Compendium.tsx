@@ -1,16 +1,17 @@
 import React from 'react';
-import { SparklesIcon, PrinterIcon } from './Icons';
+import { SparklesIcon, PrinterIcon, StethoscopeIcon, AlertTriangleIcon, PillIcon } from './Icons';
 import { EVIDENCE_LEVELS } from '../types';
 import type { CompendiumEntry, EvidenceLevel } from '../types';
 import { t } from '../i18n';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAppContext } from '../contexts/AppContext';
 import { ErrorDisplay } from './ErrorDisplay';
+import { SafetyAlert } from './SafetyAlert';
 import { useCompendiumSearch } from '../hooks/useCompendiumSearch';
 
 const Detail: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
-    <h4 className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-sage-600">
+    <h4 className="mb-1.5 text-xs font-medium uppercase tracking-[0.18em] text-sage-700">
       {label}
     </h4>
     {children}
@@ -43,11 +44,12 @@ const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) =
   </div>
 );
 
+// Every text color here keeps at least 4.5:1 contrast against its badge background.
 const evidenceBadgeStyles: Record<EvidenceLevel, string> = {
-  traditional: 'border-stone-200 bg-stone-50 text-stone-500',
+  traditional: 'border-stone-200 bg-stone-50 text-stone-600',
   limited: 'border-champagne-200 bg-champagne-50/60 text-champagne-700',
-  moderate: 'border-sage-200 bg-sage-50/60 text-sage-600',
-  strong: 'border-sage-300 bg-sage-100/70 font-medium text-sage-600',
+  moderate: 'border-sage-200 bg-sage-50/60 text-sage-700',
+  strong: 'border-sage-300 bg-sage-100/70 font-medium text-sage-700',
 };
 
 const isEvidenceLevel = (value: unknown): value is EvidenceLevel =>
@@ -61,12 +63,12 @@ const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) =
       <div className="flex items-baseline justify-between gap-3 border-b border-cream-200 pb-3">
         <h3 className="font-display text-2xl font-medium text-stone-800">{entry.name}</h3>
         <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-champagne-600">
+          <span className="text-xs uppercase tracking-[0.18em] text-champagne-700">
             {entry.category}
           </span>
           {isEvidenceLevel(entry.evidenceLevel) && (
             <span
-              className={`rounded-full border px-2.5 py-0.5 text-[11px] tracking-wide ${evidenceBadgeStyles[entry.evidenceLevel]}`}
+              className={`rounded-full border px-2.5 py-0.5 text-xs tracking-wide ${evidenceBadgeStyles[entry.evidenceLevel]}`}
             >
               {translations.evidence.label}: {translations.evidence[entry.evidenceLevel]}
             </span>
@@ -110,20 +112,24 @@ const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) =
             <p className="whitespace-pre-wrap text-stone-600">{entry.clinicalNotes}</p>
           </Detail>
         )}
+        {/* Safety sections: larger, darker headings with an icon, so they are not
+            identified by color alone and stay readable (>= 4.5:1 contrast). */}
         {entry.interactions && (
-          <div className="rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3">
-            <h4 className="mb-1 text-[11px] font-medium uppercase tracking-[0.18em] text-amber-600">
+          <div className="rounded-xl border border-amber-200 bg-amber-50/50 px-4 py-3">
+            <h4 className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-amber-800">
+              <PillIcon className="h-4 w-4 flex-shrink-0" />
               {translations.interactions}
             </h4>
-            <p className="text-amber-800/90">{entry.interactions}</p>
+            <p className="text-amber-900">{entry.interactions}</p>
           </div>
         )}
         {entry.contraindications && (
-          <div className="rounded-xl border border-rose-100 bg-rose-50/50 px-4 py-3">
-            <h4 className="mb-1 text-[11px] font-medium uppercase tracking-[0.18em] text-rose-400">
+          <div className="rounded-xl border border-rose-200 bg-rose-50/50 px-4 py-3">
+            <h4 className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-rose-700">
+              <AlertTriangleIcon className="h-4 w-4 flex-shrink-0" />
               {translations.contraindications}
             </h4>
-            <p className="text-rose-700/90">{entry.contraindications}</p>
+            <p className="text-rose-900">{entry.contraindications}</p>
           </div>
         )}
       </div>
@@ -133,12 +139,15 @@ const EntryCard: React.FC<{ entry: CompendiumEntry }> = React.memo(({ entry }) =
 EntryCard.displayName = 'EntryCard';
 
 export const Compendium: React.FC = () => {
-  const { language } = useAppContext();
+  const { language, handleNavigate } = useAppContext();
   const {
     query,
     setQuery,
     result,
+    resultQuery,
     cachedAt,
+    fetchedAt,
+    safetyConcern,
     recentSearches,
     isLoading,
     error,
@@ -146,10 +155,14 @@ export const Compendium: React.FC = () => {
     handleSearch,
     searchFromHistory,
     refreshResult,
+    proceedPastSafetyConcern,
     clearHistory,
     clearError,
   } = useCompendiumSearch();
   const translations = t(language).compendium;
+
+  const formatDate = (ms: number) =>
+    new Date(ms).toLocaleDateString(language === 'ja' ? 'ja-JP' : 'en-US');
 
   const confirmClearHistory = () => {
     if (window.confirm(translations.history.clearConfirm)) clearHistory();
@@ -176,7 +189,7 @@ export const Compendium: React.FC = () => {
               className="h-24 w-24 animate-drift object-contain drop-shadow-[0_10px_22px_rgba(193,156,104,0.22)]"
             />
           </div>
-          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-600">
+          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-700">
             Integrative Wellness
           </p>
           <h2 className="font-display text-3xl font-medium tracking-wide text-stone-800 sm:text-4xl">
@@ -198,18 +211,29 @@ export const Compendium: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={translations.searchPlaceholder}
-              className="w-full flex-grow rounded-2xl bg-transparent px-5 py-3.5 text-base text-stone-700 transition-colors placeholder:text-stone-400 focus:outline-none sm:rounded-full"
+              className="w-full flex-grow rounded-2xl bg-transparent px-5 py-3.5 text-base text-stone-700 transition-colors placeholder:text-stone-500 focus:outline-none sm:rounded-full"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading || !query.trim()}
-              className="inline-flex flex-shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-champagne-400 to-champagne-500 px-8 py-3.5 text-sm font-medium uppercase tracking-[0.18em] text-white shadow-soft transition-all duration-300 hover:shadow-elegant hover:brightness-105 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-stone-300 disabled:to-stone-300 disabled:shadow-none sm:rounded-full"
+              className="inline-flex flex-shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-champagne-600 to-champagne-700 px-8 py-3.5 text-sm font-medium uppercase tracking-[0.18em] text-white shadow-soft transition-all duration-300 hover:shadow-elegant hover:brightness-105 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-stone-300 disabled:to-stone-300 disabled:shadow-none sm:rounded-full"
             >
               <SparklesIcon className="h-4 w-4" />
               {isLoading ? translations.searching : translations.searchButton}
             </button>
           </div>
+          <p className="mx-auto mt-3 max-w-2xl px-2 text-center text-xs leading-relaxed text-stone-500">
+            {translations.notice.search}{' '}
+            {/* Inline in the sentence, so it opts out of the 44px mobile button sizing. */}
+            <button
+              type="button"
+              onClick={() => handleNavigate('disclaimer')}
+              className="min-h-0 min-w-0 p-0 align-baseline underline decoration-stone-400 underline-offset-2 transition-colors duration-300 hover:text-champagne-700"
+            >
+              {translations.notice.learnMore}
+            </button>
+          </p>
         </form>
 
         {recentSearches.length > 0 && (
@@ -217,14 +241,14 @@ export const Compendium: React.FC = () => {
             <div className="mb-2.5 flex items-center justify-between gap-3">
               <h2
                 id="recent-searches"
-                className="text-[11px] uppercase tracking-[0.2em] text-stone-400"
+                className="text-xs uppercase tracking-[0.2em] text-stone-500"
               >
                 {translations.history.title}
               </h2>
               <button
                 type="button"
                 onClick={confirmClearHistory}
-                className="text-[11px] tracking-wide text-stone-400 transition-colors duration-300 hover:text-champagne-600"
+                className="text-xs tracking-wide text-stone-500 transition-colors duration-300 hover:text-champagne-700"
               >
                 {translations.history.clear}
               </button>
@@ -251,6 +275,10 @@ export const Compendium: React.FC = () => {
 
         <ErrorDisplay message={error || ''} onClear={clearError} />
 
+        {safetyConcern && !isLoading && (
+          <SafetyAlert level={safetyConcern.level} onProceed={proceedPastSafetyConcern} />
+        )}
+
         {infoMessage && !isLoading && (
           <div className="no-print mt-8 rounded-2xl border border-champagne-200/60 bg-white/70 px-6 py-5 text-center text-stone-600 shadow-soft">
             <p>{infoMessage}</p>
@@ -262,16 +290,13 @@ export const Compendium: React.FC = () => {
             <div className="no-print flex flex-wrap items-center justify-end gap-3">
               {cachedAt !== null && (
                 <>
-                  <span className="text-xs text-stone-400">
-                    {translations.history.fromHistory.replace(
-                      '{date}',
-                      new Date(cachedAt).toLocaleDateString(language === 'ja' ? 'ja-JP' : 'en-US')
-                    )}
+                  <span className="text-xs text-stone-500">
+                    {translations.history.fromHistory.replace('{date}', formatDate(cachedAt))}
                   </span>
                   <button
                     type="button"
                     onClick={refreshResult}
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-cream-300 bg-white/70 px-5 py-2.5 text-xs tracking-[0.1em] text-stone-500 transition-colors duration-300 hover:border-champagne-300 hover:text-champagne-600 sm:min-h-[auto]"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-cream-300 bg-white/70 px-5 py-2.5 text-xs tracking-[0.1em] text-stone-500 transition-colors duration-300 hover:border-champagne-300 hover:text-champagne-700 sm:min-h-[auto]"
                   >
                     <SparklesIcon className="h-4 w-4" />
                     {translations.history.refresh}
@@ -280,16 +305,33 @@ export const Compendium: React.FC = () => {
               )}
               <button
                 onClick={handlePrint}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-cream-300 bg-white/70 px-5 py-2.5 text-xs uppercase tracking-[0.15em] text-stone-500 transition-colors duration-300 hover:border-champagne-300 hover:text-champagne-600 sm:min-h-[auto]"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-cream-300 bg-white/70 px-5 py-2.5 text-xs uppercase tracking-[0.15em] text-stone-500 transition-colors duration-300 hover:border-champagne-300 hover:text-champagne-700 sm:min-h-[auto]"
               >
                 <PrinterIcon className="h-4 w-4" />
                 {translations.print}
               </button>
             </div>
 
+            {resultQuery && (
+              <p className="print-only font-display text-lg text-stone-800">
+                Self-Care Guide for Wellness —{' '}
+                {translations.notice.printQuery.replace('{query}', resultQuery)}
+              </p>
+            )}
+
+            <aside
+              aria-label={translations.notice.resultTitle}
+              className="rounded-2xl border border-cream-300 bg-cream-50 px-5 py-4 text-sm leading-relaxed text-stone-600"
+            >
+              <p className="mb-1 font-medium text-stone-800">{translations.notice.resultTitle}</p>
+              <p>
+                {translations.notice.result.replace('{date}', formatDate(fetchedAt ?? Date.now()))}
+              </p>
+            </aside>
+
             {result.integrativeViewpoint && (
               <div className="rounded-[1.8rem] border border-champagne-200/50 bg-gradient-to-br from-white via-cream-50 to-champagne-50/40 p-8 shadow-soft sm:p-10">
-                <p className="mb-3 text-xs uppercase tracking-[0.28em] text-champagne-600">
+                <p className="mb-3 text-xs uppercase tracking-[0.28em] text-champagne-700">
                   Integrative Viewpoint
                 </p>
                 <h2 className="mb-4 font-display text-2xl font-medium text-stone-800 sm:text-[1.7rem]">
@@ -297,6 +339,32 @@ export const Compendium: React.FC = () => {
                 </h2>
                 <p className="leading-relaxed text-stone-600">{result.integrativeViewpoint}</p>
               </div>
+            )}
+
+            {result.whenToSeeDoctor && result.whenToSeeDoctor.length > 0 && (
+              <section
+                aria-labelledby="when-to-see-doctor"
+                className="rounded-2xl border border-rose-200 bg-rose-50/60 px-6 py-5 sm:px-8"
+              >
+                <h2
+                  id="when-to-see-doctor"
+                  className="mb-3 flex items-center gap-2.5 font-display text-xl font-medium text-rose-800"
+                >
+                  <StethoscopeIcon className="h-5 w-5 flex-shrink-0" />
+                  {translations.whenToSeeDoctor}
+                </h2>
+                <ul className="space-y-1.5">
+                  {result.whenToSeeDoctor.map((sign, i) => (
+                    <li key={i} className="flex gap-2.5 text-stone-700">
+                      <span
+                        className="mt-2.5 h-1 w-1 flex-shrink-0 rounded-full bg-rose-400"
+                        aria-hidden="true"
+                      />
+                      <span>{sign}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
 
             {result.supplementEntries.length > 0 && (

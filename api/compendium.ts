@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type, HarmBlockThreshold, HarmCategory } from '@google/genai';
 import { Ratelimit } from '@upstash/ratelimit';
@@ -32,6 +33,23 @@ const ratelimit =
 // In-memory fallback (per serverless instance; used only when no Redis store is
 // configured). Not shared across instances — provision Redis for production.
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+let lastRateLimitSweep = 0;
+
+// IP addresses are never stored as-is: the rate limiter keys on a keyed hash, so
+// neither Redis nor memory holds a value that can be turned back into an IP. A
+// plain SHA-256 of an IPv4 address could be reversed by brute force, hence HMAC.
+const RATE_LIMIT_SECRET =
+  process.env.RATE_LIMIT_SALT || process.env.GEMINI_API_KEY || process.env.API_KEY || '';
+
+const hashClientId = (ip: string): string =>
+  createHmac('sha256', RATE_LIMIT_SECRET).update(ip).digest('hex').slice(0, 32);
+
+// The first entry of x-forwarded-for is the client; later entries are proxies.
+const getClientIp = (req: VercelRequest): string => {
+  const raw = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return value.split(',')[0].trim() || 'unknown';
+};
 
 const compendiumEntrySchema = {
   type: Type.OBJECT,
@@ -102,11 +120,17 @@ const compendiumResponseSchema = {
       description:
         'Integrative perspective explaining the holistic approach combining Eastern and Western medicine. IMPORTANT: Must be 280-320 characters for Japanese, 180-220 words for English. Provide sufficient detail within this range.',
     },
+    whenToSeeDoctor: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description:
+        'Specific warning signs that mean the person should see a doctor instead of relying on self-care. One short sentence per item.',
+    },
     kampoEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
     westernHerbEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
     supplementEntries: { type: Type.ARRAY, items: compendiumEntrySchema },
   },
-  required: ['integrativeViewpoint', 'westernHerbEntries', 'supplementEntries'],
+  required: ['integrativeViewpoint', 'whenToSeeDoctor', 'westernHerbEntries', 'supplementEntries'],
 };
 
 const getLanguageName = (langCode: string) => {
@@ -121,12 +145,21 @@ const getLanguageName = (langCode: string) => {
   }
 };
 
-const checkRateLimitInMemory = (ip: string): boolean => {
+const checkRateLimitInMemory = (clientId: string): boolean => {
   const now = Date.now();
-  const record = rateLimitStore.get(ip);
+
+  // Drop expired entries so hashed client IDs are not kept beyond their window.
+  if (now - lastRateLimitSweep > RATE_LIMIT_WINDOW_MS) {
+    for (const [key, entry] of rateLimitStore) {
+      if (now > entry.resetTime) rateLimitStore.delete(key);
+    }
+    lastRateLimitSweep = now;
+  }
+
+  const record = rateLimitStore.get(clientId);
 
   if (!record || now > record.resetTime) {
-    rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    rateLimitStore.set(clientId, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
     return true;
   }
 
@@ -140,12 +173,12 @@ const checkRateLimitInMemory = (ip: string): boolean => {
 
 // Returns true when the request is within limits. Uses the distributed limiter
 // when configured, otherwise the per-instance in-memory fallback.
-const isWithinRateLimit = async (ip: string): Promise<boolean> => {
+const isWithinRateLimit = async (clientId: string): Promise<boolean> => {
   if (ratelimit) {
-    const { success } = await ratelimit.limit(ip);
+    const { success } = await ratelimit.limit(clientId);
     return success;
   }
-  return checkRateLimitInMemory(ip);
+  return checkRateLimitInMemory(clientId);
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -185,11 +218,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting
-  const clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
-  const ip = Array.isArray(clientIP) ? clientIP[0] : clientIP;
-
-  if (!(await isWithinRateLimit(ip))) {
+  // Rate limiting (keyed on a hash of the client IP; see hashClientId)
+  if (!(await isWithinRateLimit(hashClientId(getClientIp(req))))) {
     return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
 
@@ -276,8 +306,13 @@ The integrativeViewpoint field MUST be detailed and comprehensive within the spe
 - English: 180-220 words (aim for around 200 words)
 Do NOT write shorter than the minimum. Provide sufficient detail about how Eastern and Western approaches complement each other.
 
+CRITICAL - WHEN TO SEE A DOCTOR (whenToSeeDoctor, MANDATORY):
+- For a SYMPTOM or CONDITION query: list 3-5 specific warning signs that mean the person should see a doctor rather than rely on self-care (e.g. symptoms lasting more than two weeks, high fever, unexplained weight loss, blood in stool or urine, severe or worsening pain). If the query could describe a medical emergency, the first item must tell them to seek emergency care immediately.
+- For a SPECIFIC SUBSTANCE query: list 2-4 signs of an adverse reaction that mean they should stop using it and see a doctor (e.g. rash, jaundice or dark urine, swelling or edema, palpitations, raised blood pressure).
+- One short, concrete sentence per item. Never suggest that herbs or supplements can replace medical care.
+
 CRITICAL - LANGUAGE REQUIREMENT:
-ALL text fields including name, category, summary, properties, constitution, actions, indications, constituentHerbs, clinicalNotes, interactions, and contraindications MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language. The only exception is evidenceLevel, which must be one of its fixed English values.
+ALL text fields including name, category, summary, properties, constitution, actions, indications, constituentHerbs, clinicalNotes, interactions, contraindications, and whenToSeeDoctor MUST be written ENTIRELY in ${languageName}. Do not mix languages. Every single word must be in the specified language. The only exception is evidenceLevel, which must be one of its fixed English values.
 ${language === 'ja' ? "- Use '西洋ハーブ' for Western Herb, '漢方処方' for Kampo Formula, 'サプリメント' for Supplement" : "- Use 'Western Herb', 'Kampo Formula', 'Supplement' for categories"}
 
 CRITICAL - ALWAYS INCLUDE FOR EVERY ENTRY:
@@ -339,12 +374,15 @@ Output: Valid JSON only, no markdown.`;
       console.log('Gemini response preview:', responseText.substring(0, 500));
     }
 
+    // Search terms and generated health content are never written to the logs:
+    // only their shape and size, so that logs hold no health information.
     let result;
     try {
       result = JSON.parse(responseText);
     } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      console.error('Response text (first 1000 chars):', responseText.substring(0, 1000));
+      // Only the error name: V8's JSON.parse messages quote part of the input.
+      console.error('JSON parse error:', parseError instanceof Error ? parseError.name : 'unknown');
+      console.error('Response length:', responseText.length);
       return res
         .status(500)
         .json({ error: 'Invalid response format from AI service. Please try again.' });
@@ -357,9 +395,9 @@ Output: Valid JSON only, no markdown.`;
         hasWesternHerbEntries: !!result.westernHerbEntries,
         hasSupplementEntries: !!result.supplementEntries,
         kampoEntries: result.kampoEntries ? `${result.kampoEntries.length} entries` : 'undefined',
+        responseKeys: Object.keys(result ?? {}),
+        language,
       });
-      console.error('Response structure:', JSON.stringify(result, null, 2).substring(0, 1000));
-      console.error('Query was:', query, 'Language:', language);
       return res
         .status(500)
         .json({ error: 'Incomplete response from AI service. Please try again.' });
@@ -368,8 +406,7 @@ Output: Valid JSON only, no markdown.`;
     return res.status(200).json(result);
   } catch (error) {
     console.error('❌ Compendium API error encountered');
-    console.error('Query:', query);
-    console.error('Language:', language);
+    console.error('Language:', language, 'Query length:', query?.length ?? 0);
 
     // Log detailed error information
     if (error instanceof Error) {

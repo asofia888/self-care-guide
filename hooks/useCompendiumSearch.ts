@@ -11,7 +11,20 @@ import {
   saveHistory,
   type HistoryEntry,
 } from '../utils/searchHistory';
+import { detectSafetyConcern, type SafetyLevel } from '../utils/safetyTriage';
 import type { CompendiumResult } from '../types';
+
+interface SearchOptions {
+  // Fetch from the API even when the query is saved in history.
+  refresh?: boolean;
+  // Skip the safety triage, e.g. after the person chose to proceed past it.
+  skipSafetyCheck?: boolean;
+}
+
+export interface SafetyConcern {
+  level: SafetyLevel;
+  query: string;
+}
 
 const hasEntries = (data: CompendiumResult | null): boolean =>
   !!data &&
@@ -31,6 +44,10 @@ export function useCompendiumSearch() {
   const [resultQuery, setResultQuery] = useState<string | null>(null);
   // Set when `result` was served from saved history instead of the API.
   const [cachedAt, setCachedAt] = useState<number | null>(null);
+  // When `result` was fetched from the API, whether just now or from history.
+  const [fetchedAt, setFetchedAt] = useState<number | null>(null);
+  // Set when the query was stopped by the safety triage instead of searched.
+  const [safetyConcern, setSafetyConcern] = useState<SafetyConcern | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>(loadHistory);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,21 +65,38 @@ export function useCompendiumSearch() {
   }, []);
 
   /**
-   * Performs the search operation. A previous result for the same query and
-   * language is reused from history unless `refresh` is set.
+   * Performs the search operation. Queries that suggest a crisis or urgent
+   * symptoms are stopped by the safety triage unless `skipSafetyCheck` is set.
+   * A previous result for the same query and language is reused from history
+   * unless `refresh` is set.
    */
   const handleSearch = useCallback(
-    async (searchQuery: string, { refresh = false }: { refresh?: boolean } = {}) => {
+    async (
+      searchQuery: string,
+      { refresh = false, skipSafetyCheck = false }: SearchOptions = {}
+    ) => {
       if (!searchQuery.trim()) return;
 
       setError(null);
       setInfoMessage(null);
+      setSafetyConcern(null);
+
+      const safetyLevel = skipSafetyCheck ? null : detectSafetyConcern(searchQuery);
+      if (safetyLevel) {
+        setResult(null);
+        setResultQuery(null);
+        setCachedAt(null);
+        setFetchedAt(null);
+        setSafetyConcern({ level: safetyLevel, query: searchQuery.trim() });
+        return;
+      }
 
       const cached = refresh ? undefined : findHistoryEntry(history, searchQuery, language);
       if (cached) {
         setResult(cached.result);
         setResultQuery(cached.query);
         setCachedAt(cached.savedAt);
+        setFetchedAt(cached.savedAt);
         updateHistory(cached);
         return;
       }
@@ -70,14 +104,17 @@ export function useCompendiumSearch() {
       setIsLoading(true);
       setResult(null);
       setCachedAt(null);
+      setFetchedAt(null);
 
       try {
         const data = await getCompendiumInfo(searchQuery, language);
+        const now = Date.now();
         setResult(data);
         setResultQuery(searchQuery.trim());
+        setFetchedAt(now);
 
         if (hasEntries(data)) {
-          updateHistory({ query: searchQuery.trim(), language, result: data, savedAt: Date.now() });
+          updateHistory({ query: searchQuery.trim(), language, result: data, savedAt: now });
         } else {
           setInfoMessage(translations.noResults);
         }
@@ -106,11 +143,22 @@ export function useCompendiumSearch() {
   );
 
   /**
-   * Re-fetches the displayed result from the API, bypassing history.
+   * Re-fetches the displayed result from the API, bypassing history. The
+   * displayed result already passed (or was let past) the safety triage.
    */
   const refreshResult = useCallback(() => {
-    if (resultQuery) handleSearch(resultQuery, { refresh: true });
+    if (resultQuery) handleSearch(resultQuery, { refresh: true, skipSafetyCheck: true });
   }, [handleSearch, resultQuery]);
+
+  /**
+   * Shows the information for an urgent-symptom query after the person has
+   * read the advice to see a doctor. Crisis queries cannot be continued.
+   */
+  const proceedPastSafetyConcern = useCallback(() => {
+    if (safetyConcern?.level === 'urgent') {
+      handleSearch(safetyConcern.query, { skipSafetyCheck: true });
+    }
+  }, [handleSearch, safetyConcern]);
 
   const clearHistory = useCallback(() => {
     setHistory([]);
@@ -131,6 +179,8 @@ export function useCompendiumSearch() {
     setResult(null);
     setResultQuery(null);
     setCachedAt(null);
+    setFetchedAt(null);
+    setSafetyConcern(null);
     setError(null);
     setInfoMessage(null);
   }, []);
@@ -153,7 +203,10 @@ export function useCompendiumSearch() {
     // State
     query,
     result,
+    resultQuery,
     cachedAt,
+    fetchedAt,
+    safetyConcern,
     recentSearches,
     isLoading,
     error,
@@ -164,6 +217,7 @@ export function useCompendiumSearch() {
     handleSearch,
     searchFromHistory,
     refreshResult,
+    proceedPastSafetyConcern,
     clearHistory,
     resetSearch,
     clearError,

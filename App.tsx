@@ -27,9 +27,10 @@ const App: React.FC = () => {
   const { language, activeView, handleNavigate, fontSize } = useAppContext();
 
   useEffect(() => {
-    // Adjust the root font size based on user preference
-    // This will scale all rem-based units in Tailwind CSS
-    document.documentElement.style.fontSize = fontSize === 'large' ? '18px' : '16px';
+    // Adjust the root font size based on user preference. This scales all
+    // rem-based units in Tailwind CSS. Percentages (not px) build on the
+    // browser's own default font size, so a larger browser setting is kept.
+    document.documentElement.style.fontSize = fontSize === 'large' ? '112.5%' : '100%';
 
     // Cleanup function to reset the style when the component unmounts
     return () => {
@@ -60,7 +61,7 @@ const App: React.FC = () => {
   };
 
   const footerLink =
-    'px-3 py-1 min-h-[44px] sm:min-h-[auto] text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-champagne-600 active:text-champagne-700 transition-colors duration-300';
+    'px-3 py-1 min-h-[44px] sm:min-h-[auto] text-xs uppercase tracking-[0.2em] text-stone-500 hover:text-champagne-700 active:text-champagne-700 transition-colors duration-300';
 
   return (
     <div className="min-h-screen flex flex-col text-stone-700">
@@ -94,7 +95,7 @@ const App: React.FC = () => {
           <p className="font-display text-lg italic tracking-wide text-stone-500">
             Self-Care Guide for Wellness
           </p>
-          <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-champagne-500/80">
+          <p className="mt-1 text-[0.6875rem] uppercase tracking-[0.3em] text-champagne-700">
             Integrative Wellness
           </p>
         </div>

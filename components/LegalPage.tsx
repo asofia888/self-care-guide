@@ -17,7 +17,8 @@ export const LegalPage: React.FC<LegalPageProps> = React.memo(({ title, content 
           <h2 className="font-display text-3xl font-medium text-stone-800 md:text-4xl">{title}</h2>
         </div>
 
-        <div className="space-y-3 leading-relaxed text-stone-600">
+        {/* Paragraphs are separated by a blank line; a single newline breaks the line. */}
+        <div className="space-y-4 whitespace-pre-line leading-relaxed text-stone-600">
           {content.split('\n\n').map((paragraph, index) => {
             const parts = paragraph.split(/(\*\*.*?\*\*)/g).map((part, i) => {
               if (part.startsWith('**') && part.endsWith('**')) {

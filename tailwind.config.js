@@ -31,7 +31,9 @@ export default {
           300: '#D2B487',
           400: '#C19C68',
           500: '#B08552',
-          600: '#977044',
+          // 600 and 700 are the shades for text and for white text on buttons:
+          // both keep at least 4.5:1 contrast against white.
+          600: '#8F6A40',
           700: '#7C5C39',
         },
         // Muted sage — soft botanical secondary
@@ -43,6 +45,8 @@ export default {
           400: '#94A485',
           500: '#7C8E6D',
           600: '#647257',
+          // For small text on tinted sage backgrounds, where 600 falls below 4.5:1.
+          700: '#525E47',
         },
       },
       boxShadow: {

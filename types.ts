@@ -28,6 +28,9 @@ export interface CompendiumEntry {
 
 export interface CompendiumResult {
   integrativeViewpoint: string;
+  // Warning signs that call for medical care instead of self-care. Optional
+  // because results saved in history before this field existed lack it.
+  whenToSeeDoctor?: string[];
   kampoEntries?: CompendiumEntry[];
   westernHerbEntries: CompendiumEntry[];
   supplementEntries: CompendiumEntry[];

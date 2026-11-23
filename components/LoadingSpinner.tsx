@@ -48,7 +48,7 @@ export const LoadingSpinner: React.FC = React.memo(() => {
           {t(language).loadingSpinner.message}
           <span className="inline-block w-6 text-left text-champagne-500">{dots}</span>
         </p>
-        <p className="mt-2.5 animate-pulse-soft text-[11px] uppercase tracking-[0.3em] text-champagne-500/90">
+        <p className="mt-2.5 animate-pulse-soft text-[0.6875rem] uppercase tracking-[0.3em] text-champagne-700">
           {language === 'ja' ? '最適な情報を検索しています' : 'Searching for the best information'}
         </p>
       </div>

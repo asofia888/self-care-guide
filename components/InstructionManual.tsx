@@ -32,7 +32,7 @@ const InstructionManual: React.FC = () => {
             <HelpCircleIcon className="h-10 w-10 text-champagne-500" />
           </div>
         </div>
-        <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-600">Guide</p>
+        <p className="mb-4 text-xs uppercase tracking-[0.32em] text-champagne-700">Guide</p>
         <h2 className="font-display text-3xl font-medium text-stone-800 sm:text-4xl">
           {translations.title}
         </h2>

@@ -91,22 +91,22 @@ describe('App component', () => {
     expect(screen.getByTestId('disclaimer-page')).toBeInTheDocument();
   });
 
-  it('sets font size to 18px when fontSize is large', () => {
+  it('sets font size to 112.5% when fontSize is large', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue({ fontSize: 'large' }));
     render(<App />);
-    expect(document.documentElement.style.fontSize).toBe('18px');
+    expect(document.documentElement.style.fontSize).toBe('112.5%');
   });
 
-  it('sets font size to 16px when fontSize is standard', () => {
+  it('sets font size to 100% when fontSize is standard', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue({ fontSize: 'standard' }));
     render(<App />);
-    expect(document.documentElement.style.fontSize).toBe('16px');
+    expect(document.documentElement.style.fontSize).toBe('100%');
   });
 
   it('resets font size on unmount', () => {
     (useAppContext as Mock).mockReturnValue(createMockContextValue({ fontSize: 'large' }));
     const { unmount } = render(<App />);
-    expect(document.documentElement.style.fontSize).toBe('18px');
+    expect(document.documentElement.style.fontSize).toBe('112.5%');
     unmount();
     expect(document.documentElement.style.fontSize).toBe('');
   });

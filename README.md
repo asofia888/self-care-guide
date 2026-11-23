@@ -56,8 +56,9 @@ The application supports **bilingual content** (日本語 and English) and inclu
 ✅ **AI-Powered Recommendations** - Get personalized health guidance using advanced AI
 ✅ **Dual Medical Traditions** - Combine East and West medical approaches
 ✅ **Bilingual Support** - Full support for Japanese and English
-✅ **Accessible Design** - WCAG 2.1 compliant with screen reader support
-✅ **Privacy-First** - No user data collection, all requests are stateless
+✅ **Accessible Design** - Built toward WCAG 2.1 AA contrast and text-resize guidelines, with screen reader support
+✅ **Privacy-First** - No accounts, cookies, or analytics; search terms are not stored or logged by the server
+✅ **Safety Triage** - Crisis and urgent-symptom searches show support resources or advice to see a doctor first
 ✅ **Production-Ready** - Enterprise-grade security and performance
 
 ---
@@ -81,11 +82,14 @@ The application supports **bilingual content** (日本語 and English) and inclu
 
 ### 🎨 Accessibility Features
 
-- WCAG 2.1 Level AA compliant
+- Text colors chosen for at least 4.5:1 contrast (WCAG 2.1 AA), including the
+  interactions and contraindications headings; not yet formally audited
+- All type sizes in `rem`, so the Standard / Large setting and the browser's own
+  font size setting scale every label
+- Safety sections marked with icons, not by color alone
+- Text is selectable everywhere, so herb names and warnings can be copied
 - Screen reader support (ARIA)
 - Keyboard navigation
-- Adjustable font sizes (Standard / Large)
-- High contrast support
 
 ### 📱 Responsive Design
 
@@ -357,6 +361,7 @@ Content-Type: application/json
 ```json
 {
   "integrativeViewpoint": "Ginger combines warming properties from both Eastern and Western traditions...",
+  "whenToSeeDoctor": ["Stop use and see a doctor if you develop a rash or swelling"],
   "kampoEntries": [
     {
       "name": "生姜 (Shokyo)",
@@ -559,9 +564,23 @@ This application implements enterprise-grade security measures:
 
 ### Data Protection
 
-- ✅ **No User Data Tracking** - Stateless requests only
-- ✅ **No Cookies** - No persistent storage
-- ✅ **No Analytics** - Privacy-first by design
+- ✅ **No Query Logging** - The API never writes search terms or generated content to logs
+- ✅ **Hashed IPs** - Rate limiting keys on an HMAC of the client IP, never the IP itself
+- ✅ **No Cookies or Analytics** - Settings and search history stay in the browser (localStorage)
+- ℹ️ **Third-party AI** - Search terms are sent to the Google Gemini API to generate answers
+  (disclosed in the in-app Privacy Policy)
+
+### Safety Triage
+
+Before a search is sent to the AI, `utils/safetyTriage.ts` checks it for phrases that suggest
+a mental health crisis or symptoms that may need prompt medical care:
+
+- **Crisis** (e.g. suicidal thoughts, self-harm) - shows support lines instead of results
+- **Urgent** (e.g. chest pain, stroke signs, vomiting blood) - recommends seeing a doctor first,
+  with an option to view the information anyway
+
+Every result also includes an AI-generated-content notice (printed with the result) and a
+"When to seek medical care" list from the model.
 
 For detailed security information, see [SECURITY.md](SECURITY.md).
 
@@ -636,11 +655,12 @@ npm run test:e2e:debug    # Debug mode
 
 ### Environment Variables Required
 
-| Variable                   | Value                                           | Required                     |
-| :------------------------- | :---------------------------------------------- | :--------------------------- |
-| `GEMINI_API_KEY`           | Your Google Gemini API key                      | Yes (production)             |
-| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL (distributed rate limit) | No (falls back to in-memory) |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                        | No (falls back to in-memory) |
+| Variable                   | Value                                                      | Required                          |
+| :------------------------- | :--------------------------------------------------------- | :-------------------------------- |
+| `GEMINI_API_KEY`           | Your Google Gemini API key                                 | Yes (production)                  |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL (distributed rate limit)            | No (falls back to in-memory)      |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                                   | No (falls back to in-memory)      |
+| `RATE_LIMIT_SALT`          | Secret key for hashing client IPs (any long random string) | No (falls back to the Gemini key) |
 
 > Vercel KV stores work too — the function also reads `KV_REST_API_URL` /
 > `KV_REST_API_TOKEN`. Without any of these, rate limiting uses a per-instance
